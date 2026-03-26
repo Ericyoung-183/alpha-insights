@@ -68,7 +68,7 @@ MECE | Issue Tree | Hypothesis-Driven | Pyramid Principle | Triangulation | Pre-
 
 ```bash
 # Clone the repo
-git clone https://github.com/Ericyoung-179/alpha-insights.git
+git clone https://github.com/Ericyoung-183/alpha-insights.git
 
 # Copy to Claude Code Skills directory
 cp -r alpha-insights ~/.claude/Skills/
