@@ -248,7 +248,7 @@ X.4 与我们的关系（上下文锚定）
 ### ECharts 图表（Tier 2+ 必须）
 
 > **定位**：所有数据可视化图表统一使用 ECharts。Tier 2+ 报告必须 ≥3 个 ECharts 图表。
-> report_template.html 已内置 ECharts CDN。参考示例：`report_demo.html`（芝麻短租 Tier 2 实测报告）。
+> report_template.html 已内置 ECharts CDN。参考示例：`report_demo.html`（扫地机器人行业研究 Tier 2 实测报告）。
 
 **推荐图表类型**：
 
