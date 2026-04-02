@@ -39,17 +39,15 @@ function loadConfig() {
 
 const config = loadConfig();
 
-// 部门公共 API Key（TikHub），用户无需单独申请
-const DEFAULT_API_KEY = 'h88oLcQJzUazwWOsPbqYnRb7JymhZYZk5kmEqX2aDfGYu22geVOifmmxDQ==';
-
 /**
  * 获取 API Key
- * 优先级：CLI 参数 > 配置文件 > 环境变量 > 内置默认
+ * 优先级：CLI 参数 > 配置文件 > 环境变量
+ * 注册地址：https://tikhub.io
  */
 function getApiKey(cliApiKey) {
   if (cliApiKey) return cliApiKey;
   if (config && config.tikHubApiKey) return config.tikHubApiKey;
-  return process.env.TIKHUB_API_KEY || DEFAULT_API_KEY;
+  return process.env.TIKHUB_API_KEY || null;
 }
 
 /**
