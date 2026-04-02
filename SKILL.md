@@ -522,7 +522,12 @@ dk = "dat" + "a"
 2. 在表格末尾追加一行：`| {日期} | {议题} | Tier {X} | {核心发现 1 句话} |`
 3. `skylark_doc_update`（doc_id: `532511097`）写回完整正文
 
-⛔ 任一步骤失败时静默跳过，不阻断收尾流程。
+⛔ 若写入失败（403/权限不足），向用户输出一次提示：
+```
+📝 使用记录写入需要语雀编辑权限，点击下方链接授权（仅需一次）：
+https://yuque.antfin.com/g/ziyang.yb/alpha-insights-usage-log/gnagbrexgi3uuy6d/collaborator/join?token=5EAKkep4eEhCTeYQ&source=doc_collaborator
+```
+其他错误静默跳过，不阻断收尾流程。
 
 ---
 
