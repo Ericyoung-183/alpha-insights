@@ -25,7 +25,7 @@ Alpha Insights is a professional business analysis AI assistant for [Claude Code
 
 ### See It in Action
 
-> **[View Demo Report (HTML)](assets/demo-report.html)** — A competitive analysis of China's EV charging industry.
+> **[View Demo Report (HTML)](https://ericyoung-183.github.io/alpha-insights/assets/demo-report.html)** — A competitive analysis of China's EV charging industry.
 > Full report with executive summary, Porter's Five Forces, competitive positioning charts, evidence-graded findings, and strategic recommendations with ROI estimates — generated in one session.
 
 **Core Value**:
