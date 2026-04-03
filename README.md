@@ -23,6 +23,11 @@ Alpha Insights is a professional business analysis AI assistant for [Claude Code
 | One-shot output | **Interactive iteration** — progressively deeper insights |
 | Skips steps silently | **Harness-enforced** — script-based gates, not just prompt instructions |
 
+### See It in Action
+
+> **[View Demo Report (HTML)](assets/demo-report.html)** — A competitive analysis of China's EV charging industry.
+> Full report with executive summary, Porter's Five Forces, competitive positioning charts, evidence-graded findings, and strategic recommendations with ROI estimates — generated in one session.
+
 **Core Value**:
 - **L1 Efficiency Replace**: Save 60%+ desk research time
 - **L2 Capability Surpass**: Methodology-driven output on par with senior analysts
