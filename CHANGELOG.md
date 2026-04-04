@@ -1,5 +1,21 @@
 # Changelog
 
+## V2.0.12 (2026-04-05)
+
+> **访谈状态链路修复 + Validator/Dashboard 精度提升**
+
+### 访谈状态记录链路修复
+- SKILL.md Stage 3 访谈决策后新增 `state_manager.py log --type interview_activated/declined` 调用
+- SKILL.md Stage 4 访谈催收检查点后新增 `state_manager.py log --type interview_checkpoint_done` 调用
+- 根因：state_manager handler 已就绪、stage4 validator 已读取、Stage 6 互动引导已依赖，但 SKILL.md 从未指示模型写入 → `interview_activated` 永远为 false
+
+### Validator 精度修复
+- `stage5.py`：洞察计数 regex `[0-9#]` → `[I#]?\s*\d`，覆盖 `洞察 I1` 格式
+- `dashboard.py`：评分提取前剥离 Markdown 粗体标记（`**`），修复 `= **19 分**` 格式无法匹配的问题
+
+---
+
+
 ## V2.0.11 (2026-04-05)
 
 > **XHS 端点 fallback 修复** — 小红书搜索恢复可用。

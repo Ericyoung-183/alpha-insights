@@ -475,6 +475,9 @@ class ReportBuilder:
       <div class="footer-text">本报告由 Alpha Insights-BizAdvisor 生成</div>
       <div class="footer-text">{self.confidential} · 请勿外传</div>
       <div class="footer-date">{self.date}</div>
+      <div class="footer-cta">
+        <a href="https://github.com/Ericyoung-183/alpha-insights" target="_blank">加星 ⭐ Alpha Insights → GitHub</a>
+      </div>
     </div>
   </div>'''
 

@@ -144,7 +144,9 @@ def assess_stage5(workspace):
 
     details = []
     # 洞察计数（寻找评分标记）
-    scores = re.findall(r"(\d{1,2})\s*[/／]\s*20|评分[：:]\s*(\d{1,2})|=\s*(\d{1,2})\s*分", content)
+    # 剥离 Markdown 粗体标记，避免 **19** 格式干扰评分提取
+    content_for_scores = content.replace("**", "")
+    scores = re.findall(r"(\d{1,2})\s*[/／]\s*20|评分[：:]\s*(\d{1,2})|=\s*(\d{1,2})\s*分", content_for_scores)
     score_values = [int(s[0] or s[1] or s[2]) for s in scores if (s[0] or s[1] or s[2])]
 
     if score_values:

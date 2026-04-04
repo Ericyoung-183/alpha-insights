@@ -48,7 +48,7 @@ def validate(workspace):
             r.warn("红队审查未检测到实质/致命级挑战 — 每个核心洞察至少 1 个实质挑战")
 
     # WARN: 洞察数量
-    insight_count = count_pattern(workspace, f, r"(?:洞察|Insight)\s*[0-9#]")
+    insight_count = count_pattern(workspace, f, r"(?:洞察|Insight)\s*[I#]?\s*\d")
     if insight_count < 3:
         r.warn(f"仅检测到 {insight_count} 个洞察（建议 ≥ 3）")
 

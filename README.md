@@ -119,7 +119,7 @@ Alpha Insights will automatically:
 
 | Source | Description | Required Setup |
 |--------|------------|----------------|
-| **Knowledge base** | Historical reports, industry notes | Notion / Confluence MCP |
+| **Knowledge base** | Historical reports, industry notes | Notion MCP / Knowledge Base MCP |
 | **Internal data** | Business metrics, user behavior | ODPS MCP / Database MCP |
 
 > Unconfigured data sources are automatically skipped — core functionality is not affected.

@@ -360,6 +360,14 @@ Tier {X} — {档位名称}
 
 ⛔ 访谈决策是确认流程的一部分，不可跳过。即使建议不激活，也必须让用户做出选择。
 
+**状态记录**（Bash 可用时，用户做出选择后立即执行）：
+```bash
+# 用户选 A（需要访谈）
+python3 scripts/harness/state_manager.py log {ws} --type interview_activated --detail "用户确认需要访谈"
+# 用户选 B（跳过访谈）
+python3 scripts/harness/state_manager.py log {ws} --type interview_declined --detail "用户选择跳过访谈"
+```
+
 ---
 
 ### Stage 3.5: 访谈准备（Interview Prep）— 条件激活
@@ -419,6 +427,13 @@ Tier {X} — {档位名称}
 「Stage 3.5 生成了访谈提纲，访谈做完了吗？」
 A. 做完了，访谈纪要/原始记录给你（→ 用户拖入文件或告知路径，整理后纳入 evidence_base）
 B. 还没做完，先用现有数据继续（→ 标注"访谈证据待补充"，并提醒：「没关系，等访谈做完了随时把纪要给我，我会补充进研究和报告」）
+```
+**状态记录**（Bash 可用时，用户回答后立即执行）：
+```bash
+# 用户选 A（访谈完成）
+python3 scripts/harness/state_manager.py log {ws} --type interview_checkpoint_done --detail "completed"
+# 用户选 B（延后）
+python3 scripts/harness/state_manager.py log {ws} --type interview_checkpoint_done --detail "deferred"
 ```
 详见 `research_engine.md` Track C。
 
@@ -600,6 +615,28 @@ dk = "dat" + "a"
 **所有图表统一使用 ECharts**，不使用 CSS 图表（模板中无 CSS 图表样式）。布局组件（数据卡片、高亮框、策略卡片等）仍用 CSS。
 
 **输出**: `{ws}/report.html`
+
+**报告交付后——互动引导**（报告生成完成后立即输出，语言跟随用户）：
+
+```
+报告已就绪：{report.html 绝对路径}
+
+💡 这不是终点——报告质量取决于接下来的互动。
+
+请浏览后告诉我：
+1. **哪些地方要深挖？** —— 某个洞察值得展开、某个风险分析得不够
+2. **哪些观点想讨论？** —— 你有不同看法、想加入你的行业经验和判断
+3. **有没有遗漏？** —— 缺了重要竞对、漏了关键维度、忽略了某个趋势
+4. **哪些判断需要修正？** —— 结论偏了、逻辑有跳跃、数据解读有误
+{访谈提醒}
+
+你的领域认知是我无法替代的输入——每一轮反馈都会让报告从"AI 分析"变成"你的分析"。
+```
+
+{访谈提醒} 根据 `_state.json` 访谈状态三选一：
+- Stage 3.5 激活 + **未收到纪要**：`5. **访谈纪要** —— 访谈已规划但我还没收到纪要，完成后把纪要给我，我会有机融合进研究和报告`
+- Stage 3.5 激活 + **已收到纪要**：`5. **更多访谈** —— 如果还有后续访谈，随时把新纪要给我，我会有机融合进来`
+- Stage 3.5 **未激活**：不显示
 
 ---
 
