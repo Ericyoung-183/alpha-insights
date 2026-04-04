@@ -10,30 +10,30 @@ hooks:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_SKILL_DIR}/scripts/harness/hooks/html_write_guard.py"
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harness/hooks/html_write_guard.py"
           timeout: 3
     - matcher: "Read|Bash|Grep|Glob|Edit"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_SKILL_DIR}/scripts/harness/hooks/context_budget_hook.py"
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harness/hooks/context_budget_hook.py"
           timeout: 10
   PostToolUse:
     - matcher: "Write"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_SKILL_DIR}/scripts/harness/hooks/stage_gate_hook.py"
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harness/hooks/stage_gate_hook.py"
           timeout: 10
     - matcher: ".*"
       hooks:
         - type: command
-          command: "python3 ${CLAUDE_SKILL_DIR}/scripts/harness/hooks/progress_logger.py"
+          command: "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/harness/hooks/progress_logger.py"
           timeout: 5
           async: true
 ---
 
 # Alpha Insights-BizAdvisor — Skill 主文件
 
-> 版本：V2.0.8 | 最后更新：2026-04-04
+> 版本：V2.0.9 | 最后更新：2026-04-04
 > 定位：代替资深商业分析师，产出有深度、有决策价值的研究报告
 > 本文件是纯编排层，详细执行指令在各 Stage 加载的文件中
 > **Harness Engineering**：通过脚本验证 + 状态机 + 上下文压缩，从外部约束执行质量

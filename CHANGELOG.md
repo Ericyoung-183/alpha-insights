@@ -1,5 +1,18 @@
 # Changelog
 
+## V2.0.9 (2026-04-04)
+
+> **Hook 路径修复** — 修复所有用户 Hook 无法执行的阻断性问题。
+
+### Hook 路径修复（阻断性 Bug）
+- Frontmatter hooks 中 `${CLAUDE_SKILL_DIR}` → `${CLAUDE_PLUGIN_ROOT}`
+- 原因：`${CLAUDE_SKILL_DIR}` 仅在 SKILL.md 正文做字符串替换，frontmatter hook command 中不展开（CC 已知限制 + AntCC 同样）
+- `${CLAUDE_PLUGIN_ROOT}` 在 hook command 中既做字符串替换又设为环境变量，指向 hook 所属 skill 目录
+- 影响：4 个 hook 全部修复（html_write_guard、context_budget_hook、stage_gate_hook、progress_logger）
+- 正文 `!` 内联命令保持 `${CLAUDE_SKILL_DIR}`（该上下文可正常展开）
+
+---
+
 ## V2.0.8 (2026-04-04)
 
 > **协议合规 & 状态机修复** — 第六轮 10 项质量检查，修复 Hook 协议、状态机 Stage 3.5、版本号、文档同步。
@@ -37,7 +50,7 @@
 - `ReportBuilder`：新增 `author` 参数（默认 "Alpha Insights Research"），替代硬编码
 
 ### GitHub 裁剪规则扩展（2 → 8 条）
-- 新增：内部工具引用泛化、敏感信息移除等裁剪规则
+- 新增：CHANGELOG 语雀引用 / README AntCC 安装段 / interview.md 语雀钉钉 / data_sources 语雀 / SKILL.md 语雀搜索
 
 ---
 
@@ -162,12 +175,13 @@ SKILL.md frontmatter 声明 4 个 Hook，平台自动执行：
 
 **Stage 7B 收尾**
 - 精简收尾模板：议题 + 档位 + 报告路径 + 核心发现 + Star/Issue 链接
+- 使用记录自动追加，静默执行不打扰用户
 
 ### 改进：数据源与搜索
 
 - `resources/research_engine.md` — Track 标签统一修正（A→G），执行顺序明确
 - XHS 脚本端点迁移（`check_topics.js`、`search_notes.js`、`get_note.js`）
-- 知识库搜索集成（支持 Yuque / Notion / Confluence MCP）
+- 知识库 Track D 搜索集成
 
 ### 改进：洞察质量
 

@@ -7,7 +7,7 @@
  * 1. 脚本参数 --api-key
  * 2. ~/.alpha_insights.json 的 tikHubApiKey
  * 3. 环境变量 TIKHUB_API_KEY
- * 4. 内置默认 Key（部门公共账号）
+ * 4. 内置默认 Key（未配置）
  *
  * 网络：优先使用 Node.js fetch，若失败（企业代理/DNS 问题）自动降级为 curl
  */
@@ -39,7 +39,7 @@ function loadConfig() {
 
 const config = loadConfig();
 
-// 请配置自己的 TikHub API Key（见 README 说明）
+// API Key（需用户自行配置）
 const DEFAULT_API_KEY = null;
 
 /**
