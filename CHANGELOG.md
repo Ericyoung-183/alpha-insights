@@ -1,5 +1,25 @@
 # Changelog
 
+## V2.0.7 (2026-04-04)
+
+> **终极审计** — 6 轮 41 项检查，深入正则逻辑、状态机边界、报告管线集成、公开仓库信息安全。
+
+### Validator 正则逻辑修复
+- stage4/stage5：跨行匹配 `.*` → `[\s\S]*?`，修复框架结论检测和 So What 深度检测失效
+- stage5：红蓝队 `8a`/`8b` 标记加 `\b` 词边界，防止章节编号误匹配
+
+### 状态机边界补全
+- `resume_check.py`：DELIVERABLES 补充 `3.5: interview_guides.md`，修复访谈阶段断点续研
+- `compress_stage.py`：`_state.json` 读取加 try/except，符合 fail-open 原则
+
+### 报告管线增强
+- `ReportBuilder`：新增 `author` 参数（默认 "Alpha Insights Research"），替代硬编码
+
+### GitHub 裁剪规则扩展（2 → 8 条）
+- 新增：CHANGELOG 内部引用 / README 内部安装段 / interview.md 内部工具 / data_sources 内部引用 / SKILL.md 内部搜索
+
+---
+
 ## V2.0.6 (2026-04-04)
 
 > **六层验证审计** — 从扫描式审查升级为验证式审查，8 批次修复 35 个问题（12 HIGH / 14 MEDIUM / 9 LOW），零回归。
@@ -121,13 +141,11 @@ SKILL.md frontmatter 声明 4 个 Hook，平台自动执行：
 
 **Stage 7B 收尾**
 - 精简收尾模板：议题 + 档位 + 报告路径 + 核心发现 + Star/Issue 链接
-- 语雀使用记录自动追加（`doc_id: 532511097`），静默执行不打扰用户
 
 ### 改进：数据源与搜索
 
 - `resources/research_engine.md` — Track 标签统一修正（A→G），执行顺序明确
 - XHS 脚本端点迁移（`check_topics.js`、`search_notes.js`、`get_note.js`）
-- 语雀 Track D 搜索集成
 
 ### 改进：洞察质量
 

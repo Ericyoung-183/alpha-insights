@@ -11,7 +11,7 @@ def get_tier(workspace):
     if not os.path.isfile(path):
         return 3
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
             state = json.load(f)
         return int(state.get("tier", 3))
     except (json.JSONDecodeError, ValueError, TypeError):
@@ -26,7 +26,7 @@ def file_line_count(workspace, filename):
     path = os.path.join(workspace, filename)
     if not os.path.isfile(path):
         return 0
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
         return sum(1 for _ in f)
 
 
@@ -41,7 +41,7 @@ def file_contains_keyword(workspace, filename, keyword):
     path = os.path.join(workspace, filename)
     if not os.path.isfile(path):
         return False
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
         content = f.read()
     return keyword in content
 
@@ -50,7 +50,7 @@ def file_contains_pattern(workspace, filename, pattern):
     path = os.path.join(workspace, filename)
     if not os.path.isfile(path):
         return False
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
         content = f.read()
     return bool(re.search(pattern, content, re.MULTILINE))
 
@@ -59,7 +59,7 @@ def count_pattern(workspace, filename, pattern):
     path = os.path.join(workspace, filename)
     if not os.path.isfile(path):
         return 0
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
         content = f.read()
     return len(re.findall(pattern, content, re.MULTILINE))
 

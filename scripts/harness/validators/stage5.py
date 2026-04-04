@@ -24,14 +24,14 @@ def validate(workspace):
         r.fail("未检测到洞察评分")
 
     # 红队审查（所有档位必须执行）
-    has_red = file_contains_pattern(workspace, f, r"红队|red.?team|8a|Red Team")
+    has_red = file_contains_pattern(workspace, f, r"红队|red.?team|\b8a\b|Red Team")
     if has_red:
         r.pass_check("红队审查记录存在")
     else:
         r.fail("未检测到红队审查记录（所有档位必须执行）")
 
     # 蓝队审查（所有档位必须执行）
-    has_blue = file_contains_pattern(workspace, f, r"蓝队|blue.?team|8b|Blue Team")
+    has_blue = file_contains_pattern(workspace, f, r"蓝队|blue.?team|\b8b\b|Blue Team")
     if has_blue:
         r.pass_check("蓝队审查记录存在")
     else:
@@ -73,7 +73,7 @@ def validate(workspace):
 
     # WARN: So What 链深度（检测层级标记：→/⇒/层/layer 或 So What 出现次数）
     so_what_count = count_pattern(workspace, f, r"So What|so what|So what")
-    layer_markers = count_pattern(workspace, f, r"→.*→|⇒.*⇒|第[一二三四1-4]层|Layer [1-4]|现象.*含义.*策略|含义.*策略.*行动")
+    layer_markers = count_pattern(workspace, f, r"→.*→|⇒.*⇒|第[一二三四1-4]层|Layer [1-4]|现象[\s\S]*?含义[\s\S]*?策略|含义[\s\S]*?策略[\s\S]*?行动")
     depth_signal = max(so_what_count, layer_markers)
     if depth_signal >= 3:
         r.pass_check(f"So What 链深度信号: {depth_signal}（So What {so_what_count} 处 + 层级标记 {layer_markers} 处）")

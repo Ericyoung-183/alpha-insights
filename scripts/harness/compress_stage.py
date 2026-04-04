@@ -142,13 +142,16 @@ def compress_and_save(workspace, stage_num):
     # 写入 _state.json
     state_path = os.path.join(workspace, "_state.json")
     if os.path.isfile(state_path):
-        with open(state_path, "r", encoding="utf-8") as f:
-            state = json.load(f)
-        if "stage_summaries" not in state:
-            state["stage_summaries"] = {}
-        state["stage_summaries"][str(stage_num)] = summary
-        with open(state_path, "w", encoding="utf-8") as f:
-            json.dump(state, f, ensure_ascii=False, indent=2)
+        try:
+            with open(state_path, "r", encoding="utf-8") as f:
+                state = json.load(f)
+            if "stage_summaries" not in state:
+                state["stage_summaries"] = {}
+            state["stage_summaries"][str(stage_num)] = summary
+            with open(state_path, "w", encoding="utf-8") as f:
+                json.dump(state, f, ensure_ascii=False, indent=2)
+        except (json.JSONDecodeError, OSError):
+            pass  # fail-open: _state.json 损坏时跳过摘要写入，不阻断压缩流程
 
     # 输出摘要供 AI 直接使用
     token_estimate = len(summary) / 2.0

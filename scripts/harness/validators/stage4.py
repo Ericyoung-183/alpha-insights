@@ -87,7 +87,7 @@ def validate(workspace):
         or file_contains_keyword(workspace, f, "PESTEL")
         or file_contains_keyword(workspace, f, "Porter")
         or file_contains_keyword(workspace, f, "SWOT")
-        or file_contains_pattern(workspace, f, r"框架.*结论|框架.*分析")
+        or file_contains_pattern(workspace, f, r"框架[\s\S]*?结论|框架[\s\S]*?分析")
     )
     if has_framework:
         r.pass_check("含框架分析记录")

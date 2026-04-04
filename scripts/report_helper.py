@@ -325,12 +325,14 @@ class ReportBuilder:
     """
 
     def __init__(self, title="研究报告", subtitle="", date=None,
-                 confidential="内部资料", version="V1.0"):
+                 confidential="内部资料", version="V1.0",
+                 author="Alpha Insights Research"):
         self.title = title
         self.subtitle = subtitle
         self.date = date or datetime.now().strftime("%Y年%m月%d日")
         self.confidential = confidential
         self.version = version
+        self.author = author
         self.toc_conclusion = ""
         self.chapters = []   # list of [num_str, name, body_html]
         self.charts = []     # list of {"id": ..., "option": ...}
@@ -420,7 +422,7 @@ class ReportBuilder:
       <h1 class="cover-title">{self.title}</h1>
       <p class="cover-subtitle">{self.subtitle}</p>
       <div class="cover-divider"></div>
-      <p class="cover-meta">Alpha Insights Research</p>
+      <p class="cover-meta">{self.author}</p>
       <p class="cover-date">{self.date}</p>
     </div>
     <div class="cover-footer">

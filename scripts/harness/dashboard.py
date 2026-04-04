@@ -78,7 +78,7 @@ def assess_stage2(workspace):
             fw_names = state["frameworks_loaded"]
             details.append(f"框架: {' + '.join(fw_names[:3])}")
 
-    return "✅ 门控通过", details
+    return "✅ 已产出", details
 
 
 # ── Stage 3: Research Plan ──
@@ -105,7 +105,7 @@ def assess_stage3(workspace):
     if ds_count > 0:
         details.append(f"数据轨道 {ds_count} 类")
 
-    return "✅ 门控通过", details
+    return "✅ 已产出", details
 
 
 # ── Stage 4: Evidence Base ──
@@ -132,7 +132,7 @@ def assess_stage4(workspace):
         if (a_count + b_count) / total < 0.5:
             details.append("⚠️ B 级以上占比 < 50%")
 
-    return "✅ 门控通过", details
+    return "✅ 已产出", details
 
 
 # ── Stage 5: Insights ──
@@ -173,7 +173,7 @@ def assess_stage5(workspace):
     elif has_blue:
         details.append("⚠️ 红队缺失 | 蓝队审查 ✓")
 
-    return "✅ 门控通过", details
+    return "✅ 已产出", details
 
 
 # ── Overall Assessment ──

@@ -84,13 +84,7 @@ MECE | Issue Tree | Hypothesis-Driven | Pyramid Principle | Triangulation | Pre-
 
 ### Install
 
-**Option A — via AntCC Skill installer (recommended for Ant internal users)**:
-
-```bash
-tnpx @antskill/agentic-installer @antskill/alpha-insights
-```
-
-**Option B — via Git**:
+**via Git**:
 
 ```bash
 git clone https://github.com/Ericyoung-183/alpha-insights.git
@@ -127,7 +121,7 @@ Alpha Insights will automatically:
 
 | Source | Description | Required Setup |
 |--------|------------|----------------|
-| **Knowledge base** | Historical reports, industry notes | Yuque MCP / Notion MCP |
+| **Knowledge base** | Historical reports, industry notes | Notion MCP / Knowledge Base MCP |
 | **Internal data** | Business metrics, user behavior | ODPS MCP / Database MCP |
 
 > Unconfigured data sources are automatically skipped — core functionality is not affected.

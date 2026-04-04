@@ -19,6 +19,7 @@ STAGE_NAMES = {
 
 DELIVERABLES = {
     1: "user_brief.md", 2: "research_definition.md", 3: "research_plan.md",
+    3.5: "interview_guides.md",
     4: "evidence_base.md", 5: "insights.md", 6: "report.html",
 }
 
