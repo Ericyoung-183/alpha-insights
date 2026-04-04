@@ -1,35 +1,41 @@
 # Changelog
 
-## V2.0.5 (2026-04-03)
+## V2.0.6 (2026-04-04)
 
-> **五层深度审计 + 全量修复**：对 75 文件执行 L-A 术语一致性 / L-B 框架结构一致性 / L-C 执行流模拟 / L-D 脚本健壮性 / L-E 缺失内容审计，共识别 42 项问题（8 HIGH + 27 MEDIUM + 7 LOW），全部修复。
+> **六层验证审计** — 从扫描式审查升级为验证式审查，8 批次修复 35 个问题（12 HIGH / 14 MEDIUM / 9 LOW），零回归。
 
-### 修复：执行可靠性
+### Tier 规则统一
+- 所有档位执行全部 8 条分析规则 + 红蓝队审查 + IQR 复核，不因 Tier 降低分析深度
+- ECharts 图表要求按 Tier 区分（Tier 2 ≥3 / Tier 3 ≥6）
 
-- `state_manager.py` / `dashboard.py` — `_load_state()` 增加 `json.JSONDecodeError` 容错，损坏的 `_state.json` 不再导致流程崩溃
-- `report_helper.py` — `_to_js()` 字符串转义补充 `\r` / `\t`，修复含特殊字符的图表标签渲染异常
-- ReportBuilder 状态文件路径从 `/tmp/rpt_{project}.json` 改为 `{ws}/_rpt_state.json`，解决跨平台 + 重启后状态丢失
+### 门控↔验证器 100% 对齐
+- SKILL.md 门控条件与 validator FAIL/WARN 级别完全一致
+- evidence_base 行数按 Tier 区分（10/20/40 行）
+- 封面/目录/尾页缺失从 WARN 升级为 FAIL
+- B 级证据、访谈决策、红蓝队审查均为 FAIL 级校验
 
-### 修复：执行一致性
+### 状态机加固
+- `state_manager.py`：前进检查（禁止回跳）+ 访谈拒绝路径 + IQR 结果追踪 + Stage 3.5 交付物注册
 
-- SKILL.md Stage 6 自检项数 5→7，与 `report_standards.md` 对齐
-- Track A+B 并行写入保护：Subagent 结果统一返回主 Session 写入 `evidence_base.md`
-- Agent/Subagent 不可用时的降级路径：主 Session 串行执行
-- 红蓝队 Subagent 增加 Agent 工具不可用时的 fallback 说明
+### 路径系统统一
+- 全文 `workspace/{project}` → `{ws}`（绝对路径），消除混用歧义
+- Python 模板中 `{project}` → `{project_slug}` 统一
+- ReportBuilder 代码模板使用 `os.path.join(ws, ...)` 消除占位符混淆
 
-### 新增：交付物模板 & 边缘情况
+### 模板和定义补全
+- Stage 3/3.5/4 新增输出格式模板（研究计划、访谈提纲、证据库结构）
+- Layer 1/2/3 补充操作定义（谁执行、做什么、产出什么）
+- 模糊指标量化：「数据源组合合理」→「覆盖 ≥80% 子问题」
 
-- SKILL.md 补充 `user_brief.md` / `research_definition.md` 结构模板，Stage 1-2 交付物格式可追溯
-- 边缘情况表新增 5 条：用户否决全部洞察、中途换议题、`_state.json` 损坏恢复、Agent 不可用降级、Bash 不可用降级
-- `judgment_rules.md` 四维评分表补 3 分锚点（具体性/独特性/可执行性/影响力）
-- `judgment_rules.md` Step 2 用户否决洞察回退机制
-- `research_engine.md` 空结果处理规则（扩展关键词重试 → 标注证据缺口）
-
-### 修复：内容补全
-
-- `methodology/mece.md` 补「输出格式」章节，与其他方法论文件结构对齐
-- `report_standards.md` 补洞察分级说明（A 类 18-20 分 / B 类 16-17 分），与 Stage 5 `insights.md` 对齐
-- `research_engine.md` 修复「知识库搜索搜索」重复词 typo
+### 执行机制增强
+- IQR Subagent 调用规范（调用方式、结果处理、状态记录、降级方案）
+- 红队致命挑战增加用户决策权（可接受修正或显式保留并标注）
+- 多轨道失败决策规则（Track A 失败→阻断，其他 ≥2 失败→暂停询问）
+- 档位升级路径细化（1→2、1→3、2→3 各需补充什么）
+- 用户部分接受洞察处理规则
+- Stage 7 验证器改为全 WARN（与「无门控出口」对齐）
+- Stage 2 加载清单补充 `user_brief.md` 上下文恢复
+- 上下文预算阈值文档化（70% warn / 90% block）
 
 ---
 

@@ -30,11 +30,11 @@ def validate(workspace):
     if framework_count < 2:
         r.warn(f"框架/模型提及仅 {framework_count} 次，建议至少 2 个框架")
 
-    # WARN: IQR 复核标记（Tier 2+ 建议执行）
+    # WARN: IQR 复核标记
     has_iqr = file_contains_keyword(workspace, f, "IQR") or file_contains_keyword(workspace, f, "独立质量复核")
     if has_iqr:
         r.pass_check("IQR 复核已执行")
     else:
-        r.warn("未检测到 IQR 复核标记（Tier 2+ 建议执行独立质量复核）")
+        r.warn("未检测到 IQR 复核标记（建议执行独立质量复核）")
 
     return r

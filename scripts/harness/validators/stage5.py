@@ -23,23 +23,19 @@ def validate(workspace):
     else:
         r.fail("未检测到洞察评分")
 
-    # 红队审查（Tier 2+ 为 FAIL，Tier 1 为 WARN）
+    # 红队审查（所有档位必须执行）
     has_red = file_contains_pattern(workspace, f, r"红队|red.?team|8a|Red Team")
     if has_red:
         r.pass_check("红队审查记录存在")
-    elif tier >= 2:
-        r.fail("未检测到红队审查记录（Tier 2+ 必须执行）")
     else:
-        r.warn("未检测到红队审查记录")
+        r.fail("未检测到红队审查记录（所有档位必须执行）")
 
-    # 蓝队审查（Tier 2+ 为 FAIL，Tier 1 为 WARN）
+    # 蓝队审查（所有档位必须执行）
     has_blue = file_contains_pattern(workspace, f, r"蓝队|blue.?team|8b|Blue Team")
     if has_blue:
         r.pass_check("蓝队审查记录存在")
-    elif tier >= 2:
-        r.fail("未检测到蓝队审查记录（Tier 2+ 必须执行）")
     else:
-        r.warn("未检测到蓝队审查记录")
+        r.fail("未检测到蓝队审查记录（所有档位必须执行）")
 
     # WARN: 红队实质挑战记录
     if has_red:
@@ -75,12 +71,14 @@ def validate(workspace):
     else:
         r.warn("未检测到关键变量监测清单")
 
-    # WARN: So What 链深度
+    # WARN: So What 链深度（检测层级标记：→/⇒/层/layer 或 So What 出现次数）
     so_what_count = count_pattern(workspace, f, r"So What|so what|So what")
-    if so_what_count >= 3:
-        r.pass_check(f"So What 链记录: {so_what_count} 处")
+    layer_markers = count_pattern(workspace, f, r"→.*→|⇒.*⇒|第[一二三四1-4]层|Layer [1-4]|现象.*含义.*策略|含义.*策略.*行动")
+    depth_signal = max(so_what_count, layer_markers)
+    if depth_signal >= 3:
+        r.pass_check(f"So What 链深度信号: {depth_signal}（So What {so_what_count} 处 + 层级标记 {layer_markers} 处）")
     else:
-        r.warn(f"So What 仅出现 {so_what_count} 次（核心洞察要求 ≥3 层推导）")
+        r.warn(f"So What 链深度不足（So What {so_what_count} 处 + 层级标记 {layer_markers} 处，要求核心洞察 ≥3 层推导）")
 
     # WARN: Pre-mortem 风险记录
     has_premortem = (

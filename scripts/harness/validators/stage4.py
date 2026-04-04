@@ -6,6 +6,7 @@ import os
 from .common import (
     ValidationResult, file_exists, file_line_count,
     file_contains_keyword, file_contains_pattern, count_pattern,
+    get_tier,
 )
 
 
@@ -21,18 +22,20 @@ def _load_state(workspace):
 def validate(workspace):
     r = ValidationResult(4)
     f = "evidence_base.md"
+    tier = get_tier(workspace)
 
     if not file_exists(workspace, f):
         r.fail(f"{f} 不存在")
         return r
     r.pass_check(f"{f} 存在")
 
-    # 行数 ≥ 10
+    # 行数按 Tier 区分（Tier 1 ≥ 10 / Tier 2 ≥ 20 / Tier 3 ≥ 40）
+    min_lines = {1: 10, 2: 20, 3: 40}.get(tier, 10)
     lines = file_line_count(workspace, f)
-    if lines < 10:
-        r.fail(f"仅 {lines} 行（要求 ≥ 10）")
+    if lines < min_lines:
+        r.fail(f"仅 {lines} 行（Tier {tier} 要求 ≥ {min_lines}）")
     else:
-        r.pass_check(f"行数: {lines}")
+        r.pass_check(f"行数: {lines}（Tier {tier} 要求 ≥ {min_lines}）")
 
     # 置信度标注
     has_confidence = file_contains_pattern(workspace, f, r"[A-D]\s*级|置信度|confidence")
@@ -55,9 +58,15 @@ def validate(workspace):
     else:
         r.warn("未检测到 Track 标识")
 
-    # WARN: B 级以上占比（简化检测）
-    total_evidence = count_pattern(workspace, f, r"[A-D]\s*级")
+    # FAIL: 核心数据至少 1 条 ≥B 级
     high_quality = count_pattern(workspace, f, r"[AB]\s*级")
+    if high_quality == 0:
+        r.fail("未检测到 A/B 级证据（门控要求：核心数据至少 1 条 ≥B 级）")
+    else:
+        r.pass_check(f"A/B 级证据: {high_quality} 条")
+
+    # WARN: B 级以上占比
+    total_evidence = count_pattern(workspace, f, r"[A-D]\s*级")
     if total_evidence > 0:
         ratio = high_quality / total_evidence
         if ratio < 0.5:
@@ -85,7 +94,7 @@ def validate(workspace):
     else:
         r.warn("未检测到框架分析结论 — Stage 4 要求框架分析结论独立产出")
 
-    # WARN: IQR 复核标记（Tier 2+ 建议执行）
+    # WARN: IQR 复核标记
     has_iqr = (
         file_contains_keyword(workspace, f, "IQR")
         or file_contains_keyword(workspace, f, "独立质量复核")
@@ -93,6 +102,6 @@ def validate(workspace):
     if has_iqr:
         r.pass_check("IQR 复核已执行")
     else:
-        r.warn("未检测到 IQR 复核标记（Tier 2+ 建议执行独立质量复核）")
+        r.warn("未检测到 IQR 复核标记（建议执行独立质量复核）")
 
     return r

@@ -38,7 +38,7 @@ def validate(workspace):
         if file_contains_keyword(workspace, f, section_id):
             r.pass_check(f"{label}存在")
         else:
-            r.warn(f"{label}缺失（{section_id}）")
+            r.fail(f"{label}缺失（{section_id}）— 完整报告必须包含封面、目录和尾页")
 
     # ECharts
     if file_contains_keyword(workspace, f, "echarts"):
@@ -61,15 +61,14 @@ def validate(workspace):
     else:
         r.warn("ECharts data 键为 0 — 可能被模型输出过滤！")
 
-    # 图表数量（Tier 2+ 为 FAIL，Tier 1 为 WARN）
+    # 图表数量（Tier 2 ≥3，Tier 3 ≥6，Tier 1 建议但非必须）
     chart_count = count_pattern(workspace, f, r"echarts\.init")
-    if chart_count >= 3:
-        r.pass_check(f"ECharts 图表 {chart_count} 个（≥3）")
-    elif tier >= 2:
-        if chart_count > 0:
-            r.fail(f"ECharts 图表仅 {chart_count} 个（Tier 2+ 要求 ≥3）")
-        else:
-            r.fail("无 ECharts 图表（Tier 2+ 要求 ≥3）")
+    if tier >= 3 and chart_count < 6:
+        r.fail(f"ECharts 图表仅 {chart_count} 个（Tier 3 要求 ≥6）")
+    elif tier >= 2 and chart_count < 3:
+        r.fail(f"ECharts 图表仅 {chart_count} 个（Tier 2 要求 ≥3）")
+    elif chart_count >= 3:
+        r.pass_check(f"ECharts 图表 {chart_count} 个")
     elif chart_count > 0:
         r.warn(f"ECharts 图表仅 {chart_count} 个")
     else:
@@ -80,7 +79,7 @@ def validate(workspace):
     for w in ap_warnings:
         r.warn(w)
 
-    # WARN: IQR 复核标记（Tier 2+ 建议执行）
+    # WARN: IQR 复核标记
     has_iqr = (
         file_contains_keyword(workspace, f, "IQR")
         or file_contains_keyword(workspace, f, "独立质量复核")
@@ -88,6 +87,6 @@ def validate(workspace):
     if has_iqr:
         r.pass_check("IQR 复核已执行")
     else:
-        r.warn("未检测到 IQR 复核标记（Tier 2+ 建议执行独立质量复核）")
+        r.warn("未检测到 IQR 复核标记（建议执行独立质量复核）")
 
     return r

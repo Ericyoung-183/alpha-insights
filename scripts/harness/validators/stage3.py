@@ -32,14 +32,14 @@ def validate(workspace):
     else:
         r.warn("未检测到假设记录（H1/H2... 或 '假设' 关键词）")
 
-    # WARN: 访谈决策记录
+    # FAIL: 访谈决策记录（⛔ 决策环节不可跳过，用户可选择不做访谈）
     has_interview_decision = (
         file_contains_keyword(workspace, f, "访谈")
         or file_contains_keyword(workspace, f, "interview")
     )
     if has_interview_decision:
-        r.pass_check("含访谈相关记录")
+        r.pass_check("含访谈决策记录")
     else:
-        r.warn("未检测到访谈决策记录 — Stage 3 须向用户提出访谈建议并记录决策")
+        r.fail("未检测到访谈决策记录 — 必须向用户提出访谈建议并记录决策（用户可选择不做，但决策环节不可跳过）")
 
     return r

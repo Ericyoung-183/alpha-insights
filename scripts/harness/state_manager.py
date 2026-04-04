@@ -35,6 +35,7 @@ STAGE_DELIVERABLES = {
     1: "user_brief.md",
     2: "research_definition.md",
     3: "research_plan.md",
+    3.5: "interview_guides.md",
     4: "evidence_base.md",
     5: "insights.md",
     6: "report.html",
@@ -103,6 +104,15 @@ def cmd_advance(workspace, stage):
 
     prev_stage = state["current_stage"]
 
+    # 前进检查：禁止回跳（Stage 7 回退由 SKILL.md 边缘情况处理，不经 advance）
+    if stage <= prev_stage and prev_stage > 0:
+        print(json.dumps({
+            "error": f"不允许从 Stage {prev_stage} 回跳到 Stage {stage}。如需回退，请使用 Stage 7 迭代流程。",
+            "action": "advance",
+            "status": "BLOCKED ❌",
+        }, ensure_ascii=False))
+        sys.exit(1)
+
     # 如果有前一个 Stage 在进行中，标记为完成
     if prev_stage > 0 and prev_stage not in state["completed_stages"]:
         state["completed_stages"].append(prev_stage)
@@ -159,9 +169,19 @@ def cmd_log(workspace, log_type, detail):
             state["methodologies_loaded"].append(detail)
     elif log_type == "interview_activated":
         state["interview_activated"] = True
+    elif log_type == "interview_declined":
+        state["interview_activated"] = False
     elif log_type == "interview_checkpoint_done":
         state["interview_checkpoint_done"] = True
         state["interview_checkpoint_result"] = detail  # "completed" / "deferred" / "cancelled"
+    elif log_type == "iqr_result":
+        # 记录 IQR 复核结果（PASS / REVISE / BLOCK）
+        if "iqr_results" not in state:
+            state["iqr_results"] = {}
+        state["iqr_results"][str(state["current_stage"])] = {
+            "result": detail,  # "PASS" / "REVISE" / "BLOCK"
+            "timestamp": _now(),
+        }
 
     _save_state(workspace, state)
     print(json.dumps({"action": "log", "entry": entry, "status": "OK ✅"}, ensure_ascii=False))
