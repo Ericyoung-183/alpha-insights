@@ -1,12 +1,23 @@
 # Changelog
 
+## V2.0.10 (2026-04-04)
+
+> **Stage 1 澄清提问优化** — 禁止在 Briefing 阶段询问研究维度，研究维度由 Stage 2 框架驱动自动生成。
+
+### Stage 1 交互式澄清约束
+- 明确提问方向：决策用途、目标受众、特定关注的公司/产品、地域/时间约束、已有认知或假设
+- 禁止询问"关注哪些维度/方面"——避免越位 Stage 2 MECE 拆解、避免给用户设限
+- 用户可在 Stage 2 确认研究定义时调整维度
+
+---
+
 ## V2.0.9 (2026-04-04)
 
 > **Hook 路径修复** — 修复所有用户 Hook 无法执行的阻断性问题。
 
 ### Hook 路径修复（阻断性 Bug）
 - Frontmatter hooks 中 `${CLAUDE_SKILL_DIR}` → `${CLAUDE_PLUGIN_ROOT}`
-- 原因：`${CLAUDE_SKILL_DIR}` 仅在 SKILL.md 正文做字符串替换，frontmatter hook command 中不展开（CC 已知限制 + AntCC 同样）
+- 原因：`${CLAUDE_SKILL_DIR}` 仅在 SKILL.md 正文做字符串替换，frontmatter hook command 中不展开（已知限制）
 - `${CLAUDE_PLUGIN_ROOT}` 在 hook command 中既做字符串替换又设为环境变量，指向 hook 所属 skill 目录
 - 影响：4 个 hook 全部修复（html_write_guard、context_budget_hook、stage_gate_hook、progress_logger）
 - 正文 `!` 内联命令保持 `${CLAUDE_SKILL_DIR}`（该上下文可正常展开）
@@ -29,8 +40,8 @@
 - B 级证据置信度标签统一为 ⚠️ 中等置信度（对齐 triangulation.md 权威定义）
 
 ### git-publish 裁剪规则首次全量执行（8 条）
-- A1-A4：API Key 移除、使用记录删除、语雀引用清理、AntCC 安装段删除
-- B5-B8：Yuque MCP 泛化、语雀搜索删除、语雀→共享文档/钉钉→通知、语雀→知识库
+- A1-A4：API Key 移除、使用记录删除、知识库引用清理、内部安装段删除
+- B5-B8：知识库 MCP 泛化、知识库搜索删除、知识库→共享文档/通知→通知、知识库泛化
 
 ---
 
@@ -50,7 +61,7 @@
 - `ReportBuilder`：新增 `author` 参数（默认 "Alpha Insights Research"），替代硬编码
 
 ### GitHub 裁剪规则扩展（2 → 8 条）
-- 新增：CHANGELOG 语雀引用 / README AntCC 安装段 / interview.md 语雀钉钉 / data_sources 语雀 / SKILL.md 语雀搜索
+- 新增：CHANGELOG 知识库引用 / README 内部安装段 / interview.md 知识库/通知泛化 / data_sources 知识库泛化 / SKILL.md 知识库搜索
 
 ---
 
@@ -175,7 +186,7 @@ SKILL.md frontmatter 声明 4 个 Hook，平台自动执行：
 
 **Stage 7B 收尾**
 - 精简收尾模板：议题 + 档位 + 报告路径 + 核心发现 + Star/Issue 链接
-- 使用记录自动追加，静默执行不打扰用户
+- 使用记录自动追加（知识库 MCP），静默执行不打扰用户
 
 ### 改进：数据源与搜索
 

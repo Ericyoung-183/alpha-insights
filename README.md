@@ -113,13 +113,13 @@ Alpha Insights will automatically:
 |--------|------------|-----|
 | **Public channels** | Industry reports, analyst research, filings, news, policy docs | Search engine + web scraping |
 | **Expert interviews** | Custom interview guides, recording templates, analysis guidance | Built-in methodology |
-| **Xiaohongshu (RedNote)** | Consumer sentiment, product feedback, trend signals | Built-in scripts. Configure your API key: create `~/.alpha_insights.json` with `{"tikHubApiKey": "YOUR_KEY"}` ([Register at TikHub](https://tikhub.io)) |
+| **Xiaohongshu (RedNote)** | Consumer sentiment, product feedback, trend signals | Built-in scripts. Configure your TikHub API key in `~/.alpha_insights.json` with `{"tikHubApiKey": "YOUR_KEY"}` |
 
 ### 🟡 Optional Extensions
 
 | Source | Description | Required Setup |
 |--------|------------|----------------|
-| **Knowledge base** | Historical reports, industry notes | Notion MCP / Confluence MCP or similar |
+| **Knowledge base** | Historical reports, industry notes | Notion MCP / Confluence MCP |
 | **Internal data** | Business metrics, user behavior | ODPS MCP / Database MCP |
 
 > Unconfigured data sources are automatically skipped — core functionality is not affected.
