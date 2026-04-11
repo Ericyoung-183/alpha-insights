@@ -95,10 +95,10 @@ def assess_stage3(workspace):
         h_count = len(re.findall(r"假设", content))
     details.append(f"假设 {h_count} 个")
 
-    # Q→H 映射
+    # Q→H→Lens 映射
     qh_map = re.findall(r"→\s*Q\d|Q\d.*→|对应.*Q\d", content)
     if qh_map:
-        details.append("Q→H 映射 ✓")
+        details.append("Q→H→Lens 映射 ✓")
 
     # 数据源类别数
     ds_count = len(re.findall(r"Track\s+[A-G]", content))
@@ -131,6 +131,18 @@ def assess_stage4(workspace):
         details.append(f"A 级 {a_pct}% · B 级 {b_pct}% · C 级 {c_pct}%")
         if (a_count + b_count) / total < 0.5:
             details.append("⚠️ B 级以上占比 < 50%")
+
+    # 框架证据地图检测
+    has_map = bool(re.search(r"框架证据地图|Framework Evidence Map", content, re.IGNORECASE))
+    if has_map:
+        # 统计维度覆盖状态
+        done = len(re.findall(r"✅", content))
+        pending = len(re.findall(r"⏳", content))
+        na = len(re.findall(r"➖", content))
+        gap = len(re.findall(r"⚠️", content))
+        details.append(f"框架地图 ✅{done} ⏳{pending} ⚠️{gap} ➖{na}")
+    else:
+        details.append("⚠️ 未检测到框架证据地图")
 
     return "✅ 已产出", details
 

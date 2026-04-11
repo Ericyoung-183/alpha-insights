@@ -12,18 +12,27 @@ def validate(workspace):
         return r
     r.pass_check(f"{f} 存在")
 
-    # 必须含假设或子问题
-    has_hypothesis = (
-        file_contains_keyword(workspace, f, "假设")
-        or file_contains_keyword(workspace, f, "hypothesis")
-        or file_contains_keyword(workspace, f, "子问题")
+    # 必须含子问题
+    has_subq = (
+        file_contains_keyword(workspace, f, "子问题")
         or file_contains_keyword(workspace, f, "sub-question")
         or file_contains_keyword(workspace, f, "Q1")
     )
-    if has_hypothesis:
-        r.pass_check("含假设或子问题")
+    if has_subq:
+        r.pass_check("含子问题")
     else:
-        r.fail("未检测到假设或子问题")
+        r.fail("未检测到子问题")
+
+    # 必须含透镜分配
+    has_lens = (
+        file_contains_keyword(workspace, f, "透镜")
+        or file_contains_keyword(workspace, f, "lens")
+        or file_contains_keyword(workspace, f, "分析透镜")
+    )
+    if has_lens:
+        r.pass_check("含透镜分配")
+    else:
+        r.fail("未检测到透镜分配（分析透镜 / lens）")
 
     # WARN: 框架数量
     framework_count = count_pattern(workspace, f, r"(?:框架|framework|模型|model)")

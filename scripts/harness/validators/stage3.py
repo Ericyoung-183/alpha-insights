@@ -22,7 +22,7 @@ def validate(workspace):
     else:
         r.pass_check(f"Track 数量: {track_count}")
 
-    # WARN: 假设确认记录（Q→H 映射）
+    # WARN: 假设确认记录（Q→H→Lens 映射）
     has_hypothesis = (
         file_contains_pattern(workspace, f, r"H[0-9]")
         or file_contains_keyword(workspace, f, "假设")

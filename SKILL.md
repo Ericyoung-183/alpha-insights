@@ -28,7 +28,7 @@ hooks:
 
 # Alpha Insights-BizAdvisor — Skill 主文件
 
-> 版本：V3.0.0 | 最后更新：2026-04-10
+> 版本：V3.0.1 | 最后更新：2026-04-12
 > 定位：代替资深商业分析师，产出有深度、有决策价值的研究报告
 > 本文件是纯编排层，详细执行指令在各 Stage 加载的文件中
 > **Harness Engineering**：通过脚本验证 + 状态机 + 增量落盘，从外部约束执行质量
@@ -184,7 +184,7 @@ Alpha Insights 的所有能力必须由自身文件和内置脚本完成，**禁
 | 转场 | 门控条件（FAIL 则阻断） | WARN 条件 |
 |------|------------------------|----------|
 | 1→2 | `user_brief.md` 存在且含议题 + 档位 | 背景描述 < 3 行 |
-| 2→3 | `research_definition.md` 存在且含假设或子问题；**Tier ≥ 2 时 IQR ≠ BLOCK** | 框架数 < 2 |
+| 2→3 | `research_definition.md` 存在且含子问题 + 透镜分配；**Tier ≥ 2 时 IQR ≠ BLOCK** | 框架数 < 2 |
 | 3→4 | `research_plan.md` 存在；含访谈决策记录 | Track 数 < 3 |
 | 4→5 | `evidence_base.md` 存在且行数达标（Tier 1 ≥ 10 行 / Tier 2 ≥ 20 行 / Tier 3 ≥ 40 行）；核心数据至少 1 条 ≥B 级；**Tier ≥ 2 时 IQR ≠ BLOCK** | B 级以上证据占比 < 50% |
 | 5→6 | `insights.md` 存在且含评分 + 红蓝队审查记录 | 洞察数 < 3 |
@@ -232,7 +232,7 @@ Harness 脚本输出的是 JSON，**禁止直接展示 JSON 给用户**。必须
 | Stage | 名称 | 加载文件 | 交付物 | 用户检查点 |
 |-------|------|---------|--------|-----------|
 | 1 | Briefing | （无） | `user_brief.md` | 回答问题 |
-| 2 | Framing | `_index.md`, `methodology_mapping.md` | `research_definition.md` | ☑️ 确认研究定义 + 🔍 IQR |
+| 2 | Framing | `_index.md`, `methodology/_index.md`, 选中框架文件 | `research_definition.md` | ☑️ 确认研究定义 + 🔍 IQR |
 | 3 | Planning | `hypothesis_driven.md`, `issue_tree.md`, `data_sources.md` | `research_plan.md` | ☑️ 确认假设+计划 |
 | 3.5 | Interview | `interview.md` | `interview_guides.md` | ☑️ 确认提纲（可选）|
 | 4 | Research | `research_engine.md` | `evidence_base.md` | 进度播报 + 🔍 IQR |
@@ -268,8 +268,8 @@ Harness 脚本输出的是 JSON，**禁止直接展示 JSON 给用户**。必须
 | 档位 | 名称 | 篇幅 | Stage 差异 |
 |------|------|------|-----------|
 | **Tier 1** | 快速扫描 | 1-2 页 | Stage 4 仅 Layer 1；Stage 6 仅 Executive Summary |
-| **Tier 2** | 专题简报 | 5-8 页 | Stage 4 Layer 1-2；Stage 6 六段式精简版（≥3 ECharts） |
-| **Tier 3** | 深度报告 | 15-30 页 | Stage 4 全部 Layer；Stage 6 完整六段式（≥6 ECharts） |
+| **Tier 2** | 专题简报 | 5-8 页 | Stage 4 Layer 1-2；Stage 6 七段式精简版（≥3 ECharts） |
+| **Tier 3** | 深度报告 | 20-35 页 | Stage 4 全部 Layer；Stage 6 完整七段式（4-5 核心章节，≥6 ECharts） |
 
 默认 Tier 3。确认后写入 `user_brief.md`，用户可在 Stage 7 升级档位。
 
@@ -309,16 +309,16 @@ Tier {X} — {档位名称}
 
 ### Stage 2: 问题定义（Problem Framing）
 
-> 🎯 Stage 2 / 7 — Framing | 📋 加载: `_index.md`, `methodology_mapping.md` | 🔧 方法论: MECE
-> **门控出口**: `research_definition.md` 含假设或子问题
+> 🎯 Stage 2 / 7 — Framing | 📋 加载: `_index.md`, `methodology/_index.md`, 选中框架文件 | 🔧 方法论: MECE
+> **门控出口**: `research_definition.md` 含子问题 + 透镜分配
 
-**加载文件**: `{ws}/user_brief.md`（上下文恢复）, `frameworks/_index.md`, `frameworks/methodology_mapping.md`
+**加载文件**: `{ws}/user_brief.md`（上下文恢复）, `frameworks/_index.md`, `methodology/_index.md`
 
 **执行**:
-1. **MECE 拆解**: 核心问题 → 3-5 个子问题
-2. **框架匹配**: 按 `_index.md` 匹配主框架（1个）+ 增强框架（按子问题数选择：子问题 ≤3 选 2 个增强框架，4-5 选 3-4 个，每个增强框架标注插入点对应的子问题编号）。注意多场景匹配规则（目的场景 > 方法场景）
-3. **范围定义**: 研究边界（做什么/不做什么）
-4. **上下文锚定**: "我们是谁、在哪、要什么"
+1. **场景识别 + 框架匹配**: 从用户议题识别研究场景（1-2 个），按 `_index.md` 匹配主框架（1个）+ 增强框架（2-4 个）。注意多场景匹配规则（目的场景 > 方法场景）。向用户展示推荐组合。
+2. **☑️ 用户确认框架 → 加载框架详情文件**: 确认后深度加载选中框架的 `.md` 文件，获取各框架的维度结构（如 PESTEL 的 6 维度、Five Forces 的 5 力量）。
+3. **MECE 拆解（框架维度辅助）**: 核心问题 → 3-5 个子问题。拆解时参考已加载框架的维度结构确保关键维度不被遗漏。**注意**：不要求每个框架维度都变成子问题——与核心问题无关的维度标注 ➖ N/A 即可。拆解在主 Session 内完成，不启动 Subagent。完成后为每个子问题分配**分析透镜**（标注用哪些框架维度分析该子问题）。
+4. **范围定义 + 上下文锚定**: 研究边界（做什么/不做什么）+ "我们是谁、在哪、要什么"
 
 **输出**: `{ws}/research_definition.md`，结构如下：
 
@@ -329,14 +329,17 @@ Tier {X} — {档位名称}
 [一句话]
 
 ## 子问题拆解（MECE）
-- Q1: [子问题 1]
-- Q2: [子问题 2]
-- Q3: [子问题 3]
-...
+| 子问题 | 内容 | 分析透镜 |
+|--------|------|---------|
+| Q1 | [子问题 1] | [框架维度，如 PESTEL-E/S, TAM/SAM] |
+| Q2 | [子问题 2] | [框架维度，如 Five Forces-竞争/新进入者] |
+| Q3 | [子问题 3] | [框架维度，如 BMC, Unit Economics] |
 
-## 框架选择
+## 框架组合与维度覆盖
 - 主框架：[框架名称] — 理由：[...]
-- 增强框架：[框架 1]（插入点：Q1/Q2）、[框架 2]（插入点：Q3）
+- 增强框架：[框架 1]、[框架 2]、[框架 3]
+- 维度覆盖：[已覆盖维度数]/[总维度数]
+- N/A 维度：[维度名]: [理由]（如 PESTEL-En: 与单店经济模型无直接关联）
 
 ## 研究范围
 - 做什么：[...]
@@ -346,7 +349,7 @@ Tier {X} — {档位名称}
 我们是[角色]，处于[行业/市场]的[阶段]，需要解决[决策问题]。
 ```
 
-→ **☑️ 用户确认**
+→ **☑️ 用户确认**（子问题 + 透镜分配 + N/A 维度）
 
 **🔍 IQR 复核**：用户确认后、进入 Stage 3 前，加载 `resources/quality_review.md` 的 Stage 2 IQR 模板，启动独立 Subagent 评估研究定义质量。结果按 PASS/REVISE/BLOCK 处理。
 
@@ -354,26 +357,30 @@ Tier {X} — {档位名称}
 
 ### Stage 3: 假设与计划（Research Plan & Hypotheses）
 
-> 🎯 Stage 3 / 7 — Planning | 📋 加载: `hypothesis_driven.md`, `issue_tree.md`, `data_sources.md` | 🔧 方法论: 假设驱动, Issue Tree
+> 🎯 Stage 3 / 7 — Planning | 📋 加载: `hypothesis_driven.md`, `issue_tree.md`, `data_sources.md` | 📋 Tier 2: `ach.md`（场景 5/6/7） | 🔧 方法论: 假设驱动, Issue Tree
 > **门控出口**: `research_plan.md` 存在且含访谈决策记录
 
 **加载文件**: `{ws}/research_definition.md`（上下文恢复）, `methodology/hypothesis_driven.md`, `methodology/issue_tree.md`, `resources/data_sources.md`
 
+**Tier 2 条件加载**（触发规则和告知模板见 `methodology/_index.md`）:
+- 场景 5/6/7 → 加载 `methodology/ach.md`，向用户展示告知模板
+
 **执行**: 预扫描（）→ 假设生成 → 数据源规划 → 访谈建议
 
-**Q→H 映射规则**：每个假设必须标注对应的 Stage 2 子问题编号（如 H1→Q2）。无假设的子问题需注明原因（如"事实梳理型，不设假设"）。输出格式见 `hypothesis_driven.md`。
+**Q→H→Lens 映射规则**：每个假设必须标注对应的 Stage 2 子问题编号和分析透镜（继承自 `research_definition.md` 的子问题透镜分配）。无假设的子问题需注明原因（如"事实梳理型，不设假设"）。输出格式见 `hypothesis_driven.md`。
 
 **输出**: `{ws}/research_plan.md`，结构如下：
 
 ```markdown
 # 研究计划
 
-## 假设清单（Q→H 映射）
-| 假设 | 对应子问题 | 假设内容 | 验证方向 |
-|------|-----------|---------|---------|
-| H1 | Q1 | [有观点、可证伪的假设] | [证实/证伪所需数据] |
-| H2 | Q2 | ... | ... |
-| — | Q3 | 事实梳理型，不设假设 | — |
+## 假设清单（Q→H→Lens 映射）
+| 假设 | 对应子问题 | 分析透镜 | 假设内容 | 验证方向 |
+|------|-----------|---------|---------|---------|
+| H1 | Q1 | PESTEL-E | [有观点、可证伪的假设] | [证实/证伪所需数据] |
+| H2 | Q1 | PESTEL-P/S | ... | ... |
+| H3 | Q2 | Five Forces-竞争 | ... | ... |
+| — | Q3 | BMC | 事实梳理型，不设假设 | — |
 
 ## Track 规划
 | Track | 类型 | 搜索任务 | 目标数据源 |
@@ -453,9 +460,9 @@ python3 scripts/harness/state_manager.py log {ws} --type interview_declined --de
 **加载文件**: `{ws}/research_plan.md`（上下文恢复）, `{ws}/research_definition.md`（框架与边界恢复）, `resources/research_engine.md`（含完整多轨道并行执行规则）
 
 **三层推进**：
-- **Layer 1 概要扫描**（主 Session）：将假设转为搜索任务，分发到各 Track，快速获取概要数据
-- **Layer 2 定向深挖**（Subagent 并行）：各 Track 执行具体搜索，追溯原始来源，产出标准化证据
-- **Layer 3 证据整合**（主 Session）：汇总所有 Track 证据，执行三角验证，产出框架分析结论
+- **Layer 1 概要扫描**（主 Session）：初始化框架证据地图（Step 1.0）→ 将假设转为搜索任务，分发到各 Track，快速获取概要数据
+- **Layer 2 定向深挖**（Subagent 并行）：各 Track 执行具体搜索，追溯原始来源，产出标准化证据；每 Track 完成后更新框架证据地图
+- **Layer 3 证据整合**（主 Session）：汇总所有 Track 证据，执行三角验证，框架证据地图最终审核（Step 3.2.5），产出框架分析结论
 
 **档位控制**: Tier 1 仅 Layer 1 | Tier 2 Layer 1-2 | Tier 3 全部
 
@@ -496,8 +503,24 @@ python3 scripts/harness/state_manager.py log {ws} --type interview_checkpoint_do
 |--------|--------|--------|--------|---------|
 | ... | ... | ... | ... | 一致/矛盾/待验证 |
 
+## 框架证据地图（随 Track 更新）
+
+### [框架名称]
+| 维度 | 关联假设 | 证据 ID | 关键发现 | 状态 |
+|------|---------|---------|---------|------|
+| [维度1] | H1 | A1-01 | [发现] | ✅ |
+| [维度2] | — | — | — | ➖ N/A: [理由] |
+
 ## 框架分析结论
-[基于选定框架的独立分析产出]
+
+### [主框架] 分析结论
+- **维度覆盖**：X/Y 维度（[N/A 维度]: [理由]）
+- **核心发现**：[3-5 条]
+- **数据支撑**：[证据 ID]
+- **初步判断**：[框架视角下的整体判断]
+
+### 跨框架交叉发现（如有）
+- [多个框架维度指向同一判断的交叉洞察]
 
 ## 证据质量统计
 - A/B 级证据: X 条（占比 Y%）
@@ -511,12 +534,19 @@ python3 scripts/harness/state_manager.py log {ws} --type interview_checkpoint_do
 
 ### Stage 5: 洞察生成（Insights Generation）
 
-> 🎯 Stage 5 / 7 — Insights | 📋 加载: `judgment_rules.md`, `anti_patterns.md` | 🔧 方法论: So What 链, 红蓝队审查
+> 🎯 Stage 5 / 7 — Insights | 📋 加载: `judgment_rules.md`, `anti_patterns.md` | 📋 Tier 2: `first_principles.md`（场景 3/4/5/7）, `pre_mortem.md`（场景 2/6/7/8/9） | 🔧 方法论: So What 链, 红蓝队审查
 > **门控出口**: `insights.md` 存在且含评分 + 红蓝队审查记录（⛔ Stage 6 门控文件）
 
 **加载文件**: `{ws}/evidence_base.md`（上下文恢复）, `{ws}/user_brief.md`（用户上下文恢复）, `resources/judgment_rules.md`（含完整执行流程、红蓝队 Subagent 模板、insights.md 产出模板）, `resources/anti_patterns.md`（作为 8 条规则的背景约束，非独立步骤；Stage 6 使用其自检清单）
 
-⛔ **本 Stage 的执行流程严格按 `judgment_rules.md` 顶部的「Stage 5 执行指令」执行，不可跳过。**
+**Tier 2 条件加载**（触发规则和告知模板见 `methodology/_index.md`）:
+- 场景 3/4/5/7 → 加载 `methodology/first_principles.md`，向用户展示告知模板
+- 场景 2/6/7/8/9 → 加载 `methodology/pre_mortem.md`，向用户展示告知模板
+- 场景 5/6/7 → 延续 Stage 3 `methodology/ach.md` 进行假设验证
+
+**跨维度洞察识别**：`evidence_base.md` 包含框架证据地图，执行规则前先扫描地图中的跨维度模式——多个子问题的证据在同一框架维度交汇，或多个框架维度指向同一判断，这些交叉点往往是最有价值的洞察来源。
+
+⛔ **完成跨维度扫描后，执行流程严格按 `judgment_rules.md` 顶部的「Stage 5 执行指令」执行，不可跳过。**
 
 **档位控制**: 所有档位执行全部 8 条规则，不因 Tier 降低分析深度
 
@@ -558,7 +588,9 @@ python3 scripts/harness/dashboard.py {ws}
 
 **加载文件**: `{ws}/evidence_base.md`（图表数据恢复）, `{ws}/user_brief.md`（叙事锚点恢复）, `references/report_standards.md`, `references/report_template.html`, `resources/anti_patterns.md`
 
-**档位控制**: Tier 1 仅 Executive Summary | Tier 2 六段式精简版（≥3 ECharts） | Tier 3 完整六段式（≥6 ECharts）
+**档位控制**: Tier 1 仅 Executive Summary | Tier 2 七段式精简版（≥3 ECharts） | Tier 3 完整七段式（4-5 核心章节 × 3-5 页，≥6 ECharts，目标 20-35 页）
+
+**章节组织原则**：报告核心分析章节按**洞察主题**组织，不按子问题或框架维度。大多数洞察主题自然对应一个子问题（1:1），少数跨问题洞察可独立成章。章节标题是判断/发现（如"市场正在结构性出清"），不是问题或框架名称。框架在「研究背景与方法」章节显性列出，在核心分析章节内部作为分析工具使用。详见 `report_standards.md`。
 
 **执行**: 叙事弧线设计 → 逐章生成（每章自检 7 项，见 `report_standards.md`）→ 整合输出 → **⛔ 反模式自检**（按 `anti_patterns.md`「报告自检清单」逐项核对，不通过则修正后再继续）→ **🔍 IQR 复核**（加载 `resources/quality_review.md` Stage 6 IQR 模板，启动独立 Subagent 评估报告质量，按建议修正后再交付） → 交付包整理
 
@@ -738,7 +770,7 @@ dk = "dat" + "a"
 | 范围过大 | 聚焦核心 → 分阶段 → 明确优先级 |
 | 上下文紧张 | 平台会自动压缩早期对话。所有关键数据已通过增量落盘写入文件，转场时 Read 文件即可恢复。如仍不足，拆分课题分次研究 |
 | 假设全被证伪 | 回到 Stage 3 → 基于证伪证据重构假设 |
-| 档位中途升级 | 更新 `_state.json` 的 tier 值 → 从当前 Stage 继续，补充升级所需内容：**1→2**: 补 Layer 2 研究 + ≥3 ECharts；**1→3 或 2→3**: 补全部 Layer + ≥6 ECharts + 完整六段式。已完成 Stage 的交付物不重做，仅在后续 Stage 体现升级 |
+| 档位中途升级 | 更新 `_state.json` 的 tier 值 → 从当前 Stage 继续，补充升级所需内容：**1→2**: 补 Layer 2 研究 + ≥3 ECharts；**1→3 或 2→3**: 补全部 Layer + ≥6 ECharts + 完整七段式。已完成 Stage 的交付物不重做，仅在后续 Stage 体现升级 |
 | 用户部分接受洞察 | 接受的洞察进入报告，拒绝的标注"用户不采纳"并从核心结论中移除，保留在附录供参考 |
 | 用户拒绝所有洞察 | 与用户讨论分歧点 → 回退 Stage 4 补充数据，或回退 Stage 2 重新定义问题 |
 | 用户中途换议题 | 归档当前 workspace（标记 abandoned）→ 重新 Stage 1 → init 新 workspace |
@@ -753,8 +785,8 @@ dk = "dat" + "a"
 | Stage | 必检项 |
 |-------|--------|
 | 1 | 场景识别正确 · 产出档位已确认 · 用户上下文完整 · 预研究一句话播报 |
-| 2 | 子问题 MECE · 框架匹配场景（含多场景匹配）· 上下文锚定 · 研究边界明确 · **IQR 复核** |
-| 3 | 假设有观点且可证伪 · **Q→H 映射完整**（每个 H 标注对应 Q，无假设的 Q 注明原因） · 数据源覆盖 ≥ 80% 子问题 · 访谈建议已提出 |
+| 2 | 子问题 MECE · 框架匹配场景（含多场景匹配）· **透镜分配 + 维度覆盖 + N/A 标注** · 上下文锚定 · 研究边界明确 · **IQR 复核** |
+| 3 | 假设有观点且可证伪 · **Q→H→Lens 映射完整**（每个 H 标注对应 Q 和分析透镜，无假设的 Q 注明原因） · 数据源覆盖 ≥ 80% 子问题 · 访谈建议已提出 |
 | 4 | 三角验证 · 数据标注正确 · 核心数据≥B 级 · 轨道跳过有告知 · **访谈催收已执行**（如 Stage 3.5 激活） · 框架分析结论独立产出 · **IQR 复核** |
 | 5 | So What≥3 层 · 洞察≥16 分 · 关键变量识别 · 反直觉测试 · SMART 测试 · Pre-mortem · 优先级排序 · 红蓝队审查 · insights.md 已生成 |
 | 6 | 读取 insights.md · Review Dashboard · Python 脚本生成 HTML · ECharts 用 dk 变量拼接 · 结论先行 · 证据可追溯 · 反模式自检 · 章节自检（按 report_standards.md 清单）· ECharts 图表（Tier 2 ≥3 / Tier 3 ≥6） · **IQR 复核** |
