@@ -50,7 +50,9 @@ The Pyramid Principle is a **top-down** expression structure:
 2. Key arguments (3-5 points)
 3. Supporting data (facts/numbers/cases)
 
----## Why It Matters
+---
+
+## Why It Matters
 
 | Expression Style | Reader Experience | Problem |
 |-----------------|-------------------|---------|

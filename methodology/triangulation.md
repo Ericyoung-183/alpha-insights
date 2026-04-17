@@ -34,7 +34,9 @@ Three dimensions:
 - Researcher triangulation (different analysts)
 - Theory triangulation (different theoretical perspectives)
 
----## Why It Matters
+---
+
+## Why It Matters
 
 Problems with a single source:
 - May be incorrect

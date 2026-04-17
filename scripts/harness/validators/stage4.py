@@ -60,8 +60,10 @@ def validate(workspace):
         if ratio < 0.5:
             r.warn(f"B 级以上证据占比 {ratio:.0%}（建议 ≥ 50%）")
 
-    # 访谈催收检查点验证（依赖 _state.json）
+    # 加载 _state.json（一次加载，多处使用）
     state = load_state(workspace)
+
+    # 访谈催收检查点验证
     if state and state.get("interview_activated"):
         if state.get("interview_checkpoint_done"):
             result = state.get("interview_checkpoint_result", "unknown")
@@ -83,7 +85,6 @@ def validate(workspace):
         r.warn("未检测到框架分析结论 — Stage 4 要求框架分析结论独立产出")
 
     # WARN: IQR 复核（从 _state.json 读取，不从 deliverable 文件搜索）
-    state = load_state(workspace)
     if state and state.get("iqr_results"):
         iqr_data = state["iqr_results"].get("4")
         if iqr_data:

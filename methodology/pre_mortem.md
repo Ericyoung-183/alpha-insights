@@ -37,7 +37,9 @@ Psychological research shows that "imagining failure" identifies 30-50% more iss
 3. Aggregate and classify (affinity diagram)
 4. Develop prevention measures (for top risks)
 
----## Why It Matters
+---
+
+## Why It Matters
 
 | Approach | Psychological State | Effect |
 |----------|-------------------|--------|

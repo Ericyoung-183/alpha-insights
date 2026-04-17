@@ -48,6 +48,32 @@ def _file_size(workspace, filename):
     return os.path.getsize(path)
 
 
+# ── Stage 1: Briefing ──
+
+def assess_stage1(workspace):
+    content = _read_file(workspace, "user_brief.md")
+    if content is None:
+        return "❌ 未找到", []
+
+    details = []
+    line_count = len(content.strip().split("\n"))
+    details.append(f"{line_count} 行")
+
+    has_topic = bool(re.search(r"议题|研究问题|topic|question", content, re.IGNORECASE))
+    has_tier = bool(re.search(r"Tier|档位|tier", content, re.IGNORECASE))
+    if has_topic:
+        details.append("含议题")
+    else:
+        details.append("⚠️ 未检测到议题")
+    if has_tier:
+        details.append("含档位")
+    else:
+        details.append("⚠️ 未检测到档位")
+
+    status = "✅" if has_topic and has_tier else "⚠️"
+    return status, details
+
+
 # ── Stage 2: Research Definition ──
 
 def assess_stage2(workspace):
@@ -212,6 +238,7 @@ def overall_assessment(stages):
 def generate_dashboard(workspace):
     """生成研究质量总览"""
     stages = {
+        "用户简报 (S1)": assess_stage1(workspace),
         "研究定义 (S2)": assess_stage2(workspace),
         "研究计划 (S3)": assess_stage3(workspace),
         "证据基础 (S4)": assess_stage4(workspace),

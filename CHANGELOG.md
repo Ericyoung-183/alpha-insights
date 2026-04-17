@@ -1,5 +1,32 @@
 # Changelog
 
+## V3.0.4 (2026-04-17)
+
+### Added
+- **Tier 1 Methodology Full Loading**: Stage 2 loads MECE + Issue Tree, Stage 4 loads Triangulation, Stage 6 loads Pyramid Principle (fixes declared-but-never-loaded gap)
+- **Stage 5 re-reads research_definition.md**: Restores sub-question → insight traceability chain
+- **Stage 6 blind spot review check**: Tier 2+ reports validated for blind spot/盲区 section
+- **Dashboard Stage 1 assessment**: Quality overview now includes user brief completeness check
+
+### Fixed
+- **SMART regex**: stage5.py character class `[SMART]` → requires bold markers `**S**:`
+- **Stage 6 gate**: Added "chapter sections present" condition matching actual validator check
+- **html_write_guard**: Outputs transparent warning on JSON parse failure instead of silent allow
+- **report_helper author**: save/load no longer loses author field
+- **stage4.py**: Consolidated duplicate load_state calls into single shared load
+- **stage6.py data_count**: Fixed overlapping regex double-counting
+
+### Improved
+- **interview.md self-containment**: Yuque/DingTalk references generalized to "shared docs/notifications" with environment dependency fallback
+- **Anti-pattern example diversity**: 10 examples across NEV, coffee, insurance, e-commerce, F&B, overseas expansion
+- **Time estimates**: Tier-based with 20-30% retry buffer
+- **Color consistency**: report_standards aligned with template (#1A365D + #667EEA)
+- **Methodology file formatting**: 8 files `---##` newline fix, interview.md numbering dedup, ach.md trigger alignment
+- **Usage record removal**: Stage 7B feature removed + build.sh A2 rule cleanup
+- **Subagent Tier 1 search language**: Explicitly Chinese-only for quick scans
+
+---
+
 ## V3.0.3 (2026-04-15)
 
 ### Added

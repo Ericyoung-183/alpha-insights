@@ -379,6 +379,7 @@ class ReportBuilder:
         state = {
             "title": self.title,
             "subtitle": self.subtitle,
+            "author": self.author,
             "date": self.date,
             "confidential": self.confidential,
             "version": self.version,
@@ -400,6 +401,7 @@ class ReportBuilder:
         builder = cls(
             title=state["title"],
             subtitle=state.get("subtitle", ""),
+            author=state.get("author", "Alpha Insights Research"),
             date=state.get("date"),
             confidential=state.get("confidential", "内部资料"),
             version=state.get("version", "V1.0"),

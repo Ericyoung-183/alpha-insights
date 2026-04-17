@@ -34,7 +34,9 @@ An Issue Tree is a tool for **hierarchically decomposing** complex problems into
 3. Progressive refinement (down to an actionable level)
 4. Priority ranking (label P0/P1/P2)
 
----## Types of Issue Trees
+---
+
+## Types of Issue Trees
 
 ### 1. Why Tree
 

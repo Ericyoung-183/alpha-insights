@@ -51,11 +51,8 @@ def validate(workspace):
     else:
         r.warn("ECharts 初始化代码缺失")
 
-    # data 键完整性
-    data_count = (
-        count_pattern(workspace, f, r'"data"')
-        + count_pattern(workspace, f, r'\bdata\s*:')
-    )
+    # data 键完整性（匹配 "data": 或 data: 两种风格，去重）
+    data_count = count_pattern(workspace, f, r'(?:"data"|(?<!")\bdata)\s*[:\[]')
     if data_count > 0:
         r.pass_check(f"ECharts data 键存在（{data_count} 处）")
     else:
@@ -78,6 +75,18 @@ def validate(workspace):
     ap_warnings = check_anti_patterns(workspace, f)
     for w in ap_warnings:
         r.warn(w)
+
+    # WARN: 盲区审查（Tier 2+ 要求）
+    if tier >= 2:
+        has_blind_spot = (
+            file_contains_keyword(workspace, f, "盲区")
+            or file_contains_keyword(workspace, f, "blind spot")
+            or file_contains_keyword(workspace, f, "Blind Spot")
+        )
+        if has_blind_spot:
+            r.pass_check("盲区审查存在")
+        else:
+            r.warn("未检测到盲区审查章节（Tier 2+ 要求包含盲区/blind spot 分析）")
 
     # WARN: IQR 复核（从 _state.json 读取，不从 deliverable 文件搜索）
     state = load_state(workspace)

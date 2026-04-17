@@ -36,7 +36,9 @@ ACH (Analysis of Competing Hypotheses) is a method for **systematically validati
 4. Assess consistency (strong falsifying evidence)
 5. Form judgment (most likely hypothesis)
 
----## Why It Matters
+---
+
+## Why It Matters
 
 The pitfall of traditional thinking:
 - Start with a preferred hypothesis
@@ -223,8 +225,8 @@ Question: If a piece of evidence were wrong, would the conclusion change?
 
 ### Stage 3 Hypothesis Validation
 
-1. When trigger conditions are met, ask the user whether to activate ACH
-2. After user confirmation, execute step by step
+1. When trigger conditions are met, auto-load and notify the user (per `_index.md` Tier 2 notification template)
+2. Execute step by step
 3. Output to the ACH analysis section of `research_plan.md`
 
 ### Relationship with Hypothesis-driven Method

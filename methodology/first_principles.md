@@ -36,7 +36,9 @@ Distinction from analogical thinking:
 3. Find basic principles (irreducible facts)
 4. Re-derive (reason from first principles)
 
----## Why It Matters
+---
+
+## Why It Matters
 
 | Thinking Mode | Characteristics | Outcome |
 |--------------|-----------------|---------|

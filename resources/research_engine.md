@@ -391,9 +391,11 @@ Continuing to next track...
 | Conditional | C | 30-60 minutes (if triggered) |
 | Integration | Triangulation | 15-20 minutes |
 
-**Total**:
-- Without interviews: 65-120 minutes
-- With interviews: 95-180 minutes
+**Estimates by Tier** (includes 20-30% retry/adjustment buffer):
+- **Tier 1** (Layer 1 only): 45-75 minutes
+- **Tier 2** (Layer 1-2): 75-120 minutes
+- **Tier 3** (All layers): 120-180 minutes
+- With interviews: +30-60 minutes
 
 ---
 
@@ -1161,6 +1163,7 @@ You are assisting with a business analysis research project, currently in the St
 | ... | ... | ... | ... | ... |
 
 > ⛔ **Bilingual Search Mandatory (Tier 2+)**: Each task must have both Chinese and English keywords, searched separately. English keywords are not literal translations of Chinese but professional expressions for the topic in English contexts.
+> **Tier 1 search language**: Chinese-only search is sufficient (quick scan does not require English counterparts), but English keywords may be added if the topic involves international markets.
 
 ## Output Requirements
 1. Each task must output structured data (see format below)

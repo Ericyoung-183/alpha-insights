@@ -28,7 +28,7 @@ hooks:
 
 # Alpha Insights-BizAdvisor — Skill Main File
 
-> Version: V3.0.3 | Last Updated: 2026-04-15
+> Version: V3.0.4 | Last Updated: 2026-04-17
 > Positioning: Replaces a senior business analyst to deliver in-depth, decision-grade research reports
 > This file is a pure orchestration layer; detailed execution instructions reside in files loaded by each Stage
 > **Harness Engineering**: Enforces execution quality through script validation + state machine + incremental persistence
@@ -188,7 +188,7 @@ Quality checks are configured by risk. Each Stage has different risks and differ
 | 3→4 | `research_plan.md` exists; contains interview decision record | Track count < 3 |
 | 4→5 | `evidence_base.md` exists with sufficient lines (Tier 1 ≥ 10 / Tier 2 ≥ 20 / Tier 3 ≥ 40); core data has at least 1 item ≥ B-level; **IQR ≠ BLOCK when Tier ≥ 2** | B-level+ evidence ratio < 50% |
 | 5→6 | `insights.md` exists with scores + Red/Blue Team review records | Insight count < 3 |
-| 6→7 | `report.html` exists and ≥ 5KB + cover/TOC/footer complete; **IQR ≠ BLOCK when Tier ≥ 2** | ECharts reference/initialization missing |
+| 6→7 | `report.html` exists and ≥ 5KB + chapter sections present + cover/TOC/footer complete; **IQR ≠ BLOCK when Tier ≥ 2** | ECharts reference/initialization missing |
 
 FAIL → **Transition prohibited** — fix or roll back. WARN → Inform user, then may proceed.
 
@@ -232,12 +232,12 @@ Example:
 | Stage | Name | Loaded Files | Deliverable | User Checkpoint |
 |-------|------|-------------|-------------|----------------|
 | 1 | Briefing | (None) | `user_brief.md` | Answer questions |
-| 2 | Framing | `_index.md`, `methodology/_index.md`, selected framework files | `research_definition.md` | ☑️ Confirm research definition + 🔍 IQR |
+| 2 | Framing | `_index.md`, `methodology/_index.md`, `mece.md`, `issue_tree.md`, selected framework files | `research_definition.md` | ☑️ Confirm research definition + 🔍 IQR |
 | 3 | Planning | `hypothesis_driven.md`, `issue_tree.md`, `data_sources.md` | `research_plan.md` | ☑️ Confirm hypotheses + plan |
 | 3.5 | Interview | `interview.md` | `interview_guides.md` | ☑️ Confirm guides (optional) |
-| 4 | Research | `research_engine.md` | `evidence_base.md` | Progress broadcasts + 🔍 IQR |
-| 5 | Insights | `judgment_rules.md`, `anti_patterns.md` | `insights.md` | Rule-by-rule broadcast + ☑️ Insight confirmation (after Rule 7, before Red/Blue Team) + 📊 Quality overview |
-| 6 | Report | `report_standards.md`, `report_template.html`, `anti_patterns.md` | `report.html` | Read report + 🔍 IQR |
+| 4 | Research | `research_engine.md`, `triangulation.md` | `evidence_base.md` | Progress broadcasts + 🔍 IQR |
+| 5 | Insights | `judgment_rules.md`, `anti_patterns.md`, `research_definition.md` | `insights.md` | Rule-by-rule broadcast + ☑️ Insight confirmation (after Rule 7, before Red/Blue Team) + 📊 Quality overview |
+| 6 | Report | `report_standards.md`, `report_template.html`, `anti_patterns.md`, `pyramid_principle.md` | `report.html` | Read report + 🔍 IQR |
 | 7 | Iteration | All intermediate deliverables | Updated report | Provide revision feedback |
 
 ---
@@ -309,10 +309,10 @@ Tier {X} — {Tier name}
 
 ### Stage 2: Problem Framing
 
-> 🎯 Stage 2 / 7 — Framing | 📋 Load: `_index.md`, `methodology/_index.md`, selected framework files | 🔧 Methodology: MECE
+> 🎯 Stage 2 / 7 — Framing | 📋 Load: `_index.md`, `methodology/_index.md`, `mece.md`, `issue_tree.md`, selected framework files | 🔧 Methodology: MECE, Issue Tree
 > **Gate exit**: `research_definition.md` contains sub-questions + lens assignment
 
-**Load files**: `{ws}/user_brief.md` (context recovery), `frameworks/_index.md`, `methodology/_index.md`
+**Load files**: `{ws}/user_brief.md` (context recovery), `frameworks/_index.md`, `methodology/_index.md`, `methodology/mece.md`, `methodology/issue_tree.md`
 
 **Execution**:
 1. **Scenario identification + framework matching**: Identify 1-2 research scenarios from the user's topic; match primary framework (1) + enhanced frameworks (2-4) per `_index.md`. Note multi-scenario matching rules (purpose scenario > method scenario). Present recommended combination to user.
@@ -456,10 +456,10 @@ If they're not done during the research process, I'll remind you before Stage 4 
 
 ### Stage 4: Research Execution
 
-> 🎯 Stage 4 / 7 — Research | 📋 Load: `research_engine.md` | 🔧 Methodology: Triangulation, Multi-track Parallel
+> 🎯 Stage 4 / 7 — Research | 📋 Load: `research_engine.md`, `triangulation.md` | 🔧 Methodology: Triangulation, Multi-track Parallel
 > **Gate exit**: `evidence_base.md` exists with sufficient lines (Tier 1 ≥ 10 / Tier 2 ≥ 20 / Tier 3 ≥ 40); core data has at least 1 item ≥ B-level
 
-**Load files**: `{ws}/research_plan.md` (context recovery), `{ws}/research_definition.md` (framework & boundary recovery), `resources/research_engine.md` (contains complete multi-track parallel execution rules)
+**Load files**: `{ws}/research_plan.md` (context recovery), `{ws}/research_definition.md` (framework & boundary recovery), `resources/research_engine.md` (contains complete multi-track parallel execution rules), `methodology/triangulation.md` (A/B/C/D confidence grading criteria + triangulation execution steps)
 
 **Three-Layer Progression**:
 - **Layer 1 Overview Scan** (Main Session): Initialize Framework-Evidence Map (Step 1.0) → Convert hypotheses to search tasks, distribute to Tracks, quickly obtain overview data
@@ -536,10 +536,10 @@ See `research_engine.md` Track C for details.
 
 ### Stage 5: Insight Synthesis
 
-> 🎯 Stage 5 / 7 — Insights | 📋 Load: `judgment_rules.md`, `anti_patterns.md` | 📋 Tier 2: `first_principles.md` (scenarios 3/4/5/7), `pre_mortem.md` (scenarios 2/6/7/8/9) | 🔧 Methodology: So What Chain, Red/Blue Team Review
+> 🎯 Stage 5 / 7 — Insights | 📋 Load: `judgment_rules.md`, `anti_patterns.md`, `research_definition.md` | 📋 Tier 2: `first_principles.md` (scenarios 3/4/5/7), `pre_mortem.md` (scenarios 2/6/7/8/9) | 🔧 Methodology: So What Chain, Red/Blue Team Review
 > **Gate exit**: `insights.md` exists with scores + Red/Blue Team review records (⛔ Stage 6 gate file)
 
-**Load files**: `{ws}/evidence_base.md` (layered re-read, see protocol below), `{ws}/user_brief.md` (user context recovery), `resources/judgment_rules.md` (contains complete execution flow, Red/Blue Team Subagent templates, insights.md output template), `resources/anti_patterns.md` (as background constraint for 8 rules, not an independent step; Stage 6 uses its self-check list)
+**Load files**: `{ws}/evidence_base.md` (layered re-read, see protocol below), `{ws}/user_brief.md` (user context recovery), `{ws}/research_definition.md` (sub-question + lens assignment recovery, ensuring insights cover all sub-questions), `resources/judgment_rules.md` (contains complete execution flow, Red/Blue Team Subagent templates, insights.md output template), `resources/anti_patterns.md` (as background constraint for 8 rules, not an independent step; Stage 6 uses its self-check list)
 
 **evidence_base.md Layered Re-read Protocol** (⛔ replaces one-shot bulk loading):
 1. **Read "Research Execution Summary" first** → recover the global picture in 30 seconds, focusing on cross-track contradictions (🔴) and gaps (⚠️)
@@ -588,12 +588,12 @@ python3 scripts/harness/dashboard.py {ws}
 
 ### Stage 6: Report Generation
 
-> 🎯 Stage 6 / 7 — Report | 📋 Load: `report_standards.md`, `report_template.html`, `anti_patterns.md` | 🔧 Methodology: Pyramid Principle
-> **Gate exit**: `report.html` exists and ≥ 5KB + cover/TOC/footer complete
+> 🎯 Stage 6 / 7 — Report | 📋 Load: `report_standards.md`, `report_template.html`, `anti_patterns.md`, `pyramid_principle.md` | 🔧 Methodology: Pyramid Principle
+> **Gate exit**: `report.html` exists and ≥ 5KB + chapter sections present + cover/TOC/footer complete
 
 ⛔ **First step must read `insights.md`; if file does not exist, return to Stage 5**
 
-**Load files**: `{ws}/evidence_base.md` (layered re-read, see protocol below), `{ws}/user_brief.md` (narrative anchor recovery), `references/report_standards.md`, `references/report_template.html`, `resources/anti_patterns.md`
+**Load files**: `{ws}/evidence_base.md` (layered re-read, see protocol below), `{ws}/user_brief.md` (narrative anchor recovery), `references/report_standards.md`, `references/report_template.html`, `resources/anti_patterns.md`, `methodology/pyramid_principle.md` (conclusion-first + report structure self-check)
 
 **evidence_base.md Layered Re-read Protocol**:
 1. **Read "Research Execution Summary" first** → recover the full data picture, guiding narrative arc design
@@ -659,7 +659,7 @@ b.add_chart("chart1", {
     "xAxis": {"type": "category", "values": ["2023", "2024", "2025E"]},
     "yAxis": {"type": "value", "name": "USD (M)"},
     "series": [{"name": "Series", "type": "bar", "values": [100, 200, 300],
-                "itemStyle": {"color": "#2563eb"}}]
+                "itemStyle": {"color": "#667EEA"}}]
 })
 b.save_state("{ws}/_rpt_state.json")
 ```
@@ -728,8 +728,6 @@ Your domain knowledge is an input I cannot replace — each round of feedback tr
 - Stage 3.5 activated + **notes not received**: `5. **Interview notes** — Interviews were planned but I haven't received notes yet. Once done, share the notes and I'll organically integrate them into the research and report`
 - Stage 3.5 activated + **notes received**: `5. **More interviews** — If there are follow-up interviews, share new notes anytime and I'll organically integrate them`
 - Stage 3.5 **not activated**: Do not display
-
-**After interaction guide output**, execute the shared docs usage record (silent, see Stage 7B for details).
 
 ---
 
@@ -802,4 +800,4 @@ Best of luck with your decisions.
 | 4 | Triangulation · Data annotation correct · Core data ≥ B-level · Track skips informed · **Interview collection executed** (if Stage 3.5 activated) · Framework analysis conclusions independently produced · **IQR review** |
 | 5 | So What ≥ 3 layers · Insights ≥ 16 points · Key variables identified · Contrarian test · SMART test · Pre-mortem · Priority ranking · Red/Blue Team review · insights.md generated |
 | 6 | Read insights.md · Review Dashboard · Python script generates HTML · ECharts use dk variable concatenation · Conclusion-first · Evidence traceable · Anti-pattern self-check · Chapter self-check (per report_standards.md list) · ECharts charts (Tier 2 ≥3 / Tier 3 ≥6) · **IQR review** |
-| 7 | Minimum rework scope · Incremental annotations clear · Wrap-up template fully output · Shared docs usage record written |
+| 7 | Minimum rework scope · Incremental annotations clear · Wrap-up template fully output |

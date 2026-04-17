@@ -37,7 +37,9 @@ Opposite of "collect information first, then find conclusions," hypothesis-drive
 3. Collect data (targeted search)
 4. Validate/revise (update hypotheses)
 
----## Why It Matters
+---
+
+## Why It Matters
 
 | Approach | Process | Efficiency | Risk |
 |----------|---------|------------|------|

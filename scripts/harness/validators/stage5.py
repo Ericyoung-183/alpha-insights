@@ -96,7 +96,7 @@ def validate(workspace):
     has_smart = (
         file_contains_keyword(workspace, f, "SMART")
         or file_contains_pattern(workspace, f, r"Specific|Measurable|Achievable|Relevant|Time.?bound")
-        or file_contains_pattern(workspace, f, r"\*{0,2}[SMART]\*{0,2}\s*[:：]")
+        or file_contains_pattern(workspace, f, r"\*{2}[SMART]\*{2}\s*[:：]")
     )
     if has_smart:
         r.pass_check("含 SMART 测试记录")

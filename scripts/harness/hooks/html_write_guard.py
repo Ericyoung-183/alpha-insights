@@ -14,7 +14,12 @@ def main():
     try:
         data = json.loads(sys.stdin.read())
     except Exception:
-        return  # malformed input → fail open
+        # malformed input → allow but warn (transparent failure)
+        json.dump({
+            "decision": "allow",
+            "message": "⚠️ html_write_guard: failed to parse input, allowing by default",
+        }, sys.stdout, ensure_ascii=False)
+        return
 
     tool_input = data.get("tool_input") or {}
     file_path = tool_input.get("file_path") or tool_input.get("path") or ""

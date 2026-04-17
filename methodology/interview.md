@@ -116,7 +116,7 @@ Stage 4 Research Execution (Track B)
 - Record the expert's "offhand remarks" — these are often the most valuable insights
 - **Exploratory questions must also have specific follow-up dimensions** to prevent vague answers. For example, "Any niche opportunities with potential?" should follow up on specific dimensions (category/channel/team/technology); "What are the easiest pitfalls?" should follow up with "Can you give a typical failure case? What was the root cause?"
 
-### 3.4 Outline Example
+### 3.5 Outline Example
 
 ```
 [External Outline - Enterprise SaaS Company Research]
@@ -140,7 +140,7 @@ Data questions:
 - Market share distribution of key players, changes over the past two years?
 ```
 
-### 3.5 The Art of Quantitative Questions
+### 3.6 The Art of Quantitative Questions
 
 **Problem**: If all questions are quantitative, expert rejection probability is extremely high (suspicion or feeling of low value)
 
@@ -248,6 +248,8 @@ We'd mainly like to discuss enterprise SaaS business models, development opportu
 
 ## VII. Step 5-6: Create Shared Doc & Send Notification
 
+> ⚠️ **Environment dependency**: Steps 5-6 depend on shared document tools and notification tools (e.g., Notion/Google Docs + Slack/Teams). If the current environment does not have these tools, write the materials directly to the workspace `interview_guides.md` file and inform the user to share manually.
+
 ### 7.1 Shared Document Content
 
 Includes the following:
@@ -259,7 +261,7 @@ Includes the following:
 ### 7.2 Notification Content
 
 - Complete content of all materials above
-- **Must include shared document link**
+- **Must include shared document link** (or workspace file path)
 - **Send to 1-on-1 chat only, not group chat** (unless user explicitly requests otherwise)
 
 ---

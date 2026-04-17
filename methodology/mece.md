@@ -33,7 +33,9 @@
 - Process method (process step decomposition)
 - Element method (key element decomposition)
 
----## Why It Matters
+---
+
+## Why It Matters
 
 Analysis without MECE produces two types of problems:
 

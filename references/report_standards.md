@@ -355,7 +355,7 @@ build_report(body=body, charts=[...], title="Title", output=os.path.join(ws, 're
 > **Why not use the Write tool?** (1) Large HTML files lose content parameters under context pressure; (2) The model output layer filters `data` + array patterns (misidentified as data URIs), causing blank ECharts; (3) Generating a Tier 3 report in one pass requires 15-25K tokens, easily timing out.
 
 **Design specifications**:
-- Unified color scheme: Primary `#2563eb`, accent `#f59e0b` `#10b981` `#ef4444`
+- Unified color scheme: Primary `#1A365D` (deep blue, consistent with report_template.html), accent `#667EEA`, secondary `#f59e0b` `#10b981` `#ef4444`
 - Chart titles must express findings (e.g., "B2B Market Growth Far Exceeds B2C"), not simple descriptions (e.g., "Market Size")
 - All charts must have data source annotations
 - Print compatible: ECharts charts auto-render as static images when printing
