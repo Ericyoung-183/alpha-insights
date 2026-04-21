@@ -1,5 +1,22 @@
 # Changelog
 
+## V3.6 (2026-04-21)
+
+### Added
+- **Chapter Blueprint Mechanism**: Stage 3 defines required materials for each report chapter per sub-question (referencing 13-type material menu), Stage 4 dual-objective research (hypothesis validation + blueprint material collection), Layer 3 Step 3.5 mandatory blueprint gap check with targeted supplementary search (✅/⚠️/❌ tri-state, ❌ blocks Stage 5 entry)
+- **Evidence Reasoning Chain**: A-class insights must articulate "supports this conclusion because [specific logic]" for each key evidence item, with direction-reversal and tautology counter-examples
+- **Hosted Discussion Mode**: Post-report interaction guide adds option 5 "walk through together" — AI states position → explains uncertainty → solicits user domain input; ⛔ Question boundary rule (only ask what user can answer, not what research should answer)
+- **Evidence Source Traceability Requirement**: Each evidence item must include specific URL (web sources) or query/document ID (database sources); untraceable sources marked C-level
+- **Subagent Data Spot-Check**: Main session spot-checks 2-3 key data points per Track return (outliers/high-impact/single-source), failed checks downgraded to C-level
+
+### Improved
+- **Stage 5 User Confirmation Enforces AskUserQuestion**: A-class confirmed one by one (✅ Agree / ✏️ Adjust / ❌ Disagree), B-class batch confirmed
+- **Post-Report Interaction Guide Reordered**: Interview reminder moved before items 1-5 (completeness first)
+- **Blueprint Item Quality Standard**: Each item must specify scope + dimensions + quantity; vague items prohibited
+- **Step 3.5 ✅ Verification Standard**: Marking ✅ requires evidence to meet blueprint item's specification standard (quantity/dimensions/scope)
+
+---
+
 ## V3.0.5 (2026-04-20)
 
 ### Added
@@ -20,7 +37,7 @@
 ### Added
 - **Tier 1 Methodology Full Loading**: Stage 2 loads MECE + Issue Tree, Stage 4 loads Triangulation, Stage 6 loads Pyramid Principle (fixes declared-but-never-loaded gap)
 - **Stage 5 re-reads research_definition.md**: Restores sub-question → insight traceability chain
-- **Stage 6 blind spot review check**: Tier 2+ reports validated for blind spot/盲区 section
+- **Stage 6 blind spot review check**: Tier 2+ reports validated for blind spot section
 - **Dashboard Stage 1 assessment**: Quality overview now includes user brief completeness check
 
 ### Fixed

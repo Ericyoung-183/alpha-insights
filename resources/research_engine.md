@@ -617,7 +617,32 @@ After each Track (A/B/D/E/F/G) completes, perform the following write operations
 
 > Note: Map update is a lightweight operation (~2-3 minutes per Track). No need to write complete conclusions — just update the table.
 
-**B. ⛔ Analysis Notes Write** (mandatory, written in the same pass as evidence list):
+### ⛔ Dual-Objective Research: Hypothesis Validation + Chapter Blueprint Fulfillment (Tier 2/3)
+
+Stage 4 research serves two objectives — consider both during every search:
+
+1. **Hypothesis Validation** (directional judgment): Validate/falsify hypotheses — existing mechanism unchanged
+2. **Blueprint Material Collection** (depth assurance): Collect specific materials for the chapter blueprints in `research_definition.md`
+
+> **Key Distinction**: Hypothesis validation stops when confidence is sufficient, but the blueprint may not yet be filled. During searches, actively seek the specific materials the blueprint requires (entity profiles, quantitative comparisons, case details, etc.), not just macro-level conclusions sufficient for hypothesis validation.
+
+**B. ⛔ Evidence Source URL Requirement**:
+
+Each evidence item's "Source" column must include a **traceable, specific source** (not vague descriptions like "industry report" or "LinkedIn post"):
+- **Web sources** (Track A/B/E/F): Include specific URL. Subagents already visit the original pages during search — recording the URL is not extra work
+- **Database/knowledge base sources** (Track D/G): Include query statement or table name/document ID
+- **Untraceable sources** (verbal references, pages taken offline): Mark as C-level (untraceable) in verification column
+
+**C. ⛔ Subagent Data Spot-Check** (after each Track return, executed by Main Session):
+
+After a Subagent returns data, Main Session spot-checks 2-3 key data points with independent searches. Priority targets:
+- Outliers (e.g., "single-day $7M ARR increase")
+- Data supporting high-impact conclusions (e.g., core evidence for A-class insights)
+- Single-source data
+
+Data that fails spot-check should be downgraded to C-level in evidence_base.md with reason annotated.
+
+**D. ⛔ Analysis Notes Write** (mandatory, written in the same pass as evidence list):
 
 When each Track's evidence is written to `evidence_base.md`, **immediately following the evidence list**, write analysis notes with all four fields mandatory:
 
@@ -1169,7 +1194,7 @@ After all Tracks complete, perform a final review of the Framework-Evidence Map:
 
 ### Step 3.4: Generate Research Execution Summary
 
-⛔ **Final step of Layer 3**. Write into the "Research Execution Summary" section at the **top** of `evidence_base.md`:
+Write into the "Research Execution Summary" section at the **top** of `evidence_base.md`:
 
 1. **Core findings per track**: Re-read each Track's analysis notes and distill the most important finding in 1-2 sentences
 2. **Cross-track key signals**:
@@ -1179,6 +1204,26 @@ After all Tracks complete, perform a final review of the Framework-Evidence Map:
 3. **Hypothesis validation status overview**: ✅/❌/⏳ status for each hypothesis and core evidence source
 
 **Why this step matters**: During sequential execution, the Main Session naturally accumulates a global understanding of the data across Track D→E→F→G — which contradictions, which corroborations, what was unexpected. But by Stage 5, these understandings have been compressed away by context. The Research Execution Summary **explicitly captures this process intuition**, allowing Stage 5 to recover the global picture in 30 seconds when re-reading.
+
+### Step 3.5: Chapter Blueprint Gap Check & Targeted Supplementary Search (Tier 2/3, ⛔ Mandatory Step)
+
+> **Design Intent**: Hypothesis validation answers "is the direction correct?"; blueprint gap check ensures "is the depth sufficient?" This is Stage 4's safety net — even if blueprint materials were missed during Track searches, they are caught here.
+
+**Execution Flow**:
+
+1. **Re-read blueprint**: Read the chapter blueprints for each sub-question from `research_definition.md`
+2. **Item-by-item comparison**: For each blueprint material item, check whether `evidence_base.md` contains corresponding specific data
+3. **Mark status**:
+   - ✅ Fulfilled — evidence_base contains corresponding specific data/entities/cases, **and meets the blueprint item's specification standard** (quantity, dimensions, scope). A single mention does not qualify as a deep profile; two data points do not qualify as a comparison table.
+   - ⚠️ Unavailable — searched but data does not exist (with brief reason, e.g., "Company does not publicly disclose pricing")
+   - ❌ Gap — not searched or search was insufficient
+4. **Targeted supplementary search**: For all ❌ items, execute precise searches (don't re-run Tracks, directly search for specific information), 1-3 searches per item
+5. **Update status**: After supplementary search, update ❌ to ✅ or ⚠️ (if still unfound, annotate reason)
+6. **Write to research_definition.md**: Update the checkbox status for each blueprint item
+
+**Completion Standard**: All blueprint material items must be ✅ or ⚠️ (with explanation). No remaining ❌ allowed.
+
+> Note: ⚠️-annotated "unavailable" materials will be reflected in the report's blind spot section — users can see "this data was not found because XXX."
 
 ---
 

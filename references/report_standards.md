@@ -184,6 +184,28 @@ X.6 Relevance to Us (context anchoring, Tier 3 ≥2 paragraphs: impact assessmen
 
 ---
 
+## Chapter Material Type Reference Menu
+
+> **Purpose**: Reference for writing chapter blueprints in Stage 3 (not a constraint). AI selects applicable types from the menu and may also add custom items not listed here.
+
+| Material Type | Description | Common Use Cases |
+|--------------|-------------|-----------------|
+| Market Size Breakdown | TAM/SAM/SOM + segments + drivers + growth rate | Market overview, opportunity assessment |
+| Player Landscape | List major entities by category (≥10), with brief positioning | Competitive landscape, supply side |
+| Entity Deep Profiles | Top N entities × multi-dimension detailed descriptions (product/pricing/customers/differentiation/weaknesses) | Competition, benchmarking |
+| Quantitative Comparison Table | ≥3 entities × ≥4 metrics in structured comparison | Competition, benchmarking, selection |
+| Positioning Matrix | 2-axis scatter/quadrant chart data (axis definitions + entity coordinate rationale) | Competitive positioning, market segmentation |
+| Time Trends | ≥3 years of data + inflection points/driver annotations | Market trends, technology evolution |
+| User/Demand Profiles | Layered description by scenario/segment/frequency/willingness to pay | Demand analysis, user research |
+| Cases/Stories | ≥2 specific cases with background, approach, and outcomes | Strategy validation, pattern recognition |
+| Value Chain/Process Map | Stage breakdown + player distribution/value capture per stage | Industry analysis, business models |
+| Policy/Regulatory Environment | Regulations, compliance requirements, policy trends and impact | Macro analysis, market entry assessment |
+| Technology Approach Comparison | Technology roadmap/architecture/capability matrix comparison | Technology selection, trend assessment |
+| Financial/Unit Economics | Cost structure, revenue model, margins, break-even | Business model, investment decisions |
+| Scenario Analysis | Optimistic/base/pessimistic scenarios + key assumptions + projections | Forecasting, risk assessment |
+
+---
+
 ## Chapter Self-Check (7 Items)
 
 After generating each chapter, mandatory self-check:

@@ -28,7 +28,7 @@ hooks:
 
 # Alpha Insights-BizAdvisor — Skill Main File
 
-> Version: V3.0.5 | Last Updated: 2026-04-20
+> Version: V3.6 | Last Updated: 2026-04-21
 > Positioning: Replaces a senior business analyst to deliver in-depth, decision-grade research reports
 > This file is a pure orchestration layer; detailed execution instructions reside in files loaded by each Stage
 > **Harness Engineering**: Enforces execution quality through script validation + state machine + incremental persistence
@@ -231,8 +231,8 @@ Quality checks are configured by risk. Each Stage has different risks and differ
 | 1→2 | `user_brief.md` exists with topic + tier | Background description < 3 lines |
 | 2→3 | `research_definition.md` exists with sub-questions + lens assignment; **IQR ≠ BLOCK when Tier ≥ 2** | Framework count < 2 |
 | 3→4 | `research_plan.md` exists; contains interview decision record | Track count < 3 |
-| 4→5 | `evidence_base.md` exists with sufficient lines (Tier 1 ≥ 10 / Tier 2 ≥ 20 / Tier 3 ≥ 40); core data has at least 1 item ≥ B-level; **IQR ≠ BLOCK when Tier ≥ 2** | B-level+ evidence ratio < 50% |
-| 5→6 | `insights.md` exists with scores + Red/Blue Team review records | Insight count < 3 |
+| 4→5 | `evidence_base.md` exists with sufficient lines (Tier 1 ≥ 10 / Tier 2 ≥ 20 / Tier 3 ≥ 40); core data has at least 1 item ≥ B-level; **IQR ≠ BLOCK when Tier ≥ 2**; **Tier 2/3 chapter blueprint has no remaining ❌** | B-level+ evidence ratio < 50% |
+| 5→6 | `insights.md` exists with scores + Red/Blue Team review records; **Tier 2/3 blueprint completion displayed** | Insight count < 3 |
 | 6→7 | `report.html` exists and ≥ 5KB + chapter sections present + cover/TOC/footer complete; **IQR ≠ BLOCK when Tier ≥ 2** | ECharts reference/initialization missing |
 
 FAIL → **Transition prohibited** — fix or roll back. WARN → Inform user, then may proceed.
@@ -374,11 +374,22 @@ Tier {X} — {Tier name}
 [One sentence]
 
 ## Sub-question Decomposition (MECE)
-| Sub-question | Content | Analysis Lens |
-|-------------|---------|--------------|
-| Q1 | [Sub-question 1] | [Framework dimensions, e.g., PESTEL-E/S, TAM/SAM] |
-| Q2 | [Sub-question 2] | [Framework dimensions, e.g., Five Forces-Competition/New Entrants] |
-| Q3 | [Sub-question 3] | [Framework dimensions, e.g., BMC, Unit Economics] |
+
+### Q1: [Sub-question 1]
+**Analysis Lens**: [Framework dimensions, e.g., PESTEL-E/S, TAM/SAM]
+**Chapter Blueprint** (Tier 2/3, filled in Stage 3):
+- [ ] [Material type]: [Description]
+- [ ] [Material type]: [Description]
+
+### Q2: [Sub-question 2]
+**Analysis Lens**: [Framework dimensions, e.g., Five Forces-Competition/New Entrants]
+**Chapter Blueprint** (Tier 2/3, filled in Stage 3):
+- [ ] [Material type]: [Description]
+
+### Q3: [Sub-question 3]
+**Analysis Lens**: [Framework dimensions, e.g., BMC, Unit Economics]
+**Chapter Blueprint** (Tier 2/3, filled in Stage 3):
+- [ ] [Material type]: [Description]
 
 ## Framework Combination & Dimension Coverage
 - Primary framework: [Framework name] — Rationale: [...]
@@ -448,6 +459,34 @@ We are [role], in the [stage] of [industry/market], needing to address [decision
 3. **Complete coverage**: Every Stage 2 sub-question has corresponding hypotheses (or notes "factual survey type, no hypothesis needed")
 4. **Verifiable**: Track planning has clear data sources to support validation
 
+**📐 Chapter Blueprint** (Tier 2/3, after hypothesis self-check, before user confirmation):
+
+For each sub-question, define what specific materials the report chapter needs. Write into `research_definition.md` under each sub-question (see template above). Select applicable types from the menu below; custom items are also allowed:
+
+| Material Type | Description |
+|--------------|-------------|
+| Market Size Breakdown | TAM/SAM/SOM + segments + drivers |
+| Player Landscape | List major entities by category (≥10) |
+| Entity Deep Profiles | Top N entities × multi-dimension description (product/pricing/customers/differentiation/weaknesses) |
+| Quantitative Comparison Table | ≥3 entities × ≥4 metrics structured comparison |
+| Positioning Matrix | 2-axis scatter/quadrant chart data |
+| Time Trends | ≥3 years data + inflection point annotations |
+| User/Demand Profiles | Layered by scenario/segment/willingness to pay |
+| Cases/Stories | ≥2 specific cases with background and outcomes |
+| Value Chain/Process Map | Stage breakdown + value distribution per stage |
+| Policy/Regulatory Environment | Regulations, compliance, policy trends |
+| Technology Approach Comparison | Tech roadmap/capability matrix |
+| Financial/Unit Economics | Cost structure, revenue model, margins |
+| Scenario Analysis | Optimistic/base/pessimistic + key assumptions |
+
+| Tier | Blueprint Requirements |
+|------|----------------------|
+| Tier 1 | No blueprint |
+| Tier 2 | 2-3 items per sub-question |
+| Tier 3 | 4-6 items per sub-question |
+
+⛔ Each blueprint item must specify **scope** (which entities/markets), **dimensions** (which attributes), and **quantity** (minimum count). ❌ "competitor info" → ✅ "Top 5 AI consulting competitors × product/pricing/customers/differentiation"
+
 **☑️ User Confirmation** (using AskUserQuestion, accomplishing two things at once). Before confirmation, output preamble:
 "Here are the research hypotheses and plan. ⚠️ Once hypotheses are confirmed, all subsequent searches and analyses will revolve around them — if you have thoughts on direction or emphasis, now is the best time to share."
 1. **Confirm hypotheses and plan**: Show H1-Hn summary + Track planning overview, ask user to confirm direction
@@ -502,14 +541,14 @@ If they're not done during the research process, I'll remind you before Stage 4 
 ### Stage 4: Research Execution
 
 > 🎯 Stage 4 / 7 — Research | 📋 Load: `research_engine.md`, `triangulation.md` | 🔧 Methodology: Triangulation, Multi-track Parallel
-> **Gate exit**: `evidence_base.md` exists with sufficient lines (Tier 1 ≥ 10 / Tier 2 ≥ 20 / Tier 3 ≥ 40); core data has at least 1 item ≥ B-level
+> **Gate exit**: `evidence_base.md` exists with sufficient lines (Tier 1 ≥ 10 / Tier 2 ≥ 20 / Tier 3 ≥ 40); core data has at least 1 item ≥ B-level; **Tier 2/3 chapter blueprint has no remaining ❌**
 
-**Load files**: `{ws}/research_plan.md` (context recovery), `{ws}/research_definition.md` (framework & boundary recovery), `resources/research_engine.md` (contains complete multi-track parallel execution rules), `methodology/triangulation.md` (A/B/C/D confidence grading criteria + triangulation execution steps)
+**Load files**: `{ws}/research_plan.md` (context recovery), `{ws}/research_definition.md` (framework & boundary recovery + chapter blueprints), `resources/research_engine.md` (contains complete multi-track parallel execution rules), `methodology/triangulation.md` (A/B/C/D confidence grading criteria + triangulation execution steps)
 
 **Three-Layer Progression**:
 - **Layer 1 Overview Scan** (Main Session): Initialize Framework-Evidence Map (Step 1.0) → Convert hypotheses to search tasks, distribute to Tracks, quickly obtain overview data
-- **Layer 2 Directed Deep Dive** (Subagent parallel): Each Track executes specific searches, traces original sources, produces standardized evidence; update Framework-Evidence Map after each Track
-- **Layer 3 Evidence Integration** (Main Session): Consolidate all Track evidence, execute triangulation, Framework-Evidence Map final review (Step 3.2.5), produce framework analysis conclusions
+- **Layer 2 Directed Deep Dive** (Subagent parallel): Each Track executes specific searches, traces original sources, produces standardized evidence; update Framework-Evidence Map after each Track. **⛔ Tier 2/3 Dual-Objective Research**: Searches must consider both hypothesis validation and chapter blueprint material collection (see `research_engine.md`)
+- **Layer 3 Evidence Integration** (Main Session): Consolidate all Track evidence, execute triangulation, Framework-Evidence Map final review (Step 3.2.5), **Chapter Blueprint Gap Check & Targeted Supplementary Search** (Step 3.5), produce framework analysis conclusions
 
 **Tier Control**: Tier 1 Layer 1 only | Tier 2 Layers 1-2 | Tier 3 All layers
 
@@ -604,7 +643,10 @@ See `research_engine.md` Track C for details.
 
 ⛔ **Rule-by-rule broadcast (cannot be skipped)**: After each rule executes, broadcast a one-line progress summary to the user (format in `judgment_rules.md` "Rule Execution Broadcast Format"). Combining Rules 1-7 into a single black-box step is prohibited.
 
-**☑️ User Confirmation (after Rule 7, before Red/Blue Team)**: A-class core insights (18-20 points) discussed one by one | B-class core insights (16-17 points) confirmed in batch. ⛔ User confirms insight direction before Red/Blue Team review begins, to avoid reviewing insights the user doesn't endorse.
+**☑️ User Confirmation (after Rule 7, before Red/Blue Team, ⛔ must use AskUserQuestion)**:
+- **A-class (18-20 pts) one by one**: Present 1 insight at a time (conclusion + key evidence + reasoning chain), use AskUserQuestion with options (✅ Agree / ✏️ Adjust direction / ❌ Disagree). Wait for user response before presenting next.
+- **B-class (16-17 pts) batch**: Present all B-class at once, AskUserQuestion to confirm.
+- ⛔ User confirms insight direction before Red/Blue Team review begins, to avoid reviewing insights the user doesn't endorse.
 
 ⛔ **Red/Blue Team Feedback Triage** (after Red/Blue Team execution, cannot be skipped):
 
@@ -656,13 +698,25 @@ python3 scripts/harness/dashboard.py {ws}
 ```
 **Display the quality overview output verbatim to the user**, letting them understand overall research quality before report generation. If there are ❌ or ⚠️ items, discuss with the user whether rollback and fixes are needed.
 
-> ⚠️ **Fallback When Bash Unavailable**: Manually check S2-S5 deliverables (existence, key content markers), outputting a simplified quality overview:
+**📐 Chapter Blueprint Completion Check** (Tier 2/3, after Dashboard): Read the chapter blueprint checkbox status from `research_definition.md` and display to user:
+
+```
+📐 Chapter Blueprint Completion:
+  Q1 [sub-question]: ✅ 5/5
+  Q2 [sub-question]: ⚠️ 4/5 (⚠️ pricing info: company does not disclose)
+  Q3 [sub-question]: ✅ 4/4
+```
+
+⛔ **If any ❌ (gap) exists**: Must not enter Stage 6. Either return to Stage 4 for supplementary search, or change ❌ to ⚠️ with explanation. ⚠️ (unavailable) items are included in the report's blind spot section.
+
+> ⚠️ **Fallback When Bash Unavailable**: Manually check S2-S5 deliverables (existence, key content markers), outputting a simplified quality overview (including blueprint completion):
 > ```
 > ━━━ Research Quality Overview (Manual Check) ━━━
 > 📋 Research Definition (S2)  ✅/❌ | {sub-question count, frameworks}
 > 📋 Research Plan (S3)  ✅/❌ | {track count, hypotheses}
 > 📋 Evidence Base (S4)  ✅/❌ | {line count, high-quality evidence ratio}
 > 📋 Insight Synthesis (S5)  ✅/❌ | {insight count, Red/Blue Team status}
+> 📐 Chapter Blueprint (S3→S4) ✅/⚠️/❌ | {completed/total items}
 > ⚡ Overall Assessment: {judgment}
 > ━━━━━━━━━━━━━━━━━━━
 > ```
@@ -800,18 +854,31 @@ Report is ready: {report.html absolute path}
 💡 This is not the end — report quality depends on what comes next.
 
 Please browse and tell me:
+{interview_reminder}
 1. **What needs deeper exploration?** — An insight worth expanding, a risk analysis that's insufficient
 2. **What viewpoints to discuss?** — You have a different perspective, want to add your industry experience and judgment
 3. **Anything missing?** — A key competitor omitted, a critical dimension overlooked, a trend ignored
 4. **Any judgments to correct?** — Conclusions are off, logic has gaps, data interpretation is wrong
-{interview_reminder}
+5. **Walk through together?** — If you'd like, I can host a structured walk-through of each core insight — I share my position first, you add your judgment
 
 Your domain knowledge is an input I cannot replace — each round of feedback transforms the report from "AI analysis" to "your analysis."
 ```
 
+**Hosted Discussion Mode** (triggered when user selects option 5):
+
+Walk through A-class insights one by one. Each insight's discussion structure:
+
+1. **AI states its position first**: Present conclusion + key evidence + reasoning chain + biggest uncertainty
+2. **AI explains uncertainty**: "What I'm least certain about is XXX, because [limited data/single source/contradictory evidence]"
+3. **Solicit user's domain input**: "Based on your industry experience, does this align with what you've observed? Is there an angle I haven't covered?"
+
+⛔ **Question boundary**: Only ask the user what they **can** answer — their industry experience, strategic priorities, observed phenomena. Do NOT ask what the **research should have answered** — how large the market is, whether a competitor will enter a space, which technology approach is better. If discussion reveals a gap the research didn't cover, don't ask the user for the answer — flag it as an evidence gap and return to Stage 4 for supplementary research.
+
+Present 1 insight at a time. Wait for user response before showing the next.
+
 {interview_reminder} based on `_state.json` interview status (three options):
-- Stage 3.5 activated + **notes not received**: `5. **Interview notes** — Interviews were planned but I haven't received notes yet. Once done, share the notes and I'll organically integrate them into the research and report`
-- Stage 3.5 activated + **notes received**: `5. **More interviews** — If there are follow-up interviews, share new notes anytime and I'll organically integrate them`
+- Stage 3.5 activated + **notes not received**: `⚠️ **Interview notes** — Interviews were planned but I haven't received notes yet. Once done, share the notes and I'll organically integrate them into the research and report`
+- Stage 3.5 activated + **notes received**: `💡 **More interviews** — If there are follow-up interviews, share new notes anytime and I'll organically integrate them`
 - Stage 3.5 **not activated**: Do not display
 
 ---
