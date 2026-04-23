@@ -78,8 +78,8 @@ SWOT is the most used and most poorly done strategic tool. 90% of SWOT analyses 
 
 > **S1**: 31,048 stores (end of 2025), world's largest freshly brewed coffee chain, 4.1x Starbucks China (~7,600 stores). Density advantage = convenience moat
 > **O2**: Lower-tier coffee penetration <8%, Tier 3-4 city growth 35%+ (vs. Tier 1-2 <12%)
-> **SO Strategy (Offensive)**: Use万店scale + supply chain cost advantage to accelerate lower-tier layout, target 2026 Tier 3-4 store share from 38% to 50%
-> - Action 1: Franchise model下沉to county-level cities, single-store investment capped at RMB 250k
+> **SO Strategy (Offensive)**: Use10,000-storescale + supply chain cost advantage to accelerate lower-tier layout, target 2026 Tier 3-4 store share from 38% to 50%
+> - Action 1: Franchise model lowers toto county-level cities, single-store investment capped at RMB 250k
 > - Action 2: Launch region-limited products (e.g., Osmanthus series) to boost localization penetration
 > - Action 3: Partner with Meituan/Douyin local life, use "RMB 9.9 in-store pickup" to cultivate lower-tier user habits
 
@@ -88,7 +88,7 @@ SWOT is the most used and most poorly done strategic tool. 90% of SWOT analyses 
 ### Four Enforcement Rules of This Framework
 
 1. **Data riveting**: Every element must carry at least one quantitative data point (market share, revenue, growth rate, penetration, etc.). Pure qualitative descriptions are not accepted
-2. **Source tracing**: S/W must标注which upstream framework they come from (Value Chain / internal data / competitive comparison); O/T must标注from PESTEL / Five Forces / industry data
+2. **Source tracing**: S/W must annotatewhich upstream framework they come from (Value Chain / internal data / competitive comparison); O/T must annotatefrom PESTEL / Five Forces / industry data
 3. **Ranking and focus**: Top 3-5 items per quadrant, ranked by "ability to change competitive landscape." No flat listing of 10+ items
 4. **Cross-analysis mandatory**: TOWS matrix is the core output, not an appendix. Each cross strategy must have 2-3 specific actions, and actions must be measurable
 
@@ -231,7 +231,7 @@ From the four strategies, select **1-2 primary offensive directions**, complemen
 **SO Strategy (Offensive): Scale + supply chain accelerate lower-tier**
 
 Use S1 (10,000-store density) + S3 (supply chain cost) to capture O2 (lower-tier increment):
-- Franchise model下沉to county-level cities, single-store investment <RMB 250k, 6-8 month payback. Target 2026 Tier 3-4 store share from 38%→50%
+- Franchise model lowers toto county-level cities, single-store investment <RMB 250k, 6-8 month payback. Target 2026 Tier 3-4 store share from 38%→50%
 - S4 (data-driven product selection) × O3 (tea-coffee fusion): Launch region-limited flavors (Osmanthus/Tangerine Peel series), already verified Coconut Cloud regional variant contributes 12% increment in South China
 - S2 (digital) × O2: Use "RMB 9.9 in-store pickup" to cultivate lower-tier user habits, then membership system boosts ASP
 
@@ -239,7 +239,7 @@ Use S1 (10,000-store density) + S3 (supply chain cost) to capture O2 (lower-tier
 
 Leverage O1 (low coffee penetration = upscale space) to address W1 (weak brand premium):
 - Launch "Luckin Select" sub-brand, positioned at RMB 25-35 price tier, targeting business/social scenarios, independent store format
-- O4 (overseas) × W1: Enter Southeast Asia as "Chinese specialty coffee" positioning (not budget), avoiding domestic brand impression固化
+- O4 (overseas) × W1: Enter Southeast Asia as "Chinese specialty coffee" positioning (not budget), avoiding domestic brand impression becoming fixated
 - Risk warning: Brand upward extension success rate historically <30%, requires independent team and channels
 
 **ST Strategy (Defensive): Digital + membership build price-war moat**
@@ -252,9 +252,9 @@ Use S2 (digital operations) to counter T1 (Cotti price war) + T4 (delivery subsi
 **WT Strategy (Baseline): Tighten franchise, prevent weaknesses from being amplified**
 
 Prevent W2 (franchise QC) from being squeezed by T1/T2 (competitive attacks):
-- Franchise stores introduce "flight inspection" + AI operational compliance monitoring; non-compliant stores closed after 30-day整改
+- Franchise stores introduce "flight inspection" + AI operational compliance monitoring; non-compliant stores closed after 30-day rectification
 - W4 × T4: Cut low-margin delivery SKUs, delivery radius 5km→3km, use "in-store pickup discount" to guide channel optimization
-- Franchise store share cap at 40%, prevent scale expansion失控
+- Franchise store share cap at 40%, prevent scale expansion from spiraling out of control
 
 ---
 
@@ -267,7 +267,7 @@ Prevent W2 (franchise QC) from being squeezed by T1/T2 (competitive attacks):
 | ST (Membership defense) | Membership system iterations, monthly card user growth | ✅ 67M+ monthly transacting customers, but price war continues |
 | WT (QC tightening) | Franchise QC issues still trending | ⚠️ Shortcoming unresolved, Q4 margin decline partially attributed to this |
 
-**Key Conclusion**: Luckin 2025 focused on SO+ST, WO brand upgrade not launched, WT QC still exposed — TOWS analysis can预判strategic blind spots in advance.
+**Key Conclusion**: Luckin 2025 focused on SO+ST, WO brand upgrade not launched, WT QC still exposed — TOWS analysis can foreseestrategic blind spots in advance.
 
 ### Case 2: BYD SWOT-TOWS Deep Analysis (2025)
 
@@ -319,12 +319,12 @@ Leverage O1 (overseas increment) to address W3 (weak overseas brand):
 S4 (R&D capital) addresses T3 (Huawei ADAS threat):
 - "Tiangshen Eye" accelerated iteration, 2026 target high-end AD adoption 15%→40%+, already poached Huawei/XPeng ADAS teams
 - S1 × T2: Vertical integration cost "outlasts" competitors — maintain positive gross margin in price war, wait for second/third-tier players to exit
-- FinDreams Battery external supply to other automakers,消化T4 overcapacity
+- FinDreams Battery external supply to other automakers,absorb T4 overcapacity
 
 **WT Strategy (Baseline): Focus core, cut non-strategic losses**
 
-- Trim low-volume models: Discontinue tail-end variants with monthly sales <500,释放dealer resources
-- Yangwang/Denza missing targets for 4 consecutive quarters →收缩to "tech flagship" role (not chasing volume, only building brand)
+- Trim low-volume models: Discontinue tail-end variants with monthly sales <500,release dealer resources
+- Yangwang/Denza missing targets for 4 consecutive quarters →shrinks to "tech flagship" role (not chasing volume, only building brand)
 
 ---
 
@@ -335,7 +335,7 @@ S4 (R&D capital) addresses T3 (Huawei ADAS threat):
 | SO (Mass market dominance) | Qin/Song continuous price cuts, DM-i 5.0 launched | ✅ Market share increased, but margin declined 19% (rising revenue, falling profit) |
 | WO (Overseas factories) | Hungary/Thailand/Brazil factories progress, overseas 1.05M +145% | ✅ Overseas becoming core growth engine, revenue share 38.6% |
 | ST (ADAS catch-up) | "Tiangshen Eye" released, ADAS team expanded to 4,000+ | ⏳ Catching up but gap remains, premium competitiveness constrained |
-| WT (Focus core) | 100k layoffs, some model adjustments | ✅ Efficiency optimization initiated, but model matrix still庞大 |
+| WT (Focus core) | 100k layoffs, some model adjustments | ✅ Efficiency optimization initiated, but model matrix still too large |
 
 **Key Conclusion**: BYD 2025 core contradiction is "scale vs. profit" — SO strategy succeeds but at the cost of profit decline. The real strategic challenge is ST (ADAS catch-up), which determines the RMB 200k+ market ceiling.
 
@@ -347,8 +347,8 @@ Both cases reveal SWOT-TOWS usage principles:
 
 1. **Data anchoring is the bottom line**: "Store density advantage" needs quantification as "31,048 stores / Starbucks 4.1x" to have decision value; "weak brand" needs quantification as "business scenario <5%" to judge severity
 2. **Cross-analysis is the core**: SWOT without TOWS cross-analysis is an "advanced pros-and-cons list." SO/WO/ST/WT each have action directions, helping decision-makers prioritize with limited resources
-3. **Real-world validation闭环**: Use companies' actual actions to反向验证TOWS预判 — accurate ones strengthen confidence, deviations expose cognitive blind spots
-4. **Dynamic perspective**: Both enterprises show "rising revenue, falling profit" — TOWS can预判in advance: when SO (offensive) over-consumes resources, WT (baseline) needs提前defenses
+3. **Real-world validation loop**: Use companies' actual actions toreverse-verifyTOWS predictions — accurate ones strengthen confidence, deviations expose cognitive blind spots
+4. **Dynamic perspective**: Both enterprises show "rising revenue, falling profit" — TOWS can foreseein advance: when SO (offensive) over-consumes resources, WT (baseline) needs proactive defenses
 
 ---
 

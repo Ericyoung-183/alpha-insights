@@ -684,12 +684,7 @@ When each Track's evidence is written to `evidence_base.md`, **immediately follo
 ```
 Core keywords = Subject term + Data term + Source term + Time term
 
-Chinese examples:
-- "中国 SaaS 市场规模 2024 艾瑞咨询"
-- "头部厂商 用户数 渗透率 2024 报告"
-- "竞争分析 业务规模 券商 2024"
-
-English examples (Tier 2+ default bilingual search):
+English examples:
 - "China SaaS market size 2024 IDC Gartner"
 - "second-hand electronics market 2024 report"
 - "credit scoring industry global landscape"

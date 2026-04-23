@@ -207,7 +207,7 @@ This specifically means:
 | Dimension | manifestation | Data |
 |-----------|--------------|------|
 | Growth rate | Sharp slowdown | 2018 YoY plummeted from >300% to <10% |
-| Competitor consolidation | Mass exits | 60+ → 3 survivors. Bluegogo/Xiaoming/Coolqi等20+ bankrupt, ofo暴雷(16M users queued for deposit refunds) |
+| Competitor consolidation | Mass exits | 60+ → 3 survivors. Bluegogo/Xiaoming/Coolqi and 20+ others bankrupt, ofo collapsed(16M users queued for deposit refunds) |
 | Industry concentration | Rapid consolidation | CR3 from ~40% → >90%: Meituan acquired Mobike (USD 2.7B), Hellobike got Alibaba investment, Didi took over Bluegogo |
 | Profit | Industry-wide losses | Mobike wrote down RMB 4.55B impairment after Meituan acquisition; ofo liabilities exceeded RMB 6.5B |
 | Competitive focus | Cost efficiency + fine operations | Shifted from "who deploys more" to "who loses less" |
@@ -230,11 +230,11 @@ This specifically means:
 | Market structure | Tri-oligopoly steady state | Meituan Bike, Hellobike, Didi Qingju, CR3 ≈95% |
 | Growth rate | Low single digits | YoY ~5-8%, following urban population and commuting demand natural growth |
 | Business model | From deposit to deposit-free/monthly pass | Monthly pass RMB 15-25, per-ride price RMB 1.5-2.5, average 2-3 rides/bike/day |
-| Competitive focus | Fine operations + government relations | Dispatch efficiency (AI predicting tidal flows), vehicle turnover rate, compliance达标率 |
+| Competitive focus | Fine operations + government relations | Dispatch efficiency (AI predicting tidal flows), vehicle turnover rate, compliance rate |
 | Profit | Approaching break-even | Hellobike overall profitable in 2023; Meituan Bike still a traffic acquisition tool (no standalone P&L) |
 | Industry positioning | From "hot trend" to "infrastructure" | Bike-sharing became part of urban public transportation, no longer a startup glamour |
 
-**Restart characteristic**: Bike-sharing did not truly "decline" — it experienced理性回归after a bubble burst. This is common in China: capital catalysis causes lifecycle "premature透支," and after shakeout, the industry restarts with a healthier business model.
+**Restart characteristic**: Bike-sharing did not truly "decline" — it experiencedreturn to rationalityafter a bubble burst. This is common in China: capital catalysis causes lifecycle "premature overdraft," and after shakeout, the industry restarts with a healthier business model.
 
 ---
 
@@ -257,8 +257,8 @@ Stage         Intro  Intro→Growth Growth Explosion Maturity Shakeout Steady St
 
 1. **China market lifecycle compression effect**: Bike-sharing went from Introduction to Maturity in just 3 years (global norm: 10-15 years). Capital catalysis is the main compression driver — RMB 25.8B financing flooded in within 1 year, artificially accelerating the growth phase
 2. **Practical value of transition signals**: Growth inflection (2017 Q4) appeared 2 quarters before firm bankruptcies (2018 Q2) — if investors had exited at the growth inflection, they could have avoided >80% of losses
-3. **Policy is China's "super variable"**: The ban on new deployments directly drew a句号on the growth phase, which would not happen in purely market-driven economies. China industry analysis must treat policy as the primary dimension of stage judgment
-4. **"Death ≠ Decline"**: The bike-sharing industry itself did not decline; what declined was the泡沫化business model. The tri-oligopoly operates healthily to this day after shakeout — distinguishing "industry decline" from "bubble burst" is a key cognitive insight
+3. **Policy is China's "super variable"**: The ban on new deployments directly drew a full stop on the growth phase, which would not happen in purely market-driven economies. China industry analysis must treat policy as the primary dimension of stage judgment
+4. **"Death ≠ Decline"**: The bike-sharing industry itself did not decline; what declined was thebubble-izedbusiness model. The tri-oligopoly operates healthily to this day after shakeout — distinguishing "industry decline" from "bubble burst" is a key cognitive insight
 
 ---
 

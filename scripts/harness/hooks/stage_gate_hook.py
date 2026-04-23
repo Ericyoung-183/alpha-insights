@@ -22,6 +22,7 @@ DELIVERABLE_MAP = {
     "user_brief.md": 1,
     "research_definition.md": 2,
     "research_plan.md": 3,
+    "interview_guides.md": 3.5,
     "evidence_base.md": 4,
     "insights.md": 5,
     "report.html": 6,
@@ -65,9 +66,27 @@ def main():
     checks = result.get("checks", [])
     warnings = result.get("warnings", [])
 
+    # Stage 7 级联完整性检查：迭代状态下额外验证
+    stage7_result = None
+    stage7_gate = None
+    state = None
+    try:
+        import json
+        state_path = os.path.join(workspace, "_state.json")
+        if os.path.isfile(state_path):
+            with open(state_path, "r", encoding="utf-8") as f:
+                state = json.load(f)
+    except Exception:
+        pass
+
+    if state and state.get("current_stage") == 7:
+        stage7_result = validate_stage(7, workspace)
+        stage7_gate = stage7_result.get("gate", "UNKNOWN")
+
     # Format human-readable output
-    # gate values from ValidationResult.to_dict(): "PASS ✅" or "BLOCKED ❌"
     lines = []
+
+    # 主 Stage 结果
     if "PASS" in gate:
         lines.append(f"✅ Stage {stage_num} 门控通过")
     elif "BLOCKED" in gate:
@@ -77,13 +96,26 @@ def main():
 
     if checks:
         for chk in checks:
-            # checks format: {"level": "PASS"/"FAIL", "message": "..."}
             status = "✓" if chk.get("level") == "PASS" else "✗"
             lines.append(f"  {status} {chk.get('message', '')}")
 
     if warnings:
         for w in warnings:
             lines.append(f"  ⚠️ {w}")
+
+    # Stage 7 级联完整性结果
+    if stage7_result:
+        lines.append(f"")
+        lines.append(f"🔄 Stage 7 级联完整性检查")
+        if "PASS" in stage7_gate:
+            lines.append(f"  ✅ 级联完整")
+        elif "BLOCKED" in stage7_gate:
+            lines.append(f"  ⚠️ 级联可能不完整（检查以下）")
+        for chk in stage7_result.get("checks", []):
+            status = "✓" if chk.get("level") == "PASS" else "✗"
+            lines.append(f"    {status} {chk.get('message', '')}")
+        for w in stage7_result.get("warnings", []):
+            lines.append(f"    ⚠️ {w}")
 
     json.dump({"decision": "allow", "message": "\n".join(lines)}, sys.stdout, ensure_ascii=False)
 

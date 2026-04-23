@@ -251,12 +251,23 @@ A topic may simultaneously match 2 scenarios — **one is the purpose, the other
 
 #### Scenario 10: Special Topics
 
-> **Keywords**:
-> - Policy interpretation: "What's the current status of XX policy", "How does XX policy affect us"
-> - Trend assessment: "Will XX disrupt the industry", "How will XX trend develop"
-> - Event impact: "What impact does XX event have on the industry"
-> - Decision advisory (no clear action intent): "Is XX direction worth watching"
-> - Concept clarification: "What exactly is XX", "What's the difference between XX and YY"
+> **Sub-types and Keywords** (auto-match framework after keyword recognition):
+>
+> | Sub-type | Keyword Examples | Primary Framework | Rationale |
+> |----------|-----------------|-------------------|----------|
+> | **Concept clarification** | "What exactly is XX", "What's the difference between XX and YY" | [Issue Tree](../methodology/issue_tree.md) (specialized as "Define → Compare → Judge" three-step) | The task is cognitive decomposition, not strategic decision-making; heavy frameworks create empty spins |
+> | **Policy interpretation** | "What's the current status of XX policy", "How does XX policy affect us" | [Playing to Win](playing_to_win.md) | Need to analyze policy constraints on strategic choices |
+> | **Trend assessment** | "Will XX disrupt the industry", "How will XX trend develop" | [Playing to Win](playing_to_win.md) | Need to infer changes in WTP/HTW direction |
+> | **Event impact** | "What impact does XX event have on the industry" | [Playing to Win](playing_to_win.md) | Need structured assessment of event impact on strategic space |
+> | **Decision advisory** (no clear action intent) | "Is XX direction worth watching" | [Playing to Win](playing_to_win.md) | Need to first clarify whether it's worth playing |
+
+> **Lightweight process for concept-clarification questions (replaces PTW cascade)**:
+> ```
+> Step 1: Definition decomposition (What) — Use Issue Tree to break the core concept into 2-4 dimensions
+> Step 2: Comparative judgment (So What) — For comparison questions, establish criteria (1-3 core differentiating dimensions) and compare each
+> Step 3: Deliver conclusion (conclusion-first) — One-sentence core judgment + applicability boundaries/exception notes
+> ⚠️ Do NOT cascade into five-layer "Winning Aspiration → WTP → HTW → Capabilities → Management Systems"
+> ```
 
 > **Boundary exclusions**:
 > - ❌ Clear "entry" intent → Scenario 6 (Market Entry Strategy)
@@ -267,7 +278,7 @@ A topic may simultaneously match 2 scenarios — **one is the purpose, the other
 
 | Tier | Framework | Insertion Point | Purpose |
 |------|-----------|----------------|---------|
-| 🏗️ Primary | [Playing to Win](playing_to_win.md) | — | Structured analysis (What-if → Where to Play → How to Win) |
+| 🏗️ Primary | [Playing to Win](playing_to_win.md) / [Issue Tree](../methodology/issue_tree.md) (concept clarification) | — | Structured analysis (see sub-type table above) |
 | 🔧 Enhancement | [SWOT](swot.md) | → Strategic Synthesis | Integrated analysis to form judgment |
 
 📎 Dynamic enhancement: Select from other scenarios' frameworks based on topic nature
@@ -365,7 +376,8 @@ During Stage 2 problem definition, quickly classify growth direction type to ass
 | Platform Canvas | [platform_canvas.md](platform_canvas.md) | Platform/ecosystem business model analysis | Scenario 4 Optional Primary (replaces BMC) |
 | Disruption Theory | [disruption_theory.md](disruption_theory.md) | Disruptive innovation threat and opportunity assessment | Optional Enhancement |
 | Three Horizons | [three_horizons.md](three_horizons.md) | Multi-time-horizon growth investment portfolio | Enhancement (Strategic Synthesis) |
-| Playing to Win | [playing_to_win.md](playing_to_win.md) | Five-layer strategic choice cascade | Scenario 10 Primary / Enhancement (Strategic Synthesis) |
+| Playing to Win | [playing_to_win.md](playing_to_win.md) | Five-layer strategic choice cascade | Scenario 10 (policy/trend/event/advisory) Primary / Enhancement (Strategic Synthesis) |
+| Issue Tree | [methodology/issue_tree.md](../methodology/issue_tree.md) | Structured problem decomposition | Scenario 10 (concept-clarification) Lightweight Primary |
 
 ---
 
