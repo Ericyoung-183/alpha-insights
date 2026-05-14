@@ -71,7 +71,6 @@ def main():
     stage7_gate = None
     state = None
     try:
-        import json
         state_path = os.path.join(workspace, "_state.json")
         if os.path.isfile(state_path):
             with open(state_path, "r", encoding="utf-8") as f:

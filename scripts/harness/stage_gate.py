@@ -16,18 +16,29 @@ import os
 # 让 validators 包可被导入
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from validators import stage1, stage2, stage3, stage4, stage5, stage6, stage7
+from validators import stage1, stage2, stage3, stage3_5, stage4, stage5, stage6, stage7
 
 
 VALIDATORS = {
     1: stage1.validate,
     2: stage2.validate,
     3: stage3.validate,
+    3.5: stage3_5.validate,
     4: stage4.validate,
     5: stage5.validate,
     6: stage6.validate,
     7: stage7.validate,
 }
+
+
+def parse_stage_num(raw):
+    try:
+        value = float(raw)
+    except ValueError:
+        raise ValueError(f"无效 Stage 编号: {raw}")
+    if value.is_integer():
+        return int(value)
+    return value
 
 
 def validate_stage(stage_num, workspace):
@@ -58,7 +69,7 @@ def main():
         if len(sys.argv) < 4:
             print("错误: validate 需要 <stage_num> <workspace_path>")
             sys.exit(1)
-        stage_num = int(sys.argv[2])
+        stage_num = parse_stage_num(sys.argv[2])
         workspace = sys.argv[3]
         result = validate_stage(stage_num, workspace)
         print(json.dumps(result, ensure_ascii=False, indent=2))

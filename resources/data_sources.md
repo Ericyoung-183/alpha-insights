@@ -67,10 +67,10 @@
 | **Industry market size** | Search engine | `{industry} market size {year}` + restrict to trusted domains | Broker research reports -> Statista |
 | **Competitor company data** (earnings/funding/products) | Web scraping | Directly scrape cninfo.com.cn / SEC EDGAR in-site search page | Search engine `{company} annual report {year}` -> enterprise data platforms |
 | **User behavior/App data** | Search engine | `{App} MAU DAU QuestMobile {year}` | Qimai Data -> SimilarWeb |
-| **Policies & regulations** | Search engine | `{keywords} site:gov.cn` | PKU Law -> LegalSearch MCP |
+| **Policies & regulations** | Search engine | `{keywords} site:gov.cn` | PKU Law / public legal databases; use LegalSearch if configured |
 | **Consumer insights/user voices** | Xiaohongshu scripts | `scripts/xhs/check_topics.js --keywords "{keywords}"` | Search engine `{product} review Xiaohongshu` |
-| **Internal data/business docs** | Knowledge base search | Search via user-configured knowledge base MCP | Ask user directly |
-| **Structured business data** | Database query | Query via user-configured database MCP | Degrade to public data estimation |
+| **Internal data/business docs** | Knowledge base search | Search via the current environment's available knowledge-base tools | Ask user directly |
+| **Structured business data** | Database query | Query via the current environment's available database/data-processing tools | Degrade to public data estimation |
 | **Expert opinions/deep information** | Interview (Track C) | Stage 3.5 generates guide -> user executes | Industry KOL public statements -> broker conference call transcripts |
 | **International market data** | Search engine | `{industry} market size {year} report` | Statista -> World Bank -> OECD |
 | **⚠️ Data does not exist** | -- | All above paths yield no results | Bottom-up estimation (decompose variables for step-by-step derivation) -> annotate as C-level + note estimation method |
@@ -81,11 +81,11 @@
 
 | Capability | Common Tool Examples | Notes |
 |------------|---------------------|-------|
-| **Search engine** | WebSearch, GoogleSearch MCP, Tavily MCP, etc. | Prefer available search tools in the environment |
-| **Web scraping** | WebFetch, web scraping MCP (prefer cached) | Retrieve search result pages or specified URL content |
-| **Knowledge base search** | Yuque MCP, Notion MCP, Confluence MCP, etc. | Search via user-configured knowledge base tool |
-| **Database query** | ODPS MCP, BigQuery MCP, Snowflake MCP, etc. | Query via user-configured database tool |
-| **Xiaohongshu** | Local `scripts/xhs/` scripts | TikHub API, works out of the box |
+| **Search engine** | Codex native web, browser search, platform search tools, etc. | Prefer available search capability in the environment |
+| **Web scraping** | Codex native web, browser/web reading tools, etc. | Retrieve search result pages or specified URL content |
+| **Knowledge base search** | Knowledge-base CLI, Notion/Confluence connectors, or other knowledge-base tools | Search via user-configured knowledge base capability |
+| **Database query** | Data Process/ODPS, BigQuery, Snowflake, or other database tools | Query via user-configured database capability |
+| **Xiaohongshu** | Local `scripts/xhs/` scripts | TikHub API; configure `TIKHUB_API_KEY`, pass `--api-key`, or set `~/.alpha_insights.json` |
 
 ```
 Decision logic:

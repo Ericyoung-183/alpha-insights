@@ -1109,8 +1109,8 @@ GROUP BY first_level_name
 ORDER BY cnt DESC
 LIMIT 20;
 
--- ⚠️ First-level categories have "(新) " prefix, match accordingly
-WHERE first_level_name = '(新) 支付'
+-- ⚠️ First-level categories may have a localized prefix, match the raw table values accordingly
+WHERE first_level_name = '<raw_category_name>'
 ```
 
 **Quantitative-Qualitative Integration Requirement**:

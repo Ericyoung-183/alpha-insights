@@ -4,6 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/code)
+[![Codex Desktop](https://img.shields.io/badge/Codex%20Desktop-Skill-111111)](https://github.com/openai/codex)
 
 ![Alpha Insights](assets/poster_en.png)
 
@@ -11,7 +12,7 @@
 
 ## What is Alpha Insights?
 
-Alpha Insights is a professional business analysis AI assistant for [Claude Code](https://claude.ai/code). It produces in-depth, decision-ready research reports — the kind a senior analyst would deliver.
+Alpha Insights is a professional business analysis AI assistant for Claude Code compatible runtimes and Codex Desktop. It produces in-depth, decision-ready research reports — the kind a senior analyst would deliver.
 
 **Why Alpha Insights?**
 
@@ -33,13 +34,14 @@ Alpha Insights is a professional business analysis AI assistant for [Claude Code
 - **L2 Capability Surpass**: Methodology-driven output on par with senior analysts
 - **L3 Experience Compound**: Every research compounds into knowledge assets
 
-### V2: Harness Engineering
+### V4: Harness Engineering
 
-Prompt instructions are probabilistic — AI tends to skip steps as context fills up. V2 invests in the **execution environment** instead of just prompts:
+Prompt instructions are probabilistic — AI tends to skip steps as context fills up. V4 invests in the **execution environment** instead of just prompts:
 
 - **State machine** — tracks research stage, tier, loaded frameworks, interview status
-- **6-stage gate validators** — auto-check deliverables before advancing (PASS/FAIL/WARN)
+- **7-stage + Stage 3.5 gate validators** — auto-check deliverables before advancing (PASS/FAIL/WARN)
 - **Hook automation** — HTML write guard, auto gate checks, incremental file persistence
+- **Dual-platform adapters** — native frontmatter hooks for Claude Code compatible runtimes, Codex wrappers for Codex Desktop
 - **Quality dashboard** — one-screen overview of all quality metrics before report generation
 
 ---
@@ -83,16 +85,32 @@ MECE | Issue Tree | Hypothesis-Driven | Pyramid Principle | Triangulation | Pre-
 
 ### Install
 
-**Option B — via Git**:
+**Recommended — ask your AI coding agent**:
+
+```text
+Install Alpha Insights from this repository. Follow INSTALL_FOR_AGENTS.md exactly.
+```
+
+**Codex Desktop direct install**:
 
 ```bash
 git clone https://github.com/Ericyoung-183/alpha-insights.git
-cp -r alpha-insights ~/.claude/Skills/
+cd alpha-insights
+python3 scripts/install_codex.py --verify
+```
+
+**Claude Code compatible install**:
+
+Install this folder as a skill package in your runtime, keeping the root
+`SKILL.md` frontmatter hooks intact, then run:
+
+```bash
+python3 scripts/verify_cloudcode.py
 ```
 
 ### Usage
 
-In Claude Code, simply ask a business analysis question:
+After installation, ask a business analysis question:
 
 ```
 User: Analyze the competitive landscape of the EV charging industry in China
@@ -114,20 +132,20 @@ Alpha Insights will automatically:
 |--------|------------|-----|
 | **Public channels** | Industry reports, analyst research, filings, news, policy docs | Search engine + web scraping |
 | **Expert interviews** | Custom interview guides, recording templates, analysis guidance | Built-in methodology |
-| **Xiaohongshu (RedNote)** | Consumer sentiment, product feedback, trend signals | Built-in scripts (API key required — see tikhub_client.js) |
 
 ### 🟡 Optional Extensions
 
 | Source | Description | Required Setup |
 |--------|------------|----------------|
-| **Knowledge base** | Historical reports, industry notes | Knowledge Base MCP / Notion MCP |
-| **Internal data** | Business metrics, user behavior | ODPS MCP / Database MCP |
+| **Xiaohongshu (RedNote)** | Consumer sentiment, product feedback, trend signals | Configure `TIKHUB_API_KEY`, pass `--api-key`, or create `~/.alpha_insights.json` with `{"tikHubApiKey": "YOUR_KEY"}` |
+| **Knowledge base** | Historical reports, industry notes | Yuque CLI / Notion connector or available knowledge-base tool |
+| **Internal data** | Business metrics, user behavior | Data Process / ODPS / available database tool |
 
 > Unconfigured data sources are automatically skipped — core functionality is not affected.
 
 #### Internal Data Setup
 
-SQL examples in SKILL files use `{project}.{table_name}` placeholders. Once you configure a database MCP tool, the AI will automatically discover available tables via the table search capability — no manual replacement needed.
+SQL examples in SKILL files use `{project}.{table_name}` placeholders. Once you configure a database or data-processing tool, the AI will discover available tables through the current environment's table search/query capability — no manual replacement needed.
 
 ---
 
@@ -135,7 +153,8 @@ SQL examples in SKILL files use `{project}.{table_name}` placeholders. Once you 
 
 ```
 alpha-insights/
-├── SKILL.md              # Main file (workflow orchestration, V2.0)
+├── SKILL.md              # Main file (workflow orchestration, V4.1)
+├── INSTALL_FOR_AGENTS.md # Agent-first installation contract
 ├── CHANGELOG.md          # Version history
 ├── README.md             # This file
 ├── frameworks/           # 19 analysis frameworks
@@ -157,13 +176,17 @@ alpha-insights/
 │   ├── report_standards.md
 │   └── report_template.html
 └── scripts/
+    ├── install_codex.py  # Codex Desktop installer
+    ├── verify_codex.py   # Codex Desktop verifier
+    ├── verify_cloudcode.py # Claude Code compatible verifier
     ├── report_helper.py  # ReportBuilder for HTML generation
-    ├── harness/          # V2 Harness Engineering
+    ├── codex_hooks/      # Codex hook wrappers
+    ├── harness/          # V4 Harness Engineering
     │   ├── state_manager.py
     │   ├── stage_gate.py
     │   ├── dashboard.py
     │   ├── resume_check.py
-    │   ├── validators/   # 6-stage gate validators
+    │   ├── validators/   # 7-stage + Stage 3.5 gate validators
     │   └── hooks/        # automation hooks
     └── xhs/              # Xiaohongshu (RedNote) scripts
 ```

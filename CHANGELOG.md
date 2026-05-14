@@ -1,5 +1,25 @@
 # Changelog
 
+## V4.1 (2026-05-14)
+
+### Added
+- **Agent-first installation contract**: Added `INSTALL_FOR_AGENTS.md`, so users can ask their AI coding agent to install the package instead of following a long platform-specific tutorial.
+- **Codex Desktop installer**: Added `scripts/install_codex.py`, which installs to `~/.codex/skills/alpha-insights/`, removes Cloud Code-only frontmatter hooks from the installed `SKILL.md`, rewrites the resume check to an absolute Codex path, and registers wrappers in `~/.codex/hooks.json`.
+- **Dual-platform verifiers**: Added `scripts/verify_codex.py` and `scripts/verify_cloudcode.py`, covering Python compile, hook registration, HTML write guard, Stage 1 gate, Stage 3.5 interview gate, and progress logging smoke tests.
+- **Codex hook wrappers in source**: `scripts/codex_hooks/` is now part of the product source, so Codex support no longer depends on a manually patched local install.
+
+### Fixed
+- **Stage 3.5 gate chain**: `stage_gate.py validate 3.5` now supports decimal stages, with a new `validators/stage3_5.py`.
+- **Silent stage gate hook failure**: Removed the local `import json` scope trap in `stage_gate_hook.py`, preventing fail-open silence.
+- **Codex PostToolUse payload compatibility**: The Codex wrapper now normalizes `toolName/toolInput`, so progress logs no longer record `tool=unknown`.
+- **Open-source credential boundary**: Removed the built-in TikHub default key; users must configure a key through CLI args, `~/.alpha_insights.json`, or `TIKHUB_API_KEY`.
+
+### Improved
+- **Dual-platform README**: README and README_zh now present Codex Desktop and Claude Code compatible paths through the agent-first installer contract.
+- **Release build safety**: GitHub build now checks English Markdown output for CJK residue after i18n overlay.
+
+---
+
 ## V4.0 (2026-04-23)
 
 > **Core Upgrade**: 4 Weak frameworks strengthened to Strong — all supplemented with deep cases + real financial data anchors + complete analysis workflow demonstrations + methodology takeaways (V3-09)
@@ -283,9 +303,9 @@
 - Tier-aware: Tier 2+ enforces stricter FAIL-level validation for Red/Blue Team review, ECharts chart count, etc.
 - Stage 5 Validator most comprehensive: score detection + Red/Blue Team review + substantive challenge + So What chain depth + Pre-mortem + SMART + user confirmation + key variables + action recommendations (13 checks total)
 
-**Context Management**
-- `context_budget.py` -- Estimates total token usage of workspace artifacts, alerts at 70%/90% thresholds
-- `compress_stage.py` -- Compresses artifacts by Stage (preserving A/B-level evidence summaries), freeing context space
+**Context Management (historical mechanism, deprecated in current V4)**
+- `context_budget.py` -- Historical automatic budget estimator, removed from current V4
+- `compress_stage.py` -- Historical automatic compression tool, removed from current V4
 
 **Quality Dashboard**
 - `dashboard.py` -- Before Stage 5->6 Stage Transition, aggregates S2-S5 four-stage quality metrics in a single view
@@ -300,7 +320,7 @@ SKILL.md frontmatter declares 4 Hooks, executed automatically by the platform:
 | Hook | Trigger | Function |
 |------|---------|----------|
 | `html_write_guard.py` | PreToolUse:Write | Blocks Write tool from directly outputting HTML (must use Bash+Python) |
-| `context_budget_hook.py` | PreToolUse:Read/Bash/Grep/Glob/Edit | Real-time context budget alerts, >90% auto-block |
+| `context_budget_hook.py` | PreToolUse:Read/Bash/Grep/Glob/Edit | Historical context budget alert hook, removed from current V4 |
 | `stage_gate_hook.py` | PostToolUse:Write | Auto-runs gate validation after Deliverable write |
 | `progress_logger.py` | PostToolUse:* | Async tool call logging (`_hook_log.jsonl`) |
 
@@ -376,8 +396,8 @@ Shared module: `_workspace_finder.py` -- Intelligently locates workspace directo
 scripts/harness/
 ├── state_manager.py          # State machine
 ├── stage_gate.py             # Validator unified entry
-├── context_budget.py         # Context budget analysis
-├── compress_stage.py         # Artifact compression
+├── context_budget.py         # Historical: context budget analysis (removed from current V4)
+├── compress_stage.py         # Historical: artifact compression (removed from current V4)
 ├── dashboard.py              # Quality dashboard
 ├── resume_check.py           # Session recovery
 ├── validators/
@@ -388,7 +408,7 @@ scripts/harness/
     ├── __init__.py
     ├── _workspace_finder.py  # Shared workspace locator
     ├── html_write_guard.py   # HTML write guard
-    ├── context_budget_hook.py# Context budget alert
+    ├── context_budget_hook.py# Historical: context budget alert (removed from current V4)
     ├── stage_gate_hook.py    # Auto gate check
     └── progress_logger.py    # Progress logger
 
