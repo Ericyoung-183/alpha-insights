@@ -20,6 +20,16 @@
 
 ---
 
+## V4.0.1 (2026-04-23)
+
+### Fixed
+- **Hook DELIVERABLE_MAP completion**: `interview_guides.md` (Stage 3.5) was missing, so deliverable writes silently skipped validation. It is now registered in `stage_gate_hook.py`.
+- **Stage 7 cascade validation**: `stage7.py` was upgraded from file-existence checks to timestamp-chain cascade validation across S1-7.
+- **Scenario 10 primary framework routing**: `frameworks/_index.md` now routes subtypes automatically: concept-clarification questions use a lightweight three-step Issue Tree path, while other subtypes keep Playing to Win.
+- **i18n/en cleanliness**: Chinese example residue was cleaned from resources, and CJK residue was cleared from `frameworks/*.md` and `methodology/*.md`.
+
+---
+
 ## V4.0 (2026-04-23)
 
 > **Core Upgrade**: 4 Weak frameworks strengthened to Strong — all supplemented with deep cases + real financial data anchors + complete analysis workflow demonstrations + methodology takeaways (V3-09)
@@ -42,7 +52,7 @@
 
 - SWOT data consistency: Date unified to "end of 2025," Starbucks store count unified to "~7,600 (4.1x)"
 - Disruption Theory factual fix: "2021 surpassed Alibaba's 882M" → "approached Alibaba's 882M, officially surpassed in 2022"
-- TODO: V3-09 marked as completed
+- V3-09 task marked as completed
 
 ---
 
@@ -95,7 +105,7 @@
 - **stage6.py data_count**: Fixed overlapping regex double-counting
 
 ### Improved
-- **interview.md self-containment**: Yuque/DingTalk references generalized to "shared docs/notifications" with environment dependency fallback
+- **interview.md self-containment**: Internal knowledge-base and notification tool references generalized to "shared docs/notifications" with environment dependency fallback
 - **Anti-pattern example diversity**: 10 examples across NEV, coffee, insurance, e-commerce, F&B, overseas expansion
 - **Time estimates**: Tier-based with 20-30% retry buffer
 - **Color consistency**: report_standards aligned with template (#1A365D + #667EEA)

@@ -260,7 +260,7 @@ Optional supplements:
 
 ### VIII. Knowledge Base Search (Specialty Data Source)
 
-> **Purpose**: Search user knowledge bases (Yuque, Notion, Confluence, etc.) for historical research reports, industry notes, methodology resources
+> **Purpose**: Search user knowledge bases (Notion, Confluence, local knowledge bases, etc.) for historical research reports, industry notes, methodology resources
 >
 > **Prerequisite**: User must have configured a knowledge base MCP tool
 
@@ -370,7 +370,7 @@ SELECT * FROM huge_table;
 
 > **Purpose**: Consumer sentiment, product feedback, trend insights, brand reputation
 >
-> **Data source**: TikHub API (built-in API Key, works out of the box)
+> **Data source**: TikHub API. Configure `TIKHUB_API_KEY`, pass `--api-key`, or set `~/.alpha_insights.json`.
 
 **Script location**: `scripts/xhs/`
 
@@ -557,14 +557,14 @@ Step 4: Parse results, annotate source
 
 ## Data Source Integration Status
 
-> Specialty data sources require user configuration of corresponding MCP tools. The AI auto-detects available tools at Stage 4 start; unconfigured data sources are automatically skipped with user notification.
+> Specialty data sources require user configuration of the corresponding tools or connectors. The AI auto-detects available capabilities at Stage 4 start; unconfigured data sources are automatically skipped with user notification.
 >
 > | Data Source | Required Configuration | Status |
 > |------------|----------------------|--------|
-> | Knowledge base search | Yuque/Notion/Confluence MCP | Auto-detected |
-> | Internal database | ODPS/BigQuery/Snowflake MCP | Auto-detected |
-> | Xiaohongshu data | Built-in scripts (out of the box) | ✅ Built-in |
-> | User feedback data | Database MCP + feedback data table | Auto-detected |
+> | Knowledge base search | Knowledge-base CLI, Notion/Confluence connectors, or other knowledge-base tools | Auto-detected |
+> | Internal database | Data Process/ODPS, BigQuery, Snowflake, or other database tools | Auto-detected |
+> | Xiaohongshu data | Built-in scripts + TikHub API key configuration | Auto-detected |
+> | User feedback data | Database/data-processing tool + feedback data table | Auto-detected |
 
 ---
 

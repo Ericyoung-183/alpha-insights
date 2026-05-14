@@ -138,7 +138,7 @@ Alpha Insights will automatically:
 | Source | Description | Required Setup |
 |--------|------------|----------------|
 | **Xiaohongshu (RedNote)** | Consumer sentiment, product feedback, trend signals | Configure `TIKHUB_API_KEY`, pass `--api-key`, or create `~/.alpha_insights.json` with `{"tikHubApiKey": "YOUR_KEY"}` |
-| **Knowledge base** | Historical reports, industry notes | Yuque CLI / Notion connector or available knowledge-base tool |
+| **Knowledge base** | Historical reports, industry notes | Knowledge-base CLI, Notion connector, or another available knowledge-base tool |
 | **Internal data** | Business metrics, user behavior | Data Process / ODPS / available database tool |
 
 > Unconfigured data sources are automatically skipped — core functionality is not affected.

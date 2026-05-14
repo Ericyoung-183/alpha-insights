@@ -187,44 +187,11 @@ Not all six dimensions are equally important. Use an impact matrix to filter key
 
 ---
 
-## Case Studies
-
-### Case 1: China AI Large Model Industry PESTEL (2024)
-
-| Dimension | Key Factor | Current State | Change Trend | Impact Level | Opportunity/Threat |
-|-----------|-----------|---------------|-------------|-------------|-------------------|
-| **P Political** | National AI strategy | "New Generation AI Development Plan" + local AI support policies (Beijing/Shanghai/Shenzhen issuing compute vouchers) | Continued acceleration, "AI+" written into 2025 Government Work Report | **High** | Opportunity |
-| **P Political** | US-China tech rivalry | US restricts high-end GPU exports (A100/H100), compute capacity constrained | Restrictions continue tightening, driving domestic substitution | **High** | Threat + Opportunity (domestic chips) |
-| **E Economic** | VC/PE investment | 2024 AI sector funding >20B RMB, but concentrated in top 5-6 firms | Capital concentrating at the top, long-tail companies struggling to raise funds | **High** | Threat (for SMEs) |
-| **S Social** | Public acceptance | ChatGPT ignited public awareness, but anxiety about AI replacing jobs is rising | Application-layer awareness improving, but trust-building takes time | **Medium** | Opportunity (lower C-end market education costs) |
-| **T Technological** | Model capability iteration | GPT-4o/Claude 3.5 level capabilities, Chinese firms lagging by half to one generation | Catching up quickly, gap narrowing | **High** | Opportunity (gap is closable) |
-| **T Technological** | Compute costs | H100 single card >200K RMB, training a large model costs tens of millions | Inference costs dropping rapidly (>50% every 18 months), training costs still high | **High** | Opportunity (application-layer barriers lowering) |
-| **E Environmental** | Data center energy consumption | Training large models produces carbon emissions equivalent to hundreds of cars per year | ESG pressure increasing, green compute becoming a selling point | **Low** | Threat (compliance costs) |
-| **L Legal** | AI regulation | "Interim Measures for Generative AI Services" already implemented, registration required | Regulatory framework progressively maturing, compliance threshold rising | **High** | Threat (compliance costs) + Opportunity (weeding out low-quality players) |
-
-**Core Impacts**:
-1. **Policy + compute dual constraints shaping competitive landscape**: GPU restrictions + registration system → only resource-rich big tech and top startups can survive
-2. **Rapidly declining inference costs are the biggest opportunity**: Application-layer startup window opening in 2025-2026
-3. **Regulation is a double-edged sword**: Short-term increases compliance costs, long-term benefits compliant enterprises
-
-### Case 2: Southeast Asia E-commerce Market PESTEL (2024, Going-Global Perspective)
-
-| Dimension | Key Factor | Impact Level | Opportunity/Threat |
-|-----------|-----------|-------------|-------------------|
-| **P** | Indonesia bans social commerce direct transactions (TikTok Shop forced to merge with Tokopedia) | **High** | Threat — high regulatory uncertainty |
-| **E** | Southeast Asia e-commerce penetration only ~11% (vs China ~30%), GMV growth 15%+ | **High** | Opportunity — incremental market |
-| **S** | High youth population share (median age 29), mobile internet-native users | **High** | Opportunity — consumption growth potential |
-| **T** | Incomplete payment infrastructure, COD (cash on delivery) accounts for 40-60% | **Medium** | Threat — high fulfillment and payment friction |
-| **E** | Island topography (Indonesia 17,000+ islands), high logistics costs | **Medium** | Threat — last-mile costs |
-| **L** | Different data localization requirements across countries (Vietnam vs Singapore vs Indonesia) | **Medium** | Threat — high compliance complexity |
-
-**So What**: Chinese companies going to Southeast Asia must "adapt to local customs" — they cannot simply replicate the China model but must adapt to local payment (COD), logistics (distributed warehousing), and regulation (local partners).
-
-### Case 3: China New Energy Vehicle (NEV) Industry PESTEL (2025)
+## Practical Case: China New Energy Vehicle (NEV) Industry PESTEL Analysis (2025)
 
 > **Why This Case**: NEV is a quintessential intersection of Chinese industrial policy, technological breakthroughs, and international competition. All six PESTEL dimensions have strong driving forces, with significant inter-dimensional interaction effects.
 
-#### Background Snapshot
+### Background Snapshot
 
 - China NEV production and sales exceeded 16 million units in 2025, domestic passenger vehicle penetration nearing 60% (vs. only 5.4% in 2020)
 - China vehicle exports exceeded 7 million (global #1), with NEV exports surpassing 2.65 million (+54% YoY)
@@ -232,9 +199,9 @@ Not all six dimensions are equally important. Use an impact matrix to filter key
 
 ---
 
-#### Six-Dimension Deep Dive
+### Six-Dimension Deep Dive
 
-##### P — Political | Impact: **High** ↑
+#### P — Political | Impact: **High** ↑
 
 | Key Factor | Current State | Change Trend | Impact Direction |
 |-----------|---------------|-------------|------------------|
@@ -248,7 +215,7 @@ Not all six dimensions are equally important. Use an impact matrix to filter key
 
 ---
 
-##### E — Economic | Impact: **High** ↑
+#### E — Economic | Impact: **High** ↑
 
 | Key Factor | Current State | Change Trend | Impact Direction |
 |-----------|---------------|-------------|------------------|
@@ -261,7 +228,7 @@ Not all six dimensions are equally important. Use an impact matrix to filter key
 
 ---
 
-##### S — Social | Impact: **Medium** ↑
+#### S — Social | Impact: **Medium** ↑
 
 | Key Factor | Current State | Change Trend | Impact Direction |
 |-----------|---------------|-------------|------------------|
@@ -274,7 +241,7 @@ Not all six dimensions are equally important. Use an impact matrix to filter key
 
 ---
 
-##### T — Technological | Impact: **High** ↑
+#### T — Technological | Impact: **High** ↑
 
 | Key Factor | Current State | Change Trend | Impact Direction |
 |-----------|---------------|-------------|------------------|
@@ -288,7 +255,7 @@ Not all six dimensions are equally important. Use an impact matrix to filter key
 
 ---
 
-##### E — Environmental | Impact: **Medium** ↑
+#### E — Environmental | Impact: **Medium** ↑
 
 | Key Factor | Current State | Change Trend | Impact Direction |
 |-----------|---------------|-------------|------------------|
@@ -300,7 +267,7 @@ Not all six dimensions are equally important. Use an impact matrix to filter key
 
 ---
 
-##### L — Legal | Impact: **High** ↑
+#### L — Legal | Impact: **High** ↑
 
 | Key Factor | Current State | Change Trend | Impact Direction |
 |-----------|---------------|-------------|------------------|
@@ -313,7 +280,7 @@ Not all six dimensions are equally important. Use an impact matrix to filter key
 
 ---
 
-#### Cross-Dimension Interaction Analysis
+### Cross-Dimension Interaction Analysis
 
 ```
 P→E: Purchase tax exemption + trade-in subsidies → directly boost NEV sales → scale effects reduce costs
@@ -325,7 +292,7 @@ E(Environment)→P: EU carbon footprint requirements → forces China to establi
 L→T: Autonomous driving regulations enacted → L3 legally road-worthy → technology investment returns become visible
 ```
 
-#### So What — Strategic Implications
+### So What — Strategic Implications
 
 **1. Domestic market**: 60% penetration means incremental market is narrowing. Future is stock replacement (ICE→NEV) + upgrade purchases. Lower-tier markets and PHEV/EREV are the last two incremental strongholds.
 
@@ -335,7 +302,7 @@ L→T: Autonomous driving regulations enacted → L3 legally road-worthy → tec
 
 **4. Industry chain opportunities**: Power battery recycling (2030 market >RMB 1 trillion) + ultra-fast charging network construction + overseas localization services.
 
-#### Case Methodology Takeaways
+### Case Methodology Takeaways
 
 1. **Data anchoring**: Every dimension uses specific numbers (60% penetration, 100% tariffs, 400k ton retirements), not vague descriptions
 2. **Dimension linking**: P→E→T→L interaction chain analysis reveals causal chains like "EU tariffs → local factory construction → data compliance → tech adaptation"
