@@ -30,7 +30,7 @@ Alpha Insights is a professional business analysis AI assistant for Claude Code 
 > Full report with executive summary, Porter's Five Forces, competitive positioning charts, evidence-graded findings, and strategic recommendations with ROI estimates — generated in one session.
 
 **Core Value**:
-- **L1 Efficiency Replace**: Save 60%+ desk research time
+- **L1 Efficiency Replacement**: Save 60%+ desk research time
 - **L2 Capability Surpass**: Methodology-driven output on par with senior analysts
 - **L3 Experience Compound**: Every research compounds into knowledge assets
 
