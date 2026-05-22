@@ -43,6 +43,22 @@ The installed package must keep the root `SKILL.md` frontmatter hooks. Those
 hooks call the shared harness through `${CLAUDE_PLUGIN_ROOT}` and the inline
 resume check through `${CLAUDE_SKILL_DIR}`.
 
+Correct package boundary:
+
+```text
+~/.claude/skills/alpha-insights/SKILL.md
+~/.claude/skills/alpha-insights/frameworks/
+~/.claude/skills/alpha-insights/scripts/
+```
+
+Wrong package boundaries:
+
+```text
+~/.claude/skills/BusinessAnalystSkill/V4/alpha-insights/
+~/.claude/skills/alpha-insights/alpha-insights/SKILL.md
+~/.claude/skills/alpha-insights/SKILL.md  # with frontmatter hooks stripped
+```
+
 Run `scripts/verify_cloudcode.py` after installation or before publishing.
 
 ## Proof Required
@@ -55,4 +71,3 @@ After installation, report:
 - HTML write guard smoke result
 - Stage 1 gate smoke result
 - Stage 3.5 interview gate smoke result
-

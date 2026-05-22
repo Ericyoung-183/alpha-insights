@@ -14,6 +14,15 @@
 
 Alpha Insights is a professional business analysis AI assistant for Claude Code compatible runtimes and Codex Desktop. It produces in-depth, decision-ready research reports — the kind a senior analyst would deliver.
 
+### Why this is not just prompts
+
+Alpha Insights enforces the research workflow with runtime checks, not only instructions:
+
+- `html_write_guard` prevents premature report writing before required artifacts are ready.
+- Stage gates validate each research stage, including the Stage 3.5 interview gate.
+- `resume_check` catches broken or inconsistent run state before continuing.
+- Progress logging and persisted artifacts make long research runs auditable instead of ephemeral.
+
 **Why Alpha Insights?**
 
 | Typical AI Analysis | Alpha Insights |
