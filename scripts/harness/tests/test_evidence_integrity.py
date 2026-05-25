@@ -49,6 +49,141 @@ Interview decision: no expert interview for this quick scan.
                 any("primary-source plan" in msg for msg in messages(stage3.validate(workspace)))
             )
 
+    def test_stage3_blocks_chinese_due_diligence_plan_with_negated_primary_source(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(
+                workspace,
+                "research_plan.md",
+                """
+# 研究计划
+
+场景：标的公司尽调
+
+Track A: Public records
+Track B: Market research
+Track C: Expert interview
+
+H1: 标的公司母公司仍处于存续状态。
+访谈决策：本轮快速扫描暂不访谈。
+primary source: 未找到一手来源，先用企查查摘要。
+""",
+            )
+
+            result = stage3.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "BLOCKED ❌")
+            self.assertTrue(
+                any("primary-source plan" in msg for msg in messages(stage3.validate(workspace)))
+            )
+
+    def test_stage3_accepts_due_diligence_plan_with_concrete_primary_source_path(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(
+                workspace,
+                "research_plan.md",
+                """
+# Research Plan
+
+Scenario: due diligence target screening
+
+Track A: Public records
+Track B: Market research
+Track C: Expert interview
+
+H1: Target parent status is active.
+Interview decision: no expert interview for this quick scan.
+
+## primary-source plan
+| Key fact | Primary source path |
+| Entity status | official registry and regulatory filing |
+""",
+            )
+
+            result = stage3.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "PASS ✅")
+            self.assertTrue(
+                any("primary-source plan" in msg for msg in messages(stage3.validate(workspace)))
+            )
+
+    def test_stage4_blocks_key_numbers_without_evidence_claim_ledger(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 1}')
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+| A1-01 | B 级 | Track A | Market size reached RMB 100B in 2025 | source_type: official | source_date: 2025-01-10 |
+| A1-02 | B 级 | Track A | Growth rate reached 20% in 2025 | source_type: official | source_date: 2025-01-10 |
+
+## Framework analysis
+Porter analysis recorded.
+""",
+            )
+
+            result = stage4.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "BLOCKED ❌")
+            self.assertTrue(
+                any("Evidence Claim Ledger" in msg for msg in messages(stage4.validate(workspace)))
+            )
+
+    def test_stage4_blocks_empty_evidence_claim_ledger_section(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 1}')
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+| A1-01 | B 级 | Track A | Market size reached RMB 100B in 2025 | source_type: official | source_date: 2025-01-10 |
+
+## Evidence Claim Ledger
+
+## Framework analysis
+Porter analysis recorded.
+""",
+            )
+
+            result = stage4.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "BLOCKED ❌")
+            self.assertTrue(
+                any("claim_id" in msg for msg in messages(stage4.validate(workspace)))
+            )
+
+    def test_stage4_allows_qualitative_evidence_without_key_claim_signal(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 1}')
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+| A1-01 | B 级 | Track A | Competitors are increasing product bundling | source_type: expert | source_date: 2025-01-10 |
+| A1-02 | B 级 | Track B | Users mention onboarding friction | source_type: expert | source_date: 2025-01-11 |
+
+Line 1: qualitative support.
+Line 2: qualitative support.
+Line 3: qualitative support.
+Line 4: qualitative support.
+Line 5: qualitative support.
+
+## Framework analysis
+Porter analysis recorded.
+""",
+            )
+
+            result = stage4.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "PASS ✅")
+            self.assertTrue(
+                any("未检测到 Evidence Claim Ledger" in msg for msg in messages(stage4.validate(workspace)))
+            )
 
     def test_stage4_blocks_due_diligence_entity_claim_without_primary_source(self):
         with tempfile.TemporaryDirectory() as workspace:

@@ -12,42 +12,83 @@ DUE_DILIGENCE_TERMS = (
     "target screening",
     "corporate screening",
     "company background",
+    "target company",
+    "supplier screening",
+    "supplier background",
+    "尽调",
+    "尽职调查",
     "企业尽调",
     "并购",
+    "收购",
     "标的筛选",
     "标的研究",
+    "标的公司",
     "公司背调",
     "供应商背调",
+    "供应商审查",
 )
 
-PRIMARY_PLAN_TERMS = (
+PRIMARY_PLAN_LABEL_TERMS = (
     "primary-source plan",
     "primary source plan",
     "primary_source_plan",
+    "一手源计划",
+    "一手来源计划",
+)
+
+PRIMARY_PATH_TERMS = (
     "primary source",
+    "primary-source",
+    "primary_source",
     "official registry",
+    "official register",
     "national register",
     "company registry",
     "regulatory filing",
-    "一手源计划",
+    "regulatory record",
+    "company disclosure",
+    "court record",
+    "sec filing",
+    "一手源",
     "一手来源",
     "官方登记源",
+    "官方来源",
     "工商登记",
     "监管备案",
+    "监管记录",
     "企业公告",
+    "公司披露",
+    "法院记录",
     "原始备案",
+)
+
+PRIMARY_CONCRETE_PATH_TERMS = tuple(
+    term for term in PRIMARY_PATH_TERMS
+    if term not in {"primary source", "primary-source", "primary_source", "一手源", "一手来源"}
+)
+
+PRIMARY_NEGATION_PATTERN = re.compile(
+    r"(no|without|missing|lack(?:ing)?|unavailable)\s+.{0,40}primary[- ]source|"
+    r"primary[- ]source\s+.{0,40}(missing|unavailable|not found|absent)|"
+    r"(无|没有|缺少|未找到).{0,20}(一手源|一手来源|官方来源|官方登记源|监管备案|公司披露)",
+    re.IGNORECASE,
 )
 
 PRIMARY_SOURCE_TYPES = {
     "primary",
     "official",
     "official registry",
+    "official_registry",
     "regulator",
     "regulatory",
+    "regulatory_filing",
+    "regulatory_record",
     "company_disclosure",
     "company disclosure",
+    "company_registry",
     "filing",
     "court",
+    "court_record",
 }
 
 AGGREGATED_SOURCE_TYPES = {
@@ -55,6 +96,9 @@ AGGREGATED_SOURCE_TYPES = {
     "media",
     "third_party_summary",
     "third-party summary",
+    "third party summary",
+    "report_aggregator",
+    "report aggregator",
     "summary",
 }
 
@@ -89,6 +133,17 @@ def _truthy(value):
 def _has_any(text, terms):
     lowered = text.lower()
     return any(term.lower() in lowered for term in terms)
+
+
+def _has_primary_source_plan(text):
+    has_label = _has_any(text, PRIMARY_PLAN_LABEL_TERMS)
+    if not has_label:
+        return False
+    if _has_any(text, PRIMARY_CONCRETE_PATH_TERMS):
+        return True
+    if PRIMARY_NEGATION_PATTERN.search(text):
+        return False
+    return _has_any(text, PRIMARY_PATH_TERMS)
 
 
 def _field_map(block):
@@ -130,7 +185,7 @@ def validate_stage3_plan(r, workspace, filename="research_plan.md"):
     text = _read(workspace, filename)
     if not text or not _has_any(text, DUE_DILIGENCE_TERMS):
         return
-    if _has_any(text, PRIMARY_PLAN_TERMS):
+    if _has_primary_source_plan(text):
         r.pass_check("尽调/标的筛选 primary-source plan 已声明")
     else:
         r.fail("尽调/标的筛选缺少 primary-source plan — 必须声明官方登记源/监管备案/公司披露等一手来源路径")
@@ -142,8 +197,19 @@ def validate_evidence_base(r, workspace, filename="evidence_base.md"):
         return
 
     claims = _claim_blocks(text)
+    has_key_claim_signal = bool(re.search(
+        r"headline|chart|关键数字|图表|市场规模|market size|增长率|growth rate|"
+        r"份额|share|收入|revenue|gmv|亿元|亿|billion|million|%|"
+        r"recommendation|strategic recommendation|关键建议|战略建议|行动建议|建议支撑",
+        text,
+        re.IGNORECASE,
+    ))
+
     if "Evidence Claim Ledger" in text and not claims:
-        r.warn("检测到 Evidence Claim Ledger 标题但未检测到 claim_id 字段")
+        r.fail("检测到 Evidence Claim Ledger 标题但未检测到 claim_id 字段")
+        return
+    if not claims and has_key_claim_signal:
+        r.fail("关键数字/图表/建议支撑证据缺少 Evidence Claim Ledger claim_id 字段")
         return
     if not claims:
         r.warn("未检测到 Evidence Claim Ledger claim_id 字段 — 核心数字/实体事实建议结构化登记")
