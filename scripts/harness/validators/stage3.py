@@ -4,6 +4,7 @@ from .common import (
     ValidationResult, file_exists, count_pattern,
     file_contains_keyword, file_contains_pattern,
 )
+from . import evidence_integrity
 
 
 def validate(workspace):
@@ -41,5 +42,7 @@ def validate(workspace):
         r.pass_check("含访谈决策记录")
     else:
         r.fail("未检测到访谈决策记录 — 必须向用户提出访谈建议并记录决策（用户可选择不做，但决策环节不可跳过）")
+
+    evidence_integrity.validate_stage3_plan(r, workspace, f)
 
     return r

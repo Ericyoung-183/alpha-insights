@@ -5,6 +5,7 @@ from .common import (
     file_contains_keyword, file_contains_pattern, count_pattern,
     get_tier, load_state,
 )
+from . import evidence_integrity
 
 
 def validate(workspace):
@@ -52,6 +53,8 @@ def validate(workspace):
         r.fail("未检测到 A/B 级证据（门控要求：核心数据至少 1 条 ≥B 级）")
     else:
         r.pass_check(f"A/B 级证据: {high_quality} 条")
+
+    evidence_integrity.validate_evidence_base(r, workspace, f)
 
     # WARN: B 级以上占比
     total_evidence = count_pattern(workspace, f, r"[A-D]\s*级")

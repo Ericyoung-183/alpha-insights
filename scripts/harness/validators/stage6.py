@@ -5,6 +5,7 @@ from .common import (
     file_contains_keyword, count_pattern, check_anti_patterns,
     get_tier, load_state,
 )
+from . import evidence_integrity
 
 
 def validate(workspace):
@@ -84,6 +85,8 @@ def validate(workspace):
     ap_warnings = check_anti_patterns(workspace, f)
     for w in ap_warnings:
         r.warn(w)
+
+    evidence_integrity.validate_report_links(r, workspace, f)
 
     # WARN: 盲区审查（Tier 2+ 要求）
     if tier >= 2:

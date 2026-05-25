@@ -416,7 +416,7 @@ We are [role], in the [stage] of [industry/market], needing to address [decision
 > 🎯 Stage 3 / 7 — Planning | 📋 Load: `hypothesis_driven.md`, `issue_tree.md`, `data_sources.md` | 📋 Tier 2: `ach.md` (scenarios 5/6/7) | 🔧 Methodology: Hypothesis-driven, Issue Tree
 > **Gate exit**: `research_plan.md` exists and contains interview decision record
 
-**Load files**: `{ws}/research_definition.md` (context recovery), `methodology/hypothesis_driven.md`, `methodology/issue_tree.md`, `resources/data_sources.md` (layered loading, see below)
+**Load files**: `{ws}/research_definition.md` (context recovery), `methodology/hypothesis_driven.md`, `methodology/issue_tree.md`, `resources/data_sources.md` (layered loading, see below), `resources/evidence_integrity.md` (due diligence and numeric integrity rules)
 
 **data_sources.md layered loading**: Stage 3 only needs to read up to the "Per-Issue Data Source Combination Strategy" section (data routing table + per-issue combinations). "Internal specialized data source" details (knowledge base/database/XHS/user feedback scripts and SQL templates) are loaded on-demand during Stage 4 when executing the corresponding Track.
 
@@ -424,6 +424,8 @@ We are [role], in the [stage] of [industry/market], needing to address [decision
 - Scenarios 5/6/7 → Load `methodology/ach.md`, display notification template to user
 
 **Execution**: Pre-scan (including knowledge base search) → Hypothesis generation → Data source planning → Interview recommendation
+
+**⛔ Due diligence / target-screening primary-source plan**: If the research involves due diligence, M&A, target screening, corporate background checks, or supplier background checks, `research_plan.md` must include a `primary-source plan` that maps key entity facts to primary-source paths (official registry / regulatory filing / company disclosure / filing / court or regulatory records). Aggregators, media reports, and report aggregators can only be listed as leads.
 
 **Q→H→Lens Mapping Rule**: Each hypothesis must be annotated with the corresponding Stage 2 sub-question number and analysis lens (inherited from `research_definition.md` sub-question lens assignment). Sub-questions without hypotheses must state the reason (e.g., "factual survey type, no hypothesis needed"). Output format per `hypothesis_driven.md`.
 
@@ -451,6 +453,12 @@ We are [role], in the [stage] of [industry/market], needing to address [decision
 - Dimensions covered: [N] / [Total sub-questions]
 - Planned data sources: [list]
 - Expected confidence distribution: [A/B level target ratio]
+
+## Primary-source plan (required for due diligence / target screening; otherwise write N/A + reason)
+| Key Fact Type | Primary Source Path | Aggregator Only as Lead? | Downgrade if Missing |
+|--------------|---------------------|--------------------------|----------------------|
+| Entity active/dissolved status | Official registry / regulatory filing | Yes | Downgrade to unverified hypothesis |
+| Ownership / parent relationship | Official registry / company disclosure / filing | Yes | Do not output high-certainty judgment |
 ```
 
 **⛔ Hypothesis Self-check (Before Writing)**: Each hypothesis must pass these 4 checks; failures are corrected immediately:
@@ -543,7 +551,7 @@ If they're not done during the research process, I'll remind you before Stage 4 
 > 🎯 Stage 4 / 7 — Research | 📋 Load: `research_engine.md`, `triangulation.md` | 🔧 Methodology: Triangulation, Multi-track Parallel
 > **Gate exit**: `evidence_base.md` exists with sufficient lines (Tier 1 ≥ 10 / Tier 2 ≥ 20 / Tier 3 ≥ 40); core data has at least 1 item ≥ B-level; **Tier 2/3 chapter blueprint has no remaining ❌**
 
-**Load files**: `{ws}/research_plan.md` (context recovery), `{ws}/research_definition.md` (framework & boundary recovery + chapter blueprints), `resources/research_engine.md` (contains complete multi-track parallel execution rules), `methodology/triangulation.md` (A/B/C/D confidence grading criteria + triangulation execution steps)
+**Load files**: `{ws}/research_plan.md` (context recovery), `{ws}/research_definition.md` (framework & boundary recovery + chapter blueprints), `resources/research_engine.md` (contains complete multi-track parallel execution rules), `methodology/triangulation.md` (A/B/C/D confidence grading criteria + triangulation execution steps), `resources/evidence_integrity.md` (Evidence Claim Ledger + primary-source / numeric integrity gates)
 
 **Three-Layer Progression**:
 - **Layer 1 Overview Scan** (Main Session): Initialize Framework-Evidence Map (Step 1.0) → Convert hypotheses to search tasks, distribute to Tracks, quickly obtain overview data
@@ -555,6 +563,8 @@ If they're not done during the research process, I'll remind you before Stage 4 
 **Multi-track**: A Public Data / B Directed Sources / C Expert Interviews / D Knowledge Base / E Social Media / F Internal Database / G User Voice (activation rules in `research_engine.md`)
 
 ⛔ **Track skips must inform the user with reasons**
+
+⛔ **Evidence and numeric integrity registration**: When generating `evidence_base.md`, all headline numbers, chart data, key recommendation-support evidence, and due-diligence entity facts must be registered in the `Evidence Claim Ledger`. Fields and FAIL/WARN rules are defined in `resources/evidence_integrity.md`. Aggregated sources can be used for discovery, but cannot replace primary sources; multiple secondary sources pointing to the same origin must not count as independent cross-validation.
 
 ⛔ **Multi-track Failure Decision**: If Track A (Public Data) fails, research is blocked — must fix search tools or switch to alternatives. If Track A works but ≥2 other planned tracks fail, pause and inform user: "Of N activated tracks, M failed ({specific tracks}). Existing evidence may be insufficient for complete conclusions. Recommendations: A. Continue with existing evidence, noting evidence coverage gaps in report B. Attempt supplementary data sources"
 
@@ -588,6 +598,27 @@ See `research_engine.md` Track C for details.
 | Data Point | Source 1 | Source 2 | Source 3 | Validation Conclusion |
 |-----------|---------|---------|---------|----------------------|
 | ... | ... | ... | ... | Consistent/Contradictory/Pending |
+
+## Evidence Claim Ledger (required for key evidence)
+
+```text
+claim_id: E-001
+claim_type: numeric | entity | relationship | filing | litigation | license | recommendation_support
+claim_text: [evidence claim]
+value: [if applicable]
+unit: [if applicable]
+currency: [if applicable]
+period: [numeric claim period]
+source_id: [source identifier]
+source_type: primary | official | company_disclosure | expert | media | aggregator
+source_grade: A | B | C | D
+source_date: YYYY-MM-DD
+retrieved_at: YYYY-MM-DD
+origin_id: [original source behind secondary source; leave blank and downgrade if unknown]
+primary_source_required: true | false
+primary_source_present: true | false
+used_in: headline | chart | insight | appendix
+```
 
 ## Framework-Evidence Map (Updated per Track)
 
@@ -623,7 +654,7 @@ See `research_engine.md` Track C for details.
 > 🎯 Stage 5 / 7 — Insights | 📋 Load: `judgment_rules.md`, `anti_patterns.md`, `research_definition.md` | 📋 Tier 2: `first_principles.md` (scenarios 3/4/5/7), `pre_mortem.md` (scenarios 2/6/7/8/9) | 🔧 Methodology: So What Chain, Red/Blue Team Review
 > **Gate exit**: `insights.md` exists with scores + Red/Blue Team review records (⛔ Stage 6 gate file)
 
-**Load files**: `{ws}/evidence_base.md` (layered re-read, see protocol below), `{ws}/user_brief.md` (user context recovery), `{ws}/research_definition.md` (sub-question + lens assignment recovery, ensuring insights cover all sub-questions), `resources/judgment_rules.md` (contains complete execution flow, Red/Blue Team Subagent templates, insights.md output template), `resources/anti_patterns.md` (as background constraint for 8 rules, not an independent step; Stage 6 uses its self-check list)
+**Load files**: `{ws}/evidence_base.md` (layered re-read, see protocol below), `{ws}/user_brief.md` (user context recovery), `{ws}/research_definition.md` (sub-question + lens assignment recovery, ensuring insights cover all sub-questions), `resources/judgment_rules.md` (contains complete execution flow, Red/Blue Team Subagent templates, insights.md output template), `resources/anti_patterns.md` (as background constraint for 8 rules, not an independent step; Stage 6 uses its self-check list), `resources/evidence_integrity.md` (recommendation confidence downgrade rules)
 
 **evidence_base.md Layered Re-read Protocol** (⛔ replaces one-shot bulk loading):
 1. **Read "Research Execution Summary" first** → recover the global picture in 30 seconds, focusing on cross-track contradictions (🔴) and gaps (⚠️)
@@ -642,6 +673,8 @@ See `research_engine.md` Track C for details.
 **Tier Control**: All tiers execute all 8 rules; analysis depth is not reduced for lower tiers
 
 ⛔ **Rule-by-rule broadcast (cannot be skipped)**: After each rule executes, broadcast a one-line progress summary to the user (format in `judgment_rules.md` "Rule Execution Broadcast Format"). Combining Rules 1-7 into a single black-box step is prohibited.
+
+⛔ **Recommendation confidence constraint**: High-certainty recommendations ("strongly recommend", "must enter", "acquire immediately", "must invest", etc.) must be supported by A/B-grade evidence and any required primary sources. If key support mainly comes from B/C, C/D, aggregators, or media sources, downgrade to a conditional recommendation or unverified hypothesis and write the downgrade reason into `insights.md`.
 
 **☑️ User Confirmation (after Rule 7, before Red/Blue Team, ⛔ must use AskUserQuestion)**:
 - **A-class (18-20 pts) one by one**: Present 1 insight at a time (conclusion + key evidence + reasoning chain), use AskUserQuestion with options (✅ Agree / ✏️ Adjust direction / ❌ Disagree). Wait for user response before presenting next.
@@ -730,17 +763,18 @@ python3 scripts/harness/dashboard.py {ws}
 
 ⛔ **First step must read `insights.md`; if file does not exist, return to Stage 5**
 
-**Load files**: `{ws}/evidence_base.md` (layered re-read, see protocol below), `{ws}/user_brief.md` (narrative anchor recovery), `references/report_standards.md`, `references/report_template.html`, `resources/anti_patterns.md`, `methodology/pyramid_principle.md` (conclusion-first + report structure self-check)
+**Load files**: `{ws}/evidence_base.md` (layered re-read, see protocol below), `{ws}/user_brief.md` (narrative anchor recovery), `references/report_standards.md`, `references/report_template.html`, `resources/anti_patterns.md`, `resources/evidence_integrity.md`, `methodology/pyramid_principle.md` (conclusion-first + report structure self-check)
 
 **evidence_base.md Layered Re-read Protocol**:
 1. **Read "Research Execution Summary" first** → recover the full data picture, guiding narrative arc design
 2. **Read specific Track data points on demand when generating charts** (precision targeting, not bulk loading)
+3. **When citing headline numbers, chart data, or key recommendations, include a `claim_id`, `evidence_id`, or `source_id` back-link**. If no back-link exists, return to Stage 4 and complete the Evidence Claim Ledger.
 
 **Tier Control**: Tier 1 Executive Summary only | Tier 2 seven-section condensed (≥3 ECharts) | Tier 3 complete seven-section (4-5 core chapters × 3-5 pages, ≥6 ECharts, target 20-35 pages)
 
 **Chapter Organization Principle**: Report core analysis chapters are organized by **insight themes**, not by sub-questions or framework dimensions. Most insight themes naturally correspond to one sub-question (1:1); some cross-question insights may form independent chapters. Chapter titles are judgments/findings (e.g., "The Market Is Undergoing Structural Consolidation"), not questions or framework names. Frameworks are explicitly listed in the "Research Background & Methods" section and used as analytical tools within core analysis chapters. Details in `report_standards.md`.
 
-**Execution**: Narrative arc design → Chapter-by-chapter generation (each chapter self-checks 7 items per `report_standards.md`) → Integration output → **⛔ Anti-pattern self-check** (verify against `anti_patterns.md` "Report Self-check List" item by item; failures must be corrected before continuing) → **🔍 IQR Review** (load `resources/quality_review.md` Stage 6 IQR template, launch independent Subagent to assess report quality) → Delivery package assembly
+**Execution**: Narrative arc design → Chapter-by-chapter generation (each chapter self-checks 7 items per `report_standards.md`) → Integration output → **⛔ Evidence back-link self-check** (headline numbers and chart data must link back to the Evidence Claim Ledger) → **⛔ Anti-pattern self-check** (verify against `anti_patterns.md` "Report Self-check List" item by item; failures must be corrected before continuing) → **🔍 IQR Review** (load `resources/quality_review.md` Stage 6 IQR template, launch independent Subagent to assess report quality) → Delivery package assembly
 
 > **Stage 6 IQR REVISE Handling**: When IQR returns REVISE, handle by finding type — report expression/structure issues are corrected in S6; if IQR identifies insufficient evidence or flawed insights, follow cascade rules and ask the user whether to return to S4/S5 for supplementation.
 
@@ -941,8 +975,8 @@ Best of luck with your decisions.
 |-------|----------------|
 | 1 | Scenario correctly identified · Report tier confirmed · User context complete · Pre-research one-sentence broadcast |
 | 2 | Sub-questions MECE · Frameworks match scenarios (including multi-scenario matching) · **Lens assignment + dimension coverage + N/A annotations** · Context anchoring · Research boundaries clear · **IQR review** |
-| 3 | Hypotheses are opinionated and falsifiable · **Q→H→Lens mapping complete** (each H annotated with corresponding Q and analysis lens; Q without hypotheses noted with reason) · Data source coverage ≥ 80% of sub-questions · Interview recommendation presented |
-| 4 | Triangulation · Data annotation correct · Core data ≥ B-level · Track skips informed · **Interview collection executed** (if Stage 3.5 activated) · Framework analysis conclusions independently produced · **IQR review** |
-| 5 | So What ≥ 3 layers · Insights ≥ 16 points · Key variables identified · Contrarian test · SMART test · Pre-mortem · Priority ranking · Red/Blue Team review · insights.md generated |
-| 6 | Read insights.md · Review Dashboard · Python script generates HTML · ECharts use dk variable concatenation · Conclusion-first · Evidence traceable · Anti-pattern self-check · Chapter self-check (per report_standards.md list) · ECharts charts (Tier 2 ≥3 / Tier 3 ≥6) · **IQR review** |
+| 3 | Hypotheses are opinionated and falsifiable · **Q→H→Lens mapping complete** (each H annotated with corresponding Q and analysis lens; Q without hypotheses noted with reason) · Data source coverage ≥ 80% of sub-questions · Due diligence / target-screening primary-source plan · Interview recommendation presented |
+| 4 | Triangulation · Data annotation correct · Evidence Claim Ledger · Core data ≥ B-level · Due diligence key facts have primary sources · Track skips informed · **Interview collection executed** (if Stage 3.5 activated) · Framework analysis conclusions independently produced · **IQR review** |
+| 5 | So What ≥ 3 layers · Insights ≥ 16 points · Key variables identified · Contrarian test · SMART test · Pre-mortem · Priority ranking · Recommendation confidence matches source grades · Red/Blue Team review · insights.md generated |
+| 6 | Read insights.md · Review Dashboard · Python script generates HTML · ECharts use dk variable concatenation · Conclusion-first · headline/chart evidence back-links · Anti-pattern self-check · Chapter self-check (per report_standards.md list) · ECharts charts (Tier 2 ≥3 / Tier 3 ≥6) · **IQR review** |
 | 7 | Minimum rework scope · Incremental annotations clear · Wrap-up template fully output |

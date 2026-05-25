@@ -51,6 +51,7 @@ Prompt instructions are probabilistic — AI tends to skip steps as context fill
 
 - **State machine** — tracks research stage, tier, loaded frameworks, interview status
 - **7-stage + Stage 3.5 gate validators** — auto-check deliverables before advancing (PASS/FAIL/WARN)
+- **Evidence & Numeric Integrity Gate** — blocks stale entity claims, weak-source strong recommendations, and unlinked headline/chart numbers
 - **Hook automation** — HTML write guard, auto gate checks, incremental file persistence
 - **Dual-platform adapters** — native frontmatter hooks for Claude Code compatible runtimes, Codex wrappers for Codex Desktop
 - **Quality dashboard** — one-screen overview of all quality metrics before report generation

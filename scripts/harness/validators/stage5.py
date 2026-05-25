@@ -4,6 +4,7 @@ from .common import (
     ValidationResult, file_exists, file_contains_pattern,
     file_contains_keyword, count_pattern, get_tier,
 )
+from . import evidence_integrity
 
 
 def validate(workspace):
@@ -109,5 +110,7 @@ def validate(workspace):
         r.pass_check("含行动建议")
     else:
         r.warn("未检测到行动建议")
+
+    evidence_integrity.validate_insight_confidence(r, workspace, f)
 
     return r

@@ -25,11 +25,15 @@
 ### Data Verification Rules
 
 > Complete definitions and verification methods for validation levels (A/B/C/D) are in [`triangulation.md`](../methodology/triangulation.md).
+> Key numbers, chart data, due-diligence entity facts, and evidence supporting strategic recommendations must also follow the Evidence Claim Ledger fields and gate rules in [`evidence_integrity.md`](evidence_integrity.md).
 
 **Execution rules for this checklist**:
 - Core data (market size, growth rate, competitor data, user data) **must** achieve B-level or above
 - D-level data is **prohibited** as supporting evidence for key conclusions
 - C-level data should be annotated with "recommend supplementary verification"
+- Headline numbers, chart data, and recommendation-support evidence must register `claim_id`, `source_date`, `retrieved_at`, and `used_in`
+- In due diligence / M&A / target-screening work, entity status, ownership / parent relationships, officers, regulatory filings, licenses, major litigation, and filings must have `primary` / `official` / `company_disclosure` source types
+- Aggregators, media, and report aggregators are leads only; if used for A/B-level cross-validation, fill `origin_id` to prove they are not repeating the same original source
 
 ### Information Type Annotation Standards (Important)
 
