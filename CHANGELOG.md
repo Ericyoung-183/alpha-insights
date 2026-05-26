@@ -1,6 +1,13 @@
 # Changelog
 
-## V4.1 (2026-05-14)
+## V4.1 (2026-05-26)
+
+### 2026-05-26 Release Refresh
+- **Evidence and numeric integrity gates**: Added `resources/evidence_integrity.md` and `validators/evidence_integrity.py`, covering the Evidence Claim Ledger, primary-source requirements, source-laundering risk, key number / chart back-links, and source-grade constraints for strong recommendations.
+- **Stage 3/4/5/6 gate hardening**: Stage 3 now detects due-diligence / target-screening primary-source plans; Stage 4 blocks key numbers, chart data, and recommendation-support evidence without a claim ledger; Stage 5 blocks strong recommendations backed only by weak sources; Stage 6 blocks headline/chart claims without evidence back-links.
+- **Release pipeline fix**: `build.sh` now tracks code files in source-change detection, and Skill Center / ATC publishing now uses CLI directory publishing instead of manual zip upload.
+
+### 2026-05-14 Initial V4.1
 
 ### Added
 - **Agent-first installation contract**: Added `INSTALL_FOR_AGENTS.md`, so users can ask their AI coding agent to install the package instead of following a long platform-specific tutorial.
