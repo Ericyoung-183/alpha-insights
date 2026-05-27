@@ -2,8 +2,10 @@
 
 ## V4.1 (2026-05-26)
 
+### 2026-05-27 Installer Patch (package 4.1.2)
 - **Single-version Codex install semantics**: `scripts/install_codex.py` now replaces the previous installed directory directly instead of creating `alpha-insights.backup-*` directories, preventing Codex Desktop from loading backup folders as active skills.
 - **Active context pollution fix**: The Codex install root now stays unique at `~/.codex/skills/alpha-insights/`; repeated installs leave only the latest version.
+- **Reinstall regression coverage**: Added a Codex installer test for repeated installs, unique install roots, and hook wrapper path updates.
 
 ### 2026-05-26 Release Refresh
 - **Evidence and numeric integrity gates**: Added `resources/evidence_integrity.md` and `validators/evidence_integrity.py`, covering the Evidence Claim Ledger, primary-source requirements, source-laundering risk, key number / chart back-links, and source-grade constraints for strong recommendations.
