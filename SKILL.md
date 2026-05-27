@@ -28,7 +28,7 @@ hooks:
 
 # Alpha Insights-BizAdvisor — Skill Main File
 
-> Version: V4.1 | Last Updated: 2026-05-26
+> Version: V4.1 | Last Updated: 2026-05-27
 > Positioning: Replaces a senior business analyst to deliver in-depth, decision-grade research reports
 > This file is a pure orchestration layer; detailed execution instructions reside in files loaded by each Stage
 > **Harness Engineering**: Enforces execution quality through script validation + state machine + incremental persistence

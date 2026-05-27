@@ -29,6 +29,8 @@ The installer must:
 
 - Copy the package to `$CODEX_HOME/skills/alpha-insights/`, or
   `~/.codex/skills/alpha-insights/` when `CODEX_HOME` is unset.
+- Replace any existing `alpha-insights` install directly. Do not create sibling
+  backup directories under `$CODEX_HOME/skills/` or `~/.codex/skills/`.
 - Remove Cloud Code-only frontmatter hooks from the installed `SKILL.md`.
 - Rewrite inline resume checks to use the installed absolute Codex skill path.
 - Register Codex hook wrappers in `~/.codex/hooks.json`:

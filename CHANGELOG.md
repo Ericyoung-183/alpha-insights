@@ -2,6 +2,9 @@
 
 ## V4.1 (2026-05-26)
 
+- **Single-version Codex install semantics**: `scripts/install_codex.py` now replaces the previous installed directory directly instead of creating `alpha-insights.backup-*` directories, preventing Codex Desktop from loading backup folders as active skills.
+- **Active context pollution fix**: The Codex install root now stays unique at `~/.codex/skills/alpha-insights/`; repeated installs leave only the latest version.
+
 ### 2026-05-26 Release Refresh
 - **Evidence and numeric integrity gates**: Added `resources/evidence_integrity.md` and `validators/evidence_integrity.py`, covering the Evidence Claim Ledger, primary-source requirements, source-laundering risk, key number / chart back-links, and source-grade constraints for strong recommendations.
 - **Stage 3/4/5/6 gate hardening**: Stage 3 now detects due-diligence / target-screening primary-source plans; Stage 4 blocks key numbers, chart data, and recommendation-support evidence without a claim ledger; Stage 5 blocks strong recommendations backed only by weak sources; Stage 6 blocks headline/chart claims without evidence back-links.

@@ -9,7 +9,6 @@ import os
 import shutil
 import subprocess
 import sys
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -78,26 +77,30 @@ def _adapt_skill_md(skill_path: Path, target: Path) -> None:
     skill_path.write_text(text, encoding="utf-8")
 
 
-def _copy_skill_tree(target: Path, backup: bool) -> Path | None:
+def _remove_existing_target(target: Path) -> None:
+    if target.is_dir() and not target.is_symlink():
+        shutil.rmtree(target)
+    elif target.exists() or target.is_symlink():
+        target.unlink()
+
+
+def _copy_skill_tree(target: Path) -> None:
     target = target.expanduser()
     target.parent.mkdir(parents=True, exist_ok=True)
     tmp = target.with_name(f".{target.name}.tmp-{os.getpid()}")
     if tmp.exists():
         shutil.rmtree(tmp)
-    shutil.copytree(SOURCE_ROOT, tmp, ignore=_ignore)
-    _adapt_skill_md(tmp / "SKILL.md", target)
 
-    backup_path = None
-    if target.exists():
-        if backup:
-            stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-            backup_path = target.with_name(f"{target.name}.backup-{stamp}")
-            shutil.move(str(target), str(backup_path))
-        else:
-            shutil.rmtree(target)
+    try:
+        shutil.copytree(SOURCE_ROOT, tmp, ignore=_ignore)
+        _adapt_skill_md(tmp / "SKILL.md", target)
 
-    shutil.move(str(tmp), str(target))
-    return backup_path
+        _remove_existing_target(target)
+        shutil.move(str(tmp), str(target))
+    except Exception:
+        if tmp.exists():
+            shutil.rmtree(tmp)
+        raise
 
 
 def _load_hooks(path: Path) -> dict[str, Any]:
@@ -199,14 +202,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target", type=Path, default=codex_home / "skills" / SKILL_NAME)
     parser.add_argument("--hooks-json", type=Path, default=codex_home / "hooks.json")
-    parser.add_argument("--no-backup", action="store_true", help="Replace an existing install without creating a backup")
     parser.add_argument("--verify", action="store_true", help="Run verify_codex.py after install (default behavior)")
     parser.add_argument("--skip-verify", action="store_true", help="Install without running verify_codex.py")
     args = parser.parse_args()
 
     target = args.target.expanduser()
     hooks_json = args.hooks_json.expanduser()
-    backup_path = _copy_skill_tree(target, backup=not args.no_backup)
+    _copy_skill_tree(target)
     _register_hooks(hooks_json, target)
 
     if not args.skip_verify:
@@ -215,7 +217,6 @@ def main() -> None:
     result = {
         "installed_path": str(target),
         "hooks_json": str(hooks_json),
-        "backup_path": str(backup_path) if backup_path else None,
         "status": "OK",
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
