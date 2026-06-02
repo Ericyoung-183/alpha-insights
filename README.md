@@ -173,7 +173,7 @@ SQL examples in SKILL files use `{project}.{table_name}` placeholders. Once you 
 
 ```
 alpha-insights/
-├── SKILL.md              # Main file (workflow orchestration, V4.1)
+├── SKILL.md              # Main file (workflow orchestration, V4.1.4)
 ├── INSTALL_FOR_AGENTS.md # Agent-first installation contract
 ├── CHANGELOG.md          # Version history
 ├── README.md             # This file

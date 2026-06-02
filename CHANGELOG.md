@@ -2,7 +2,7 @@
 
 ## V4.1 (2026-05-26)
 
-### 2026-06-02 Public Package Boundary Patch (package 4.1.3)
+### 2026-06-02 Public Package Boundary Patch (package 4.1.4)
 - **Public social-media adapter boundary**: The GitHub build no longer bundles provider-specific Xiaohongshu/RedNote collection scripts.
 - **Track E public fallback**: English public runtime docs now route social-media research through public search, browser-readable links, user-provided screenshots/exports, or a separately installed private adapter.
 - **GitHub runtime English overlay**: Added `i18n/en_runtime/` overlays for user-visible hook, validator, verifier, report helper, and report template output in the public GitHub build; formal releases continue to enforce the strict runtime CJK gate.
