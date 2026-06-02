@@ -2,14 +2,14 @@
 """
 Alpha Insights — Review Dashboard
 
-在 Stage 5 → Stage 6 转场前，汇总展示研究质量全景。
-读取 _state.json + 各阶段交付物，提取关键质量指标。
+Summarize the full research quality picture before Stage 5 -> Stage 6.
+Read _state.json plus stage deliverables and extract quality indicators.
 
-用法:
+Usage:
     python3 scripts/harness/dashboard.py <workspace_path>
 
-输出:
-    格式化的质量总览文本（非 JSON），可直接展示给用户。
+Output:
+    Human-readable quality dashboard text, not JSON, suitable for direct display.
 """
 
 import json
@@ -53,22 +53,22 @@ def _file_size(workspace, filename):
 def assess_stage1(workspace):
     content = _read_file(workspace, "user_brief.md")
     if content is None:
-        return "❌ 未找到", []
+        return "missing", []
 
     details = []
     line_count = len(content.strip().split("\n"))
-    details.append(f"{line_count} 行")
+    details.append(f"{line_count} lines")
 
-    has_topic = bool(re.search(r"议题|研究问题|topic|question", content, re.IGNORECASE))
-    has_tier = bool(re.search(r"Tier|档位|tier", content, re.IGNORECASE))
+    has_topic = bool(re.search(r"\u8bae\u9898|\u7814\u7a76\u95ee\u9898|topic|question", content, re.IGNORECASE))
+    has_tier = bool(re.search(r"Tier|\u6863\u4f4d|tier", content, re.IGNORECASE))
     if has_topic:
-        details.append("含议题")
+        details.append("topic present")
     else:
-        details.append("⚠️ 未检测到议题")
+        details.append("topic not detected")
     if has_tier:
-        details.append("含档位")
+        details.append("tier present")
     else:
-        details.append("⚠️ 未检测到档位")
+        details.append("tier not detected")
 
     status = "✅" if has_topic and has_tier else "⚠️"
     return status, details
@@ -79,32 +79,28 @@ def assess_stage1(workspace):
 def assess_stage2(workspace):
     content = _read_file(workspace, "research_definition.md")
     if content is None:
-        return "❌ 未找到", []
+        return "missing", []
 
     details = []
-    # 子问题计数
-    q_count = len(re.findall(r"(?:^|\n)\s*(?:Q\d|子问题|Sub-question)", content, re.IGNORECASE))
+    q_count = len(re.findall(r"(?:^|\n)\s*(?:Q\d|\u5b50\u95ee\u9898|Sub-question)", content, re.IGNORECASE))
     if q_count == 0:
         q_count = len(re.findall(r"(?:^|\n)\s*\d+\.\s", content))
-    details.append(f"子问题 {q_count} 个")
+    details.append(f"sub-questions {q_count} items")
 
-    # MECE 检测
     if "MECE" in content or "mece" in content.lower():
         details.append("MECE ✓")
 
-    # 框架计数
-    fw_matches = re.findall(r"(?:框架|framework|模型|model)[：:]\s*(\S+)", content, re.IGNORECASE)
+    fw_matches = re.findall(r"(?:\u6846\u67b6|framework|\u6a21\u578b|model)[：:]\s*(\S+)", content, re.IGNORECASE)
     fw_count = len(fw_matches)
     if fw_count > 0:
-        details.append(f"框架: {' + '.join(fw_matches[:3])}")
+        details.append(f"Frameworks: {' + '.join(fw_matches[:3])}")
     else:
-        # 尝试从 state 中获取
         state = _load_state(workspace)
         if state and state.get("frameworks_loaded"):
             fw_names = state["frameworks_loaded"]
-            details.append(f"框架: {' + '.join(fw_names[:3])}")
+            details.append(f"Frameworks: {' + '.join(fw_names[:3])}")
 
-    return "✅ 已产出", details
+    return "✅ produced", details
 
 
 # ── Stage 3: Research Plan ──
@@ -112,26 +108,23 @@ def assess_stage2(workspace):
 def assess_stage3(workspace):
     content = _read_file(workspace, "research_plan.md")
     if content is None:
-        return "❌ 未找到", []
+        return "missing", []
 
     details = []
-    # 假设计数
     h_count = len(re.findall(r"(?:^|\n)\s*H\d", content))
     if h_count == 0:
-        h_count = len(re.findall(r"假设", content))
-    details.append(f"假设 {h_count} 个")
+        h_count = len(re.findall(r"\u5047\u8bbe", content))
+    details.append(f"hypotheses {h_count} items")
 
-    # Q→H→Lens 映射
-    qh_map = re.findall(r"→\s*Q\d|Q\d.*→|对应.*Q\d", content)
+    qh_map = re.findall(r"→\s*Q\d|Q\d.*→|\u5bf9\u5e94.*Q\d", content)
     if qh_map:
-        details.append("Q→H→Lens 映射 ✓")
+        details.append("Q->H->Lens mapping present")
 
-    # 数据源类别数
     ds_count = len(re.findall(r"Track\s+[A-G]", content))
     if ds_count > 0:
-        details.append(f"数据轨道 {ds_count} 类")
+        details.append(f"data tracks {ds_count} categories")
 
-    return "✅ 已产出", details
+    return "✅ produced", details
 
 
 # ── Stage 4: Evidence Base ──
@@ -139,38 +132,35 @@ def assess_stage3(workspace):
 def assess_stage4(workspace):
     content = _read_file(workspace, "evidence_base.md")
     if content is None:
-        return "❌ 未找到", []
+        return "missing", []
 
     details = []
     lines = content.strip().split("\n")
-    details.append(f"证据 {len(lines)} 行")
+    details.append(f"evidence {len(lines)} lines")
 
-    # 置信度分布
-    a_count = len(re.findall(r"\bA\s*级|置信度.*A|confidence.*A", content, re.IGNORECASE))
-    b_count = len(re.findall(r"\bB\s*级|置信度.*B|confidence.*B", content, re.IGNORECASE))
-    c_count = len(re.findall(r"\bC\s*级|置信度.*C|confidence.*C", content, re.IGNORECASE))
+    a_count = len(re.findall(r"\bA\s*\u7ea7|\u7f6e\u4fe1\u5ea6.*A|confidence.*A", content, re.IGNORECASE))
+    b_count = len(re.findall(r"\bB\s*\u7ea7|\u7f6e\u4fe1\u5ea6.*B|confidence.*B", content, re.IGNORECASE))
+    c_count = len(re.findall(r"\bC\s*\u7ea7|\u7f6e\u4fe1\u5ea6.*C|confidence.*C", content, re.IGNORECASE))
     total = a_count + b_count + c_count
     if total > 0:
         a_pct = round(a_count / total * 100)
         b_pct = round(b_count / total * 100)
         c_pct = round(c_count / total * 100)
-        details.append(f"A 级 {a_pct}% · B 级 {b_pct}% · C 级 {c_pct}%")
+        details.append(f"Grade A {a_pct}% · Grade B {b_pct}% · Grade C {c_pct}%")
         if (a_count + b_count) / total < 0.5:
-            details.append("⚠️ B 级以上占比 < 50%")
+            details.append("B-or-better share below 50%")
 
-    # 框架证据地图检测
-    has_map = bool(re.search(r"框架证据地图|Framework Evidence Map", content, re.IGNORECASE))
+    has_map = bool(re.search(r"\u6846\u67b6\u8bc1\u636e\u5730\u56fe|Framework Evidence Map", content, re.IGNORECASE))
     if has_map:
-        # 统计维度覆盖状态
         done = len(re.findall(r"✅", content))
         pending = len(re.findall(r"⏳", content))
         na = len(re.findall(r"➖", content))
         gap = len(re.findall(r"⚠️", content))
-        details.append(f"框架地图 ✅{done} ⏳{pending} ⚠️{gap} ➖{na}")
+        details.append(f"framework map ✅{done} ⏳{pending} ⚠️{gap} ➖{na}")
     else:
-        details.append("⚠️ 未检测到框架证据地图")
+        details.append("framework evidence map not detected")
 
-    return "✅ 已产出", details
+    return "✅ produced", details
 
 
 # ── Stage 5: Insights ──
@@ -178,48 +168,44 @@ def assess_stage4(workspace):
 def assess_stage5(workspace):
     content = _read_file(workspace, "insights.md")
     if content is None:
-        return "❌ 未找到", []
+        return "missing", []
 
     details = []
-    # 洞察计数（寻找评分标记）
-    # 剥离 Markdown 粗体标记，避免 **19** 格式干扰评分提取
     content_for_scores = content.replace("**", "")
-    scores = re.findall(r"(\d{1,2})\s*[/／]\s*20|评分[：:]\s*(\d{1,2})|=\s*(\d{1,2})\s*分", content_for_scores)
+    scores = re.findall(r"(\d{1,2})\s*[/／]\s*20|\u8bc4\u5206[：:]\s*(\d{1,2})|=\s*(\d{1,2})\s*\u5206", content_for_scores)
     score_values = [int(s[0] or s[1] or s[2]) for s in scores if (s[0] or s[1] or s[2])]
 
     if score_values:
         core = [s for s in score_values if s >= 18]
         secondary = [s for s in score_values if 16 <= s < 18]
-        details.append(f"洞察 {len(score_values)} 个")
+        details.append(f"insights {len(score_values)} items")
         if core:
-            details.append(f"核心洞察 A 类 {len(core)} 个（18-20 分）")
+            details.append(f"Core A insights {len(core)} (18-20 points)")
         if secondary:
-            details.append(f"核心洞察 B 类 {len(secondary)} 个（16-17 分）")
+            details.append(f"Core B insights {len(secondary)} (16-17 points)")
     else:
-        details.append("⚠️ 未检测到评分")
+        details.append("score not detected")
 
-    # 红蓝队标记
-    has_red = bool(re.search(r"红队|red.?team", content, re.IGNORECASE))
-    has_blue = bool(re.search(r"蓝队|blue.?team", content, re.IGNORECASE))
+    has_red = bool(re.search(r"\u7ea2\u961f|red.?team", content, re.IGNORECASE))
+    has_blue = bool(re.search(r"\u84dd\u961f|blue.?team", content, re.IGNORECASE))
     if has_red and has_blue:
-        # 检查致命挑战
-        fatal = re.findall(r"致命", content)
+        fatal = re.findall(r"\u81f4\u547d", content)
         if fatal:
-            details.append(f"红队: {len(fatal)} 致命挑战已处理")
+            details.append(f"red team: {len(fatal)} fatal challenges handled")
         else:
-            details.append("红蓝队审查 ✓")
+            details.append("red/blue-team review present")
     elif has_red:
-        details.append("红队审查 ✓ | ⚠️ 蓝队缺失")
+        details.append("red-team review present | blue-team missing")
     elif has_blue:
-        details.append("⚠️ 红队缺失 | 蓝队审查 ✓")
+        details.append("red-team missing | blue-team review present")
 
-    return "✅ 已产出", details
+    return "✅ produced", details
 
 
 # ── Overall Assessment ──
 
 def overall_assessment(stages):
-    """根据各阶段状态给出总体评估"""
+    """Generate the overall assessment from stage statuses."""
     failed = [name for name, (status, _) in stages.items() if "❌" in status]
     warnings = []
     for name, (_, details) in stages.items():
@@ -228,38 +214,37 @@ def overall_assessment(stages):
                 warnings.append(f"{name}: {d}")
 
     if failed:
-        return f"❌ {len(failed)} 个阶段交付物缺失（{', '.join(failed)}），建议回退修复后再进入 Stage 6"
+        return f"❌ {len(failed)} stage deliverables missing ({', '.join(failed)}); fix before entering Stage 6"
     elif warnings:
-        return f"⚠️ 整体通过，{len(warnings)} 项警告建议关注"
+        return f"⚠️ overall passed with {len(warnings)} warnings to review"
     else:
-        return "✅ 全部通过，可进入 Stage 6 报告生成"
+        return "✅ all checks passed; ready for Stage 6 report generation"
 
 
 def generate_dashboard(workspace):
-    """生成研究质量总览"""
+    """Generate the research quality dashboard."""
     stages = {
-        "用户简报 (S1)": assess_stage1(workspace),
-        "研究定义 (S2)": assess_stage2(workspace),
-        "研究计划 (S3)": assess_stage3(workspace),
-        "证据基础 (S4)": assess_stage4(workspace),
-        "洞察生成 (S5)": assess_stage5(workspace),
+        "User Brief (S1)": assess_stage1(workspace),
+        "Research Definition (S2)": assess_stage2(workspace),
+        "Research Plan (S3)": assess_stage3(workspace),
+        "Evidence Base (S4)": assess_stage4(workspace),
+        "Insights (S5)": assess_stage5(workspace),
     }
 
-    # 读取 Tier 信息
     state = _load_state(workspace)
-    tier_str = f"Tier {state['tier']}" if state and "tier" in state else "未知"
+    tier_str = f"Tier {state['tier']}" if state and "tier" in state else "unknown"
 
     lines = []
-    lines.append("━━━ 研究质量总览 ━━━")
-    lines.append(f"📊 研究档位: {tier_str}")
+    lines.append("=== Research Quality Dashboard ===")
+    lines.append(f"Research tier: {tier_str}")
     lines.append("")
 
     for name, (status, details) in stages.items():
-        detail_str = " | ".join(details) if details else "无详情"
+        detail_str = " | ".join(details) if details else "no details"
         lines.append(f"📋 {name}   {status} | {detail_str}")
 
     lines.append("")
-    lines.append(f"⚡ 总体评估: {overall_assessment(stages)}")
+    lines.append(f"Overall assessment: {overall_assessment(stages)}")
     lines.append("━━━━━━━━━━━━━━━━━━━")
 
     return "\n".join(lines)
@@ -267,12 +252,12 @@ def generate_dashboard(workspace):
 
 def main():
     if len(sys.argv) < 2:
-        print("用法: python3 dashboard.py <workspace_path>")
+        print("Usage: python3 dashboard.py <workspace_path>")
         sys.exit(1)
 
     workspace = sys.argv[1]
     if not os.path.isdir(workspace):
-        print(f"错误: workspace 目录不存在: {workspace}")
+        print(f"error: workspace directory does not exist: {workspace}")
         sys.exit(1)
 
     print(generate_dashboard(workspace))

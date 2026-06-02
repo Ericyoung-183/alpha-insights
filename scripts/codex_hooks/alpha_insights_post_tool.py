@@ -69,15 +69,52 @@ def _normalized_payload(data: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
-def _run_hook(script: Path, payload: dict[str, Any]) -> str:
-    proc = subprocess.run(
+def _snippet(value: str, limit: int = 600) -> str:
+    value = value.strip()
+    if len(value) <= limit:
+        return value
+    return value[:limit].rstrip() + "..."
+
+
+def _hook_error(script: Path, hook_name: str, proc: subprocess.CompletedProcess[str], *, blocked: bool) -> dict[str, Any]:
+    return {
+        "hook": hook_name,
+        "script": str(script),
+        "returncode": proc.returncode,
+        "stderr": _snippet(proc.stderr),
+        "stdout": _snippet(proc.stdout),
+        "blocked": blocked,
+    }
+
+
+def _hook_error_message(hook_name: str, proc: subprocess.CompletedProcess[str], *, blocked: bool) -> str:
+    detail_parts = []
+    if proc.stderr.strip():
+        detail_parts.append(f"stderr: {_snippet(proc.stderr)}")
+    if proc.stdout.strip():
+        detail_parts.append(f"stdout: {_snippet(proc.stdout)}")
+    details = "\n".join(detail_parts) or "no child hook output"
+    if blocked:
+        return (
+            f"Alpha Insights {hook_name} hook failed (returncode={proc.returncode}). "
+            "Treat the current gate as BLOCKED until manual validation passes.\n"
+            f"{details}"
+        )
+    return (
+        f"Alpha Insights {hook_name} hook failed (returncode={proc.returncode}). "
+        "Continue the tool operation, but inspect the hook before relying on automation logs.\n"
+        f"{details}"
+    )
+
+
+def _run_hook(script: Path, payload: dict[str, Any]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
         ["python3", str(script)],
         input=json.dumps(payload, ensure_ascii=False),
         text=True,
         capture_output=True,
         check=False,
     )
-    return proc.stdout.strip()
 
 
 def main() -> None:
@@ -86,14 +123,33 @@ def main() -> None:
     except Exception:
         return
 
-    _run_hook(PROGRESS_LOGGER, _normalized_payload(data))
+    hook_errors: list[dict[str, Any]] = []
+    progress_proc = _run_hook(PROGRESS_LOGGER, _normalized_payload(data))
+    if progress_proc.returncode != 0:
+        hook_errors.append(_hook_error(PROGRESS_LOGGER, "progress_logger", progress_proc, blocked=False))
 
     messages: list[str] = []
+    gates: list[dict[str, Any]] = []
     for path in _extract_paths(data):
         payload = dict(data)
         payload["tool_name"] = _tool_name(data) or "ApplyPatch"
         payload["tool_input"] = {"file_path": path}
-        output = _run_hook(STAGE_GATE_HOOK, payload)
+        proc = _run_hook(STAGE_GATE_HOOK, payload)
+        if proc.returncode != 0:
+            hook_errors.append(_hook_error(STAGE_GATE_HOOK, "stage_gate", proc, blocked=True))
+            messages.append(_hook_error_message("stage gate", proc, blocked=True))
+            gates.append(
+                {
+                    "blocked": True,
+                    "semantic": "hard_stop",
+                    "hook_error": True,
+                    "hook": "stage_gate",
+                    "script": str(STAGE_GATE_HOOK),
+                    "returncode": proc.returncode,
+                }
+            )
+            continue
+        output = proc.stdout.strip()
         if not output:
             continue
         try:
@@ -104,11 +160,28 @@ def main() -> None:
             message = decoded.get("message")
             if message:
                 messages.append(str(message))
+            gate = decoded.get("alpha_insights_gate")
+            if isinstance(gate, dict):
+                gates.append(gate)
+
+    if hook_errors and not messages:
+        messages.extend(
+            _hook_error_message(str(error["hook"]).replace("_", " "), progress_proc, blocked=False)
+            for error in hook_errors
+            if error.get("hook") == "progress_logger"
+        )
 
     if messages:
-        print(json.dumps({"decision": "allow", "message": "\n\n".join(messages)}, ensure_ascii=False))
+        blocked = any(bool(gate.get("blocked")) for gate in gates)
+        print(json.dumps({
+            "decision": "allow",
+            "message": "\n\n".join(messages),
+            "alpha_insights_blocked": blocked,
+            "alpha_insights_gates": gates,
+            "alpha_insights_hook_error": bool(hook_errors),
+            "alpha_insights_hook_errors": hook_errors,
+        }, ensure_ascii=False))
 
 
 if __name__ == "__main__":
     main()
-

@@ -8,6 +8,7 @@ KNOWN_DELIVERABLES = [
     "user_brief.md",
     "research_definition.md",
     "research_plan.md",
+    "interview_guides.md",
     "evidence_base.md",
     "insights.md",
     "report.html",

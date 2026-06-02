@@ -8,6 +8,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 The Industry Lifecycle framework describes how industries evolve from birth to decline, serving as a foundational tool for judging development stages and forecasting future trends.

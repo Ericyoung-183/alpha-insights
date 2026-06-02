@@ -36,7 +36,7 @@ Alpha Insights enforces the research workflow with runtime checks, not only inst
 ### See It in Action
 
 > **[View Demo Report (HTML)](https://ericyoung-183.github.io/alpha-insights/assets/demo-report.html)** — A competitive analysis of China's EV charging industry.
-> Full report with executive summary, Porter's Five Forces, competitive positioning charts, evidence-graded findings, and strategic recommendations with ROI estimates — generated in one session.
+> Compact public demo with executive summary, Porter's Five Forces, competitive positioning charts, evidence-graded findings, and strategic recommendations — generated in one session. It is a Tier 2 topic-brief sample, not a full Tier 3 deep report.
 
 > **[Read the V4.1 launch note](https://ericyoung-183.github.io/alpha-insights/launch.html)** — Why Alpha Insights treats serious AI research as a harness-enforced workflow, not another prompt pack.
 
@@ -113,12 +113,20 @@ python3 scripts/install_codex.py --verify
 
 **Claude Code compatible install**:
 
-Install this folder as a skill package in your runtime, keeping the root
-`SKILL.md` frontmatter hooks intact, then run:
+Install this repository as the `alpha-insights` skill package. For the standard
+Claude Code skill directory:
 
 ```bash
-python3 scripts/verify_cloudcode.py
+git clone https://github.com/Ericyoung-183/alpha-insights.git
+mkdir -p ~/.claude/skills
+rm -rf ~/.claude/skills/alpha-insights
+cp -R alpha-insights ~/.claude/skills/alpha-insights
+python3 ~/.claude/skills/alpha-insights/scripts/verify_cloudcode.py --skill-root ~/.claude/skills/alpha-insights
 ```
+
+Keep the root `SKILL.md` frontmatter hooks intact. If your runtime uses a
+different skill root, copy the same package directory there and run the verifier
+with that path.
 
 ### Usage
 
@@ -149,9 +157,9 @@ Alpha Insights will automatically:
 
 | Source | Description | Required Setup |
 |--------|------------|----------------|
-| **Xiaohongshu (RedNote)** | Consumer sentiment, product feedback, trend signals | Configure `TIKHUB_API_KEY`, pass `--api-key`, or create `~/.alpha_insights.json` with `{"tikHubApiKey": "YOUR_KEY"}` |
+| **Xiaohongshu (RedNote)** | Consumer sentiment, product feedback, trend signals | Public web search or a separately installed private adapter; the GitHub package does not bundle provider-specific collection scripts |
 | **Knowledge base** | Historical reports, industry notes | Knowledge-base CLI, Notion connector, or another available knowledge-base tool |
-| **Internal data** | Business metrics, user behavior | Data Process / ODPS / available database tool |
+| **Internal data** | Business metrics, user behavior | Available database or data warehouse tool |
 
 > Unconfigured data sources are automatically skipped — core functionality is not affected.
 
@@ -200,7 +208,6 @@ alpha-insights/
     │   ├── resume_check.py
     │   ├── validators/   # 7-stage + Stage 3.5 gate validators
     │   └── hooks/        # automation hooks
-    └── xhs/              # Xiaohongshu (RedNote) scripts
 ```
 
 ---

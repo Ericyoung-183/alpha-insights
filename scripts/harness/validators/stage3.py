@@ -1,4 +1,4 @@
-"""Stage 3: Planning 验证器"""
+"""Stage 3: Planning Validator"""
 
 from .common import (
     ValidationResult, file_exists, count_pattern,
@@ -12,36 +12,33 @@ def validate(workspace):
     f = "research_plan.md"
 
     if not file_exists(workspace, f):
-        r.fail(f"{f} 不存在")
+        r.fail(f"{f} missing")
         return r
-    r.pass_check(f"{f} 存在")
+    r.pass_check(f"{f} exists")
 
-    # WARN: Track 数量
     track_count = count_pattern(workspace, f, r"Track [A-G]")
     if track_count < 3:
-        r.warn(f"仅检测到 {track_count} 个 Track（建议 ≥ 3）")
+        r.warn(f"only {track_count} Track entries detected; recommend at least 3")
     else:
-        r.pass_check(f"Track 数量: {track_count}")
+        r.pass_check(f"Track count: {track_count}")
 
-    # WARN: 假设确认记录（Q→H→Lens 映射）
     has_hypothesis = (
         file_contains_pattern(workspace, f, r"H[0-9]")
-        or file_contains_keyword(workspace, f, "假设")
+        or file_contains_keyword(workspace, f, "\u5047\u8bbe")
     )
     if has_hypothesis:
-        r.pass_check("含假设记录")
+        r.pass_check("hypothesis record present")
     else:
-        r.warn("未检测到假设记录（H1/H2... 或 '假设' 关键词）")
+        r.warn("hypothesis record not detected (H1/H2 or hypothesis keyword)")
 
-    # FAIL: 访谈决策记录（⛔ 决策环节不可跳过，用户可选择不做访谈）
     has_interview_decision = (
-        file_contains_keyword(workspace, f, "访谈")
+        file_contains_keyword(workspace, f, "\u8bbf\u8c08")
         or file_contains_keyword(workspace, f, "interview")
     )
     if has_interview_decision:
-        r.pass_check("含访谈决策记录")
+        r.pass_check("interview decision record present")
     else:
-        r.fail("未检测到访谈决策记录 — 必须向用户提出访谈建议并记录决策（用户可选择不做，但决策环节不可跳过）")
+        r.fail("interview decision record missing; propose interviews to the user and record the decision, even if declined")
 
     evidence_integrity.validate_stage3_plan(r, workspace, f)
 

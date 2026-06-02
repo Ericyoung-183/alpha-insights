@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Alpha Insights — Resume Check (用于 SKILL.md !`shell` 内联调用)
+Alpha Insights — Resume Check (\u7528\u4e8e SKILL.md !`shell` \u5185\u8054\u8c03\u7528)
 
-自动扫描 workspace 目录，输出断点续做摘要。
-无参数运行：从 cwd 向上扫描；带参数运行：扫描指定目录。
+\u81ea\u52a8\u626b\u63cf workspace \u76ee\u5f55，\u8f93\u51fa\u65ad\u70b9\u7eed\u505a\u6458\u8981。
+\u65e0\u53c2\u6570\u8fd0\u884c：\u4ece cwd \u5411\u4e0a\u626b\u63cf；\u5e26\u53c2\u6570\u8fd0\u884c：\u626b\u63cf\u6307\u5b9a\u76ee\u5f55。
 
-输出设计为人可读，直接嵌入 SKILL prompt。
+\u8f93\u51fa\u8bbe\u8ba1\u4e3a\u4eba\u53ef\u8bfb，\u76f4\u63a5\u5d4c\u5165 SKILL prompt。
 """
 
 import json
@@ -27,7 +27,7 @@ KNOWN_FILES = list(DELIVERABLES.values())
 
 
 def find_workspaces(base_dir):
-    """扫描 base_dir 下所有可能的 workspace 目录"""
+    """scan candidate workspace directories under base_dir"""
     found = []
 
     # Strategy 1: base_dir/workspace/*/
@@ -48,7 +48,7 @@ def find_workspaces(base_dir):
 
 
 def workspace_summary(ws_path):
-    """为一个 workspace 生成摘要"""
+    """generate one workspace summary"""
     name = os.path.basename(ws_path)
 
     # Try _state.json first

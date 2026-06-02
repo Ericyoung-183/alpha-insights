@@ -315,7 +315,7 @@ Regardless of tier, these standards remain constant:
 ### ECharts Charts
 
 > **Purpose**: All data visualizations use ECharts exclusively. Tier 2 ≥3, Tier 3 ≥6.
-> report_template.html includes a built-in ECharts CDN. Reference example: `report_demo.html` (robot vacuum industry research Tier 2 live report).
+> `report_template.html` includes a built-in ECharts CDN. Generate reports using `report_template.html` + `scripts/report_helper.py`; `report_demo.html` is a legacy layout reference only, not the ECharts standard example.
 
 **Recommended chart types**:
 
@@ -352,7 +352,7 @@ b.add_chapter(1, "Executive Summary", "<h2>Core Conclusion</h2><p>...</p>")
 b.add_chart("chart1", {
     "xAxis": {"type": "category", "values": ["2023", "2024", "2025E"]},
     "series": [{"type": "bar", "values": [100, 200, 300]}]
-})
+}, claim_ids=["E-001"])
 b.save_state("/tmp/rpt.json")
 
 # Final step: Assemble (use absolute paths)
@@ -361,7 +361,7 @@ b = ReportBuilder.load_state("/tmp/rpt.json")
 b.build(os.path.join(ws, 'report.html'))
 ```
 
-> **Key**: All ECharts `data` keys should be written as `"values"` in Python dicts. The script's `_to_js()` automatically maps `"values"` → `"data"` during JS serialization, eliminating filtering issues at the code level.
+> **Key**: All ECharts `data` keys should be written as `"values"` in Python dicts. The script's `_to_js()` automatically maps `"values"` → `"data"` during JS serialization, eliminating filtering issues at the code level. Each chart must link back to the `Evidence Claim Ledger` through `claim_ids` or `source_ids`.
 > **ReportBuilder auto-generates**: cover page, table of contents, chapter headers, footer page, ECharts JS initialization. The model only needs to output chapter content HTML + chart option dicts.
 
 **Fallback method** (when ReportBuilder is unavailable, fall back to raw `build_report()`):

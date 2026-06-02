@@ -50,7 +50,7 @@ Post-interview processing
 |          Evidence Base           |
 +-----------------------------+
        |
-Stage 4 Research Execution (Track B)
+Stage 4 Research Execution (Track C interview evidence integration)
 ```
 
 ---

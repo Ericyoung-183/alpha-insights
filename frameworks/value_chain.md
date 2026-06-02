@@ -6,6 +6,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 Value Chain analysis decomposes an enterprise or industry chain into a series of value-creating activities, identifying which segments create the most value and which are strategic control points. It is the core tool for cost optimization and competitive advantage positioning.

@@ -8,6 +8,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 SWOT Analysis was developed by Albert Humphrey at Stanford Research Institute in the 1960s and is the most classic strategic synthesis tool in strategic management.

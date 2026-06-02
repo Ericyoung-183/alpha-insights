@@ -6,6 +6,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 Blue Ocean Strategy helps companies create uncontested market space through "value innovation" — simultaneously pursuing differentiation and low cost — making competition irrelevant.

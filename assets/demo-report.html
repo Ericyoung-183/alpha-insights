@@ -162,7 +162,7 @@
       <div class="cover-number">AI</div>
     </div>
     <div class="cover-right">
-      <div class="cover-badge">Alpha Insights &mdash; Deep Research Report</div>
+      <div class="cover-badge">Alpha Insights &mdash; Compact Public Demo</div>
       <h1 class="cover-title">China EV Charging Industry</h1>
       <p class="cover-subtitle">Competitive Landscape Analysis 2026</p>
       <div class="cover-divider"></div>
@@ -171,7 +171,7 @@
     </div>
     <div class="cover-footer">
       <span>PUBLIC DEMO</span>
-      <span>Tier 3 &mdash; Deep Research</span>
+      <span>Tier 2 &mdash; Topic Brief Demo</span>
     </div>
   </div>
 
@@ -276,7 +276,7 @@
       <h2>Market Size &amp; Growth Trajectory</h2>
       <p>China's EV charging infrastructure market has grown at a <strong>34% CAGR</strong> over 2021-2025, driven by rapid EV adoption (NEV penetration reached 48% of new car sales in Q1 2026) and supportive government policy.</p>
 
-      <div class="chart-container">
+      <div class="chart-container" data-claim-id="CLAIM-001" data-source-id="SRC-001">
         <div class="chart-title">Market Size &amp; Growth Rate (2021-2028E)</div>
         <div id="chart-market-size" style="width:100%;height:350px;"></div>
       </div>
@@ -323,7 +323,7 @@
     <div class="chapter-body">
 
       <h2>Forces Assessment Overview</h2>
-      <div class="chart-container">
+      <div class="chart-container" data-claim-id="CLAIM-002" data-source-id="SRC-002">
         <div class="chart-title">Porter's Five Forces &mdash; China EV Charging Industry</div>
         <div id="chart-porters" style="width:100%;height:380px;"></div>
       </div>
@@ -380,7 +380,7 @@
     <div class="chapter-body">
 
       <h2>Market Share Distribution</h2>
-      <div class="chart-container">
+      <div class="chart-container" data-claim-id="CLAIM-003" data-source-id="SRC-003">
         <div class="chart-title">Public Charging Network Market Share (2025)</div>
         <div id="chart-market-share" style="width:100%;height:350px;"></div>
       </div>
@@ -396,7 +396,7 @@
       </table>
 
       <h2>Competitive Positioning Matrix</h2>
-      <div class="chart-container">
+      <div class="chart-container" data-claim-id="CLAIM-004" data-source-id="SRC-004">
         <div class="chart-title">Strategic Positioning: Scale vs. Profitability</div>
         <div id="chart-positioning" style="width:100%;height:380px;"></div>
       </div>
@@ -471,8 +471,8 @@
     <div class="chapter-body">
 
       <h2>Methodology Note</h2>
-      <p>This report was produced using the <strong>Alpha Insights</strong> SKILL for Claude Code. The analysis followed a <strong>7-stage structured workflow</strong>: Scenario Identification → Framework Selection → Multi-track Data Collection → Analysis & Synthesis → Judgment & Insight Generation → Report Generation → Delivery.</p>
-      <p>Quality was enforced via <strong>7-stage + Stage 3.5 gate validators</strong> (harness engineering) and an <strong>Independent Quality Review (IQR)</strong> scoring across 5 dimensions: Evidence Quality, Analytical Depth, Actionability, Logical Coherence, and Presentation.</p>
+      <p>This report was produced using the <strong>Alpha Insights</strong> SKILL for Claude Code-compatible runtimes and Codex Desktop. The analysis followed a <strong>7-stage structured workflow</strong>: Scenario Identification → Framework Selection → Multi-track Data Collection → Analysis & Synthesis → Judgment & Insight Generation → Report Generation → Delivery.</p>
+      <p>Quality was enforced via <strong>7-stage + Stage 3.5 gate validators</strong> (harness engineering), chart-level evidence metadata, and an <strong>Independent Quality Review (IQR)</strong> process covering deliverable-specific review dimensions across Stage 2, Stage 4, and Stage 6.</p>
 
       <h2>Source List &amp; Confidence Grading</h2>
       <table class="data-table">
@@ -508,8 +508,11 @@
         </div>
       </div>
 
+      <h2>Known Blind Spots</h2>
+      <p>This compact demo intentionally omits a full primary-source trail, refreshed live data pulls, full sensitivity modeling, and a complete Tier 3 chapter expansion. Treat it as a format and workflow sample, not as a current investment memo.</p>
+
       <h2>Disclaimer</h2>
-      <p style="font-size:12px;">This public demo is generated for demonstration purposes and is not based on private client work. Data points are based on publicly available information and illustrative estimates; they may not reflect the most current figures. All projections should be refreshed and independently verified before investment or operating decisions. The confidence grading system reflects the triangulation quality of sources, not absolute accuracy.</p>
+      <p style="font-size:12px;">This compact public demo is generated for demonstration purposes and is not based on private client work. It is a Tier 2 topic-brief sample, not a full V4.1 Tier 3 deep report. Data points are based on publicly available information and illustrative estimates; they may not reflect the most current figures. All projections should be refreshed and independently verified before investment or operating decisions. The confidence grading system reflects the triangulation quality of sources, not absolute accuracy.</p>
 
       <div class="page-number">&mdash; 6 &mdash;</div>
     </div>
@@ -553,23 +556,30 @@
     ];
     dk.scatterColors = ['#1A365D','#2D5B8C','#667EEA','#DD6B20','#10B981','#F59E0B','#A0AEC0'];
 
+    function showChartFallback() {
+      document.querySelectorAll('.chart-container [id^="chart-"]').forEach(function(el) {
+        el.innerHTML = '<div style="height:100%;min-height:220px;display:flex;align-items:center;justify-content:center;text-align:center;color:#718096;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;padding:18px;">Chart could not render. Please refresh with network access to the ECharts CDN.</div>';
+      });
+    }
+
+    if (!window.echarts) {
+      showChartFallback();
+    } else {
+
     // Chart 1: Market Size Bar + Line
     var opt1 = {
       tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
       legend: { top: 5 },
-      xAxis: { type: 'category' },
+      xAxis: { type: 'category', data: dk.years },
       yAxis: [
         { type: 'value', name: 'Market Size ($B)', position: 'left' },
         { type: 'value', name: 'Growth Rate (%)', position: 'right', axisLabel: { formatter: '{value}%' } }
       ],
       series: [
-        { name: 'Market Size ($B)', type: 'bar', itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#667EEA' }, { offset: 1, color: '#1A365D' }]) }, barWidth: '45%' },
-        { name: 'Growth Rate (%)', type: 'line', yAxisIndex: 1, smooth: true, lineStyle: { color: '#DD6B20', width: 3 }, itemStyle: { color: '#DD6B20' }, symbol: 'circle', symbolSize: 8 }
+        { name: 'Market Size ($B)', type: 'bar', data: dk.marketSize, itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#667EEA' }, { offset: 1, color: '#1A365D' }]) }, barWidth: '45%' },
+        { name: 'Growth Rate (%)', type: 'line', data: dk.growthRate, yAxisIndex: 1, smooth: true, lineStyle: { color: '#DD6B20', width: 3 }, itemStyle: { color: '#DD6B20' }, symbol: 'circle', symbolSize: 8 }
       ]
     };
-    opt1.xAxis['data'] = dk.years;
-    opt1.series[0]['data'] = dk.marketSize;
-    opt1.series[1]['data'] = dk.growthRate;
     var chart1 = echarts.init(document.getElementById('chart-market-size'));
     chart1.setOption(opt1);
 
@@ -588,15 +598,14 @@
         axisName: { color: '#2D3748', fontSize: 12 },
         splitArea: { areaStyle: { color: ['#F7FAFC', '#EDF2F7', '#E2E8F0', '#CBD5E0', '#A0AEC0'] } }
       },
-      series: [{ type: 'radar' }]
-    };
-    opt2.series[0]['data'] = [{
+      series: [{ type: 'radar', data: [{
       value: dk.radarValues,
       name: 'Force Intensity',
       areaStyle: { color: 'rgba(102,126,234,0.25)' },
       lineStyle: { color: '#667EEA', width: 2 },
       itemStyle: { color: '#667EEA' }
-    }];
+    }] }]
+    };
     var chart2 = echarts.init(document.getElementById('chart-porters'));
     chart2.setOption(opt2);
 
@@ -605,13 +614,13 @@
       tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
       series: [{
         type: 'pie',
+        data: dk.pieItems,
         radius: ['40%', '70%'],
         avoidLabelOverlap: true,
         itemStyle: { borderRadius: 8, borderColor: '#fff', borderWidth: 3 },
         label: { show: true, formatter: '{b}\n{d}%', fontSize: 12 }
       }]
     };
-    opt3.series[0]['data'] = dk.pieItems;
     var chart3 = echarts.init(document.getElementById('chart-market-share'));
     chart3.setOption(opt3);
 
@@ -622,18 +631,19 @@
       yAxis: { name: 'Profitability Score', nameLocation: 'middle', nameGap: 40, min: 0, max: 100 },
       series: [{
         type: 'scatter',
+        data: dk.scatterItems,
         symbolSize: function(val) { return val[2]; },
         label: { show: true, formatter: function(p) { return p['data'][3]; }, position: 'top', fontSize: 11, color: '#2D3748' },
         itemStyle: { color: function(p) { return dk.scatterColors[p.dataIndex]; } }
       }]
     };
-    opt4.series[0]['data'] = dk.scatterItems;
     var chart4 = echarts.init(document.getElementById('chart-positioning'));
     chart4.setOption(opt4);
 
     window.addEventListener('resize', function() {
       chart1.resize(); chart2.resize(); chart3.resize(); chart4.resize();
     });
+    }
   </script>
 
 </body>

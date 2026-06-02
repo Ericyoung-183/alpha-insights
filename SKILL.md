@@ -833,7 +833,7 @@ b.add_chart("chart1", {
     "yAxis": {"type": "value", "name": "USD (M)"},
     "series": [{"name": "Series", "type": "bar", "values": [100, 200, 300],
                 "itemStyle": {"color": "#667EEA"}}]
-})
+}, claim_ids=["E-001"])
 b.save_state("{ws}/_rpt_state.json")
 ```
 

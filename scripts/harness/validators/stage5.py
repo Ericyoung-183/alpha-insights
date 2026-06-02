@@ -1,4 +1,4 @@
-"""Stage 5: Insights 验证器"""
+"""Stage 5: Insights Validator"""
 
 from .common import (
     ValidationResult, file_exists, file_contains_pattern,
@@ -13,103 +13,92 @@ def validate(workspace):
     tier = get_tier(workspace)
 
     if not file_exists(workspace, f):
-        r.fail(f"{f} 不存在")
+        r.fail(f"{f} missing")
         return r
-    r.pass_check(f"{f} 存在")
+    r.pass_check(f"{f} exists")
 
-    # 必须含评分
-    has_score = file_contains_pattern(workspace, f, r"[0-9]+\s*分|评分|score|Score")
+    has_score = file_contains_pattern(workspace, f, r"[0-9]+\s*\u5206|\u8bc4\u5206|score|Score")
     if has_score:
-        r.pass_check("含洞察评分")
+        r.pass_check("insight score present")
     else:
-        r.fail("未检测到洞察评分")
+        r.fail("insight score not detected")
 
-    # 红队审查（所有档位必须执行）
-    has_red = file_contains_pattern(workspace, f, r"红队|red.?team|Red.?Team|红队审查")
+    has_red = file_contains_pattern(workspace, f, r"\u7ea2\u961f|red.?team|Red.?Team|\u7ea2\u961f\u5ba1\u67e5")
     if has_red:
-        r.pass_check("红队审查记录存在")
+        r.pass_check("red-team review record present")
     else:
-        r.fail("未检测到红队审查记录（所有档位必须执行）")
+        r.fail("red-team review record not detected; required for all tiers")
 
-    # 蓝队审查（所有档位必须执行）
-    has_blue = file_contains_pattern(workspace, f, r"蓝队|blue.?team|Blue.?Team|蓝队审查")
+    has_blue = file_contains_pattern(workspace, f, r"\u84dd\u961f|blue.?team|Blue.?Team|\u84dd\u961f\u5ba1\u67e5")
     if has_blue:
-        r.pass_check("蓝队审查记录存在")
+        r.pass_check("blue-team review record present")
     else:
-        r.fail("未检测到蓝队审查记录（所有档位必须执行）")
+        r.fail("blue-team review record not detected; required for all tiers")
 
-    # WARN: 红队实质挑战记录
     if has_red:
         has_substantive = file_contains_pattern(
-            workspace, f, r"实质|致命|Substantive|Fatal"
+            workspace, f, r"\u5b9e\u8d28|\u81f4\u547d|Substantive|Fatal"
         )
         if has_substantive:
-            r.pass_check("红队含实质/致命级挑战记录")
+            r.pass_check("red-team substantive/fatal challenge record present")
         else:
-            r.warn("红队审查未检测到实质/致命级挑战 — 每个核心洞察至少 1 个实质挑战")
+            r.warn("red-team review lacks substantive/fatal challenges; each core insight needs at least one substantive challenge")
 
-    # WARN: 洞察数量
-    insight_count = count_pattern(workspace, f, r"(?:洞察|Insight)\s*[I#]?\s*\d")
+    insight_count = count_pattern(workspace, f, r"(?:\u6d1e\u5bdf|Insight)\s*[I#]?\s*\d")
     if insight_count < 3:
-        r.warn(f"仅检测到 {insight_count} 个洞察（建议 ≥ 3）")
+        r.warn(f"only {insight_count} insights detected; recommend at least 3")
 
-    # WARN: 用户确认状态
     has_confirm = file_contains_pattern(
-        workspace, f, r"用户确认|已确认|待确认|已修改"
+        workspace, f, r"\u7528\u6237\u786e\u8ba4|\u5df2\u786e\u8ba4|\u5f85\u786e\u8ba4|\u5df2\u4fee\u6539"
     )
     if has_confirm:
-        r.pass_check("含用户确认状态记录")
+        r.pass_check("user confirmation status present")
     else:
-        r.warn("未检测到用户确认状态 — insights.md 应记录洞察确认结果")
+        r.warn("user confirmation status not detected; insights.md should record confirmation outcomes")
 
-    # WARN: 关键变量监测
     has_key_var = (
-        file_contains_keyword(workspace, f, "关键变量")
-        or file_contains_keyword(workspace, f, "监测清单")
+        file_contains_keyword(workspace, f, "\u5173\u952e\u53d8\u91cf")
+        or file_contains_keyword(workspace, f, "\u76d1\u6d4b\u6e05\u5355")
     )
     if has_key_var:
-        r.pass_check("含关键变量/监测清单")
+        r.pass_check("key-variable/watchlist record present")
     else:
-        r.warn("未检测到关键变量监测清单")
+        r.warn("key-variable watchlist not detected")
 
-    # WARN: So What 链深度（检测层级标记：→/⇒/层/layer 或 So What 出现次数）
     so_what_count = count_pattern(workspace, f, r"So What|so what|So what")
-    layer_markers = count_pattern(workspace, f, r"→.*→|⇒.*⇒|第[一二三四1-4]层|Layer [1-4]|现象[\s\S]*?含义[\s\S]*?策略|含义[\s\S]*?策略[\s\S]*?行动")
+    layer_markers = count_pattern(workspace, f, r"→.*→|⇒.*⇒|\u7b2c[\u4e00\u4e8c\u4e09\u56db1-4]\u5c42|Layer [1-4]|\u73b0\u8c61[\s\S]*?\u542b\u4e49[\s\S]*?\u7b56\u7565|\u542b\u4e49[\s\S]*?\u7b56\u7565[\s\S]*?\u884c\u52a8")
     depth_signal = max(so_what_count, layer_markers)
     if depth_signal >= 3:
-        r.pass_check(f"So What 链深度信号: {depth_signal}（So What {so_what_count} 处 + 层级标记 {layer_markers} 处）")
+        r.pass_check(f"So What depth signal: {depth_signal}（So What {so_what_count} matches + layer markers {layer_markers} matches)")
     else:
-        r.warn(f"So What 链深度不足（So What {so_what_count} 处 + 层级标记 {layer_markers} 处，要求核心洞察 ≥3 层推导）")
+        r.warn(f"So What chain depth is thin (So What {so_what_count} matches + layer markers {layer_markers} matches; core insights require at least 3 reasoning layers)")
 
-    # WARN: Pre-mortem 风险记录
     has_premortem = (
         file_contains_keyword(workspace, f, "Pre-mortem")
         or file_contains_keyword(workspace, f, "pre-mortem")
-        or file_contains_keyword(workspace, f, "风险提示")
-        or file_contains_keyword(workspace, f, "失败原因")
+        or file_contains_keyword(workspace, f, "\u98ce\u9669\u63d0\u793a")
+        or file_contains_keyword(workspace, f, "\u5931\u8d25\u539f\u56e0")
     )
     if has_premortem:
-        r.pass_check("含 Pre-mortem 风险记录")
+        r.pass_check("pre-mortem risk record present")
     else:
-        r.warn("未检测到 Pre-mortem 风险记录")
+        r.warn("pre-mortem risk record not detected")
 
-    # WARN: SMART 测试记录（匹配完整词 SMART，或全拼 Specific/Measurable...，或展开格式 **S**: / **M**: ...）
     has_smart = (
         file_contains_keyword(workspace, f, "SMART")
         or file_contains_pattern(workspace, f, r"Specific|Measurable|Achievable|Relevant|Time.?bound")
         or file_contains_pattern(workspace, f, r"\*{2}[SMART]\*{2}\s*[:：]")
     )
     if has_smart:
-        r.pass_check("含 SMART 测试记录")
+        r.pass_check("SMART test record present")
     else:
-        r.warn("未检测到 SMART 测试记录")
+        r.warn("SMART test record not detected")
 
-    # 行动建议
-    has_action = file_contains_keyword(workspace, f, "建议") or file_contains_keyword(workspace, f, "行动")
+    has_action = file_contains_keyword(workspace, f, "\u5efa\u8bae") or file_contains_keyword(workspace, f, "\u884c\u52a8")
     if has_action:
-        r.pass_check("含行动建议")
+        r.pass_check("action recommendation present")
     else:
-        r.warn("未检测到行动建议")
+        r.warn("action recommendation not detected")
 
     evidence_integrity.validate_insight_confidence(r, workspace, f)
 

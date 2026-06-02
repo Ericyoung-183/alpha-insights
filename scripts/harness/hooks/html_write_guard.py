@@ -28,9 +28,10 @@ def main():
         json.dump({
             "decision": "block",
             "reason": (
-                "HTML 文件必须通过 Bash + Python 脚本生成（report_helper.py 或手动 dk 拼接）。"
-                "Write 工具被禁止写 .html，因为模型输出层会随机过滤 ECharts 的 data 关键字，"
-                "且 Write 在 context 紧张时会截断大文件。请参照 Stage 6 指令。"
+                "HTML files must be generated through Bash + Python scripts "
+                "(report_helper.py or manual string assembly). Write is blocked for .html "
+                "because model output can filter ECharts data keys and truncate large files "
+                "when context is tight. Follow Stage 6 instructions."
             ),
         }, sys.stdout, ensure_ascii=False)
 

@@ -47,7 +47,7 @@ That third level is where AI research starts to become organizational infrastruc
 
 GitHub: [Ericyoung-183/alpha-insights](https://github.com/Ericyoung-183/alpha-insights)
 
-Demo report: [EV charging competitive analysis](https://ericyoung-183.github.io/alpha-insights/assets/demo-report.html)
+Demo report: [EV charging competitive analysis](https://ericyoung-183.github.io/alpha-insights/assets/demo-report.html) (compact Tier 2 public demo)
 
 Release: [V4.1 dual-platform release](https://github.com/Ericyoung-183/alpha-insights/releases/tag/v4.1.0)
 

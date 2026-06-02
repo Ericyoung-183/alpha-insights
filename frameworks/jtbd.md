@@ -8,6 +8,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 JTBD understands demand from the perspective of "what job does the user want to get done" rather than "who is the user." It is one of the most penetrating analytical lenses in demand insight and product innovation.

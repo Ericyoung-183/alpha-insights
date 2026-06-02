@@ -5,7 +5,7 @@
 > **Core Principle**: Separation of generation and evaluation — models are inherently lenient when evaluating their own output; independent evaluation is required
 > **Trigger Condition**: Tier 2 and above research (Tier 1 quick scans skip IQR)
 > **Execution Method**: Use the Agent tool to launch a subagent with the deliverable + prompt template below
-> **Fallback**: When Agent tool is unavailable, self-check in the main session using the template below; conclusions are equivalent
+> **Fallback**: When Agent tool is unavailable, self-check in the main session using the template below; this is a weaker fallback, not equivalent to independent IQR, and the result must be labeled "Main-session self-check (independent Subagent not used)"
 
 ---
 

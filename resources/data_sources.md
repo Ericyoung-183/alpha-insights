@@ -72,7 +72,7 @@
 | **Competitor company data** (earnings/funding/products) | Web scraping | Directly scrape cninfo.com.cn / SEC EDGAR in-site search page | Search engine `{company} annual report {year}` -> enterprise data platforms |
 | **User behavior/App data** | Search engine | `{App} MAU DAU QuestMobile {year}` | Qimai Data -> SimilarWeb |
 | **Policies & regulations** | Search engine | `{keywords} site:gov.cn` | PKU Law / public legal databases; use LegalSearch if configured |
-| **Consumer insights/user voices** | Xiaohongshu scripts | `scripts/xhs/check_topics.js --keywords "{keywords}"` | Search engine `{product} review Xiaohongshu` |
+| **Consumer insights/user voices** | Public web search or optional private social-media adapter | `{product} review Xiaohongshu` / `{product} user feedback RedNote` | User-provided screenshots, links, or exported notes |
 | **Internal data/business docs** | Knowledge base search | Search via the current environment's available knowledge-base tools | Ask user directly |
 | **Structured business data** | Database query | Query via the current environment's available database/data-processing tools | Degrade to public data estimation |
 | **Expert opinions/deep information** | Interview (Track C) | Stage 3.5 generates guide -> user executes | Industry KOL public statements -> broker conference call transcripts |
@@ -88,8 +88,8 @@
 | **Search engine** | Codex native web, browser search, platform search tools, etc. | Prefer available search capability in the environment |
 | **Web scraping** | Codex native web, browser/web reading tools, etc. | Retrieve search result pages or specified URL content |
 | **Knowledge base search** | Knowledge-base CLI, Notion/Confluence connectors, or other knowledge-base tools | Search via user-configured knowledge base capability |
-| **Database query** | Data Process/ODPS, BigQuery, Snowflake, or other database tools | Query via user-configured database capability |
-| **Xiaohongshu** | Local `scripts/xhs/` scripts | TikHub API; configure `TIKHUB_API_KEY`, pass `--api-key`, or set `~/.alpha_insights.json` |
+| **Database query** | SQL warehouse, BigQuery, Snowflake, or other database tools | Query via user-configured database capability |
+| **Xiaohongshu / RedNote** | Public search, browser reading, or a separately installed private adapter | The public GitHub package does not bundle provider-specific collection scripts |
 
 ```
 Decision logic:
@@ -301,7 +301,7 @@ Step 4: Extract useful information, annotate source
 
 > **Purpose**: Company internal business data, user behavior data, transaction records, and other core data assets
 >
-> **Prerequisite**: User must have configured a database MCP tool (e.g., ODPS, BigQuery, Snowflake) with appropriate access permissions
+> **Prerequisite**: User must have configured a database or data warehouse tool (e.g., BigQuery, Snowflake, Postgres, DuckDB, or another environment-specific connector) with appropriate access permissions
 
 **Required capabilities** (AI auto-matches available tools in the environment):
 
@@ -370,21 +370,20 @@ SELECT * FROM huge_table;
 
 ---
 
-### X. Xiaohongshu Data (Specialty Data Source)
+### X. Xiaohongshu / RedNote Data (Optional Social-Media Source)
 
 > **Purpose**: Consumer sentiment, product feedback, trend insights, brand reputation
 >
-> **Data source**: TikHub API. Configure `TIKHUB_API_KEY`, pass `--api-key`, or set `~/.alpha_insights.json`.
+> **Public package boundary**: The GitHub package does not bundle provider-specific collection scripts. Use public search, browser-readable pages, user-provided links/screenshots, or a separately installed private adapter if the user's environment provides one.
 
-**Script location**: `scripts/xhs/`
+**Collection options**:
 
-| Script | Function | Use Case |
-|--------|----------|----------|
-| **search_notes.js** | Keyword note search | Quick retrieval of topic-related content |
-| **fetch_user_notes.js** | Get user's latest notes | Track specific influencer activity |
-| **get_note.js** | Get note details | In-depth analysis of individual content |
-| **check_topics.js** | Batch keyword/user scan | Sentiment monitoring, trend scanning |
-| **tikhub_client.js** | API client (shared) | Internal dependency |
+| Option | Use Case | Evidence Grade |
+|--------|----------|----------------|
+| Public web search (`site:xiaohongshu.com` + keywords) | Lightweight trend scan and quote discovery | Usually C unless original page is accessible |
+| Browser-readable note pages or share links provided by the user | Direct inspection of specific notes or comments | B/C depending on visibility and timestamp |
+| User-provided screenshots or exported notes | Private or login-gated content that the AI cannot access directly | C unless source metadata is complete |
+| Separately installed private adapter | High-volume collection in environments where the user has configured one | Grade by adapter reliability and source traceability |
 
 **When to use**:
 - Stage 3 pre-scan: Understanding consumer sentiment, product reputation
@@ -393,29 +392,28 @@ SELECT * FROM huge_table;
 
 **Execution flow**:
 ```
-Step 1: Keyword Search
-   - node scripts/xhs/search_notes.js --keyword "keyword"
-   - Optional sort: general, time_descending (newest), popularity_descending (most popular)
+Step 1: Search publicly visible pages
+   - Query examples: "{brand} review Xiaohongshu", "{category} RedNote user feedback", "site:xiaohongshu.com {keyword}"
 
-Step 2: Batch Scan (recommended)
-   - node scripts/xhs/check_topics.js --keywords "keyword1,keyword2" --since 24h
-   - Auto-dedup, sorted by engagement, time range filtering
+Step 2: Capture traceable evidence
+   - Preserve title, author/account, visible date, link or screenshot reference, engagement if visible
+   - Do not treat copied snippets without source metadata as high-confidence evidence
 
-Step 3: Detail Retrieval (for deep dives)
-   - node scripts/xhs/get_note.js --url "share link"
-   - Get full note content and comments
+Step 3: Ask for manual evidence when access is gated
+   - Request links, screenshots, exports, or a configured private adapter only when Track E is material to the research question
+
+Step 4: Synthesize cautiously
+   - Use social media as directional signal unless sample size, timestamps, and source traceability are strong
 ```
 
-**Parameter reference**:
+**Search guidance**:
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `--keyword` | Search keyword | "AI programming" |
-| `--keywords` | Multiple keywords (comma-separated) | "AI programming,Cursor" |
-| `--user-id` | User ID (can be multiple) | "uid1,uid2" |
-| `--since` | Time range | `1h`, `6h`, `24h`, `7d` |
-| `--sort` | Sort method | `general`, `time_descending`, `popularity_descending` |
-| `--count` | Number of results | Default 5 |
+| Search Need | Query Pattern |
+|-------------|---------------|
+| Product sentiment | `{product} review Xiaohongshu` / `{product} RedNote feedback` |
+| Competitor comparison | `{brand A} {brand B} Xiaohongshu comparison` |
+| Pain points | `{category} pain point Xiaohongshu` / `{product} complaint RedNote` |
+| Trend signal | `{topic} Xiaohongshu trend` / `{topic} RedNote creator discussion` |
 
 **Value assessment criteria**:
 
@@ -426,21 +424,23 @@ Step 3: Detail Retrieval (for deep dives)
 
 **Output format**:
 ```
-Xiaohongshu intelligence scan complete (last 24h)
+Xiaohongshu / RedNote intelligence scan complete
 
-🔔 Notable content:
+Notable content:
 
 1. @AuthorName - 2026-02-24
    Title: In-depth Comparison of AI Programming Tools
-   ❤️ 12K | ⭐ 8956 | 💬 326
-   🔗 https://www.xiaohongshu.com/explore/...
+   Engagement: likes/saves/comments if visible
+   Link or screenshot: https://www.xiaohongshu.com/explore/...
+   Evidence grade: C (publicly discovered, limited sample)
 
 2. @AnotherAuthor - 2026-02-24
    Title: One Month Real Experience with Cursor
-   ❤️ 3456 | ⭐ 2100 | 💬 89
-   🔗 https://www.xiaohongshu.com/explore/...
+   Engagement: 3456 likes / 2100 saves / 89 comments if visible
+   Link or screenshot: user-provided screenshot
+   Evidence grade: C
 
-📋 Other content: 8 regular notes (omitted)
+Other content: 8 regular notes (omitted)
 ```
 
 **Data verification levels**:
@@ -566,8 +566,8 @@ Step 4: Parse results, annotate source
 > | Data Source | Required Configuration | Status |
 > |------------|----------------------|--------|
 > | Knowledge base search | Knowledge-base CLI, Notion/Confluence connectors, or other knowledge-base tools | Auto-detected |
-> | Internal database | Data Process/ODPS, BigQuery, Snowflake, or other database tools | Auto-detected |
-> | Xiaohongshu data | Built-in scripts + TikHub API key configuration | Auto-detected |
+> | Internal database | SQL warehouse, BigQuery, Snowflake, or other database tools | Auto-detected |
+> | Xiaohongshu / RedNote data | Public search/browser access or optional private adapter | Auto-detected when available |
 > | User feedback data | Database/data-processing tool + feedback data table | Auto-detected |
 
 ---

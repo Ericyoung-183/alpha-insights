@@ -1,4 +1,4 @@
-"""共享验证工具函数"""
+"""Shared validation helper functions."""
 
 import json
 import os
@@ -6,7 +6,7 @@ import re
 
 
 def load_state(workspace):
-    """加载 _state.json，不存在或解析失败则返回 None"""
+    """Load _state.json; return None when missing or invalid."""
     path = os.path.join(workspace, "_state.json")
     if not os.path.isfile(path):
         return None
@@ -18,7 +18,7 @@ def load_state(workspace):
 
 
 def get_tier(workspace):
-    """从 _state.json 读取研究档位（Tier 1/2/3），默认 Tier 3"""
+    """Read research tier from _state.json; default to Tier 3."""
     state = load_state(workspace)
     if state:
         try:
@@ -53,7 +53,7 @@ def file_contains_keyword(workspace, filename, keyword):
         return False
     with open(path, "r", encoding="utf-8", errors="replace") as f:
         content = f.read()
-    return keyword in content
+    return keyword in content or keyword.lower() in content.lower()
 
 
 def file_contains_pattern(workspace, filename, pattern):
@@ -75,18 +75,18 @@ def count_pattern(workspace, filename, pattern):
 
 
 def check_anti_patterns(workspace, filename):
-    """检测报告中的反模式用语"""
-    anti_patterns = ["全面分析", "综合考虑", "需要进一步研究", "有待观察", "不一而足"]
+    """Detect vague anti-pattern wording in reports."""
+    anti_patterns = ["\u5168\u9762\u5206\u6790", "\u7efc\u5408\u8003\u8651", "\u9700\u8981\u8fdb\u4e00\u6b65\u7814\u7a76", "\u6709\u5f85\u89c2\u5bdf", "\u4e0d\u4e00\u800c\u8db3"]
     warnings = []
     for ap in anti_patterns:
         count = count_pattern(workspace, filename, re.escape(ap))
         if count > 0:
-            warnings.append(f"反模式「{ap}」出现 {count} 次")
+            warnings.append(f"Vague anti-pattern wording detected {count} time(s)")
     return warnings
 
 
 class ValidationResult:
-    """验证结果收集器"""
+    """Validation result collector."""
 
     def __init__(self, stage):
         self.stage = stage

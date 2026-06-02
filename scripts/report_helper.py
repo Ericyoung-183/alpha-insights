@@ -1,31 +1,31 @@
 #!/usr/bin/env python3
 """
-report_helper.py — Alpha Insights 报告生成工具
+report_helper.py — Alpha Insights report generation helper
 
-两种使用方式：
+Two usage patterns:
 
-1. build_report()（原始 API）：一次性传入所有 body HTML + charts，适合小报告。
-2. ReportBuilder（推荐）：分步构建，解决大报告生成的两个核心问题：
-   - 模板预填充：封面/目录/章节头/尾页自动生成，模型只填内容
-   - 分步生成：save_state()/load_state() 支持多次调用，每次 2-3K tokens
+1. build_report()(original API): pass all body HTML and charts at once; suitable for smaller reports.
+2. ReportBuilder(recommended): incremental build mode for large reports:
+   - template prefill: cover/TOC/chapter headers/footer generated automatically; model supplies only content
+   - incremental generation: save_state()/load_state() support multiple calls, 2-3K tokens each
 
-ReportBuilder 用法：
+ReportBuilder Usage:
     from report_helper import ReportBuilder
 
-    b = ReportBuilder("报告标题", "副标题")
-    b.set_toc_conclusion("核心结论一句话")
+    b = ReportBuilder("Report Title", "Subtitle")
+    b.set_toc_conclusion("one-sentence core conclusion")
 
-    b.add_chapter("01", "Executive Summary", "<h2>核心结论</h2><p>...</p>")
-    b.add_chart("chart1", {"xAxis": {"type": "category", "values": [...]}, ...})
+    b.add_chapter("01", "Executive Summary", "<h2>Core Conclusion</h2><p>...</p>")
+    b.add_chart("chart1", {"xAxis": {"type": "category", "values": [...]}, ...}, claim_ids=["E-001"])
 
-    b.add_chapter("02", "市场全景", "<h2>...</h2><p>...</p>")
-    b.add_chart("chart2", {...})
+    b.add_chapter("02", "Market Landscape", "<h2>...</h2><p>...</p>")
+    b.add_chart("chart2", {...}, claim_ids=["E-002"])
 
     b.build("workspace/project/report.html")
 
-分步生成（跨多次 Bash 调用）：
+Incremental generation across multiple Bash calls:
     # Step 1
-    b = ReportBuilder("标题", "副标题")
+    b = ReportBuilder("Title", "Subtitle")
     b.save_state("/tmp/rpt.json")
 
     # Step 2
@@ -33,15 +33,16 @@ ReportBuilder 用法：
     b.add_chapter(...)
     b.save_state("/tmp/rpt.json")
 
-    # Step N（最后一步）
+    # Step N(Final step)
     b = ReportBuilder.load_state("/tmp/rpt.json")
     b.build("workspace/project/report.html")
 
-核心机制：模型在 Python dict 中使用 "values" 键（安全，不被输出层过滤），
-本脚本在序列化为 ECharts JS 时自动映射 "values" → "data"。
+Core mechanism: the model writes the safe "values" key in Python dicts,
+and this script maps "values" to "data" when serializing ECharts JS.
 """
 
 import json
+import html
 import os
 import re
 import sys
@@ -49,17 +50,21 @@ from datetime import datetime
 from pathlib import Path
 
 
-# ── 核心：values → data 安全序列化 ─────────────────────────────
+# -- Core: safe values-to-data serialization ---------------------------------
+
+def _escape_html(value):
+    return html.escape(str(value or ""), quote=True)
+
 
 def _to_js(obj, indent=0):
-    """将 Python 对象递归序列化为 JS 对象字面量。
-    
-    关键：遇到 "values" 键时，输出为 "data"（ECharts 需要的键名）。
-    这样模型永远不需要在 Python 代码中写出 "data" + 数组的模式。
+    """Serialize a Python object recursively as a JS object literal.
+
+    Key rule: output "data" when a "values" key is encountered; ECharts requires that key.
+    This avoids asking the model to write the fragile "data" + array pattern directly.
     """
     pad = "  " * indent
     pad_inner = "  " * (indent + 1)
-    
+
     if obj is None:
         return "null"
     elif isinstance(obj, bool):
@@ -67,17 +72,17 @@ def _to_js(obj, indent=0):
     elif isinstance(obj, (int, float)):
         return str(obj)
     elif isinstance(obj, str):
-        # 转义字符串中的特殊字符
+        # Escape special string characters
         escaped = obj.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t")
         return f"'{escaped}'"
     elif isinstance(obj, list):
         if not obj:
             return "[]"
-        # 短数组（纯基本类型且长度 ≤ 8）单行输出
+        # Short primitive arrays are emitted on one line
         if len(obj) <= 8 and all(isinstance(x, (int, float, str, bool, type(None))) for x in obj):
             items = ", ".join(_to_js(x) for x in obj)
             return f"[{items}]"
-        # 长数组或含嵌套对象的数组，多行输出
+        # Long or nested arrays are emitted across multiple lines
         items = []
         for x in obj:
             items.append(f"{pad_inner}{_to_js(x, indent + 1)}")
@@ -87,9 +92,9 @@ def _to_js(obj, indent=0):
             return "{}"
         items = []
         for k, v in obj.items():
-            # ★ 核心映射：values → data
+            # Core mapping: values -> data
             js_key = "data" if k == "values" else k
-            # JS 对象键：简单标识符不加引号，其他加引号
+            # JS object keys: simple identifiers stay unquoted; others are quoted
             if re.match(r'^[a-zA-Z_$][a-zA-Z0-9_$]*$', js_key):
                 key_str = js_key
             else:
@@ -100,13 +105,13 @@ def _to_js(obj, indent=0):
         return str(obj)
 
 
-# ── 图表 JS 生成 ──────────────────────────────────────────────
+# ── Chart JS generation ──────────────────────────────────────────────
 
 def _make_chart_js(charts):
-    """生成所有 ECharts 初始化 JS 代码。
+    """Generate all ECharts initialization JS.
 
-    每个图表用独立 try-catch 包裹，一个出错不影响其他图表。
-    charts: list of dict, 每个 dict 含 "id" 和 "option" 键。
+    Wrap every chart in its own try/catch so one failure does not break the rest.
+    charts: list of dict, each dict contains "id" and "option" keys.
     """
     if not charts:
         return ""
@@ -117,20 +122,33 @@ def _make_chart_js(charts):
         chart_id = chart.get("id", f"chart{i+1}")
         option = chart.get("option", {})
         var_name = f"c{i+1}"
+        chart_id_js = _to_js(str(chart_id))
+        error_label_js = _to_js(f"ECharts init error [{chart_id}]:")
+        evidence_meta = {
+            k: v for k, v in {
+                "claimIds": chart.get("claim_ids"),
+                "sourceIds": chart.get("source_ids"),
+            }.items() if v
+        }
+        evidence_js = (
+            f"  {var_name}.__alphaEvidence = {_to_js(evidence_meta, 1)};\n"
+            if evidence_meta else ""
+        )
         var_names.append(var_name)
 
-        # 每个图表独立 try-catch，防止一个出错杀死全部
+        # Each chart has an independent try/catch.
         js_parts.append(
             f"var {var_name};\n"
             f"try {{\n"
-            f"  {var_name} = echarts.init(document.getElementById('{chart_id}'));\n"
+            f"  {var_name} = echarts.init(document.getElementById({chart_id_js}));\n"
             f"  {var_name}.setOption({_to_js(option, 1)});\n"
+            f"{evidence_js}"
             f"}} catch(e) {{\n"
-            f"  console.error('ECharts init error [{chart_id}]:', e);\n"
+            f"  console.error({error_label_js}, e);\n"
             f"}}"
         )
 
-    # 响应式 resize（也加保护）
+    # Responsive resize, also guarded
     resize_lines = "".join(
         f"    if ({v}) {v}.resize();\n" for v in var_names
     )
@@ -141,45 +159,45 @@ def _make_chart_js(charts):
     return "\n\n".join(js_parts)
 
 
-# ── 模板读取 ─────────────────────────────────────────────────
+# ── Template loading ─────────────────────────────────────────────────
 
 def _read_template(template_path=None):
-    """读取 report_template.html，提取 <style> 和 ECharts CDN。"""
+    """Read report_template.html and extract <style> plus ECharts CDN."""
     if template_path is None:
-        # 默认路径：相对于本脚本
+        # Default path: relative to this script
         template_path = Path(__file__).parent.parent / "references" / "report_template.html"
-    
+
     template_path = Path(template_path)
     if not template_path.exists():
-        print(f"⚠️ 模板文件不存在: {template_path}，使用内置最小样式")
+        print(f"⚠️ template file missing: {template_path}, using minimal built-in style")
         return _minimal_style(), _ECHARTS_CDN, _FALLBACK_JS
-    
+
     html = template_path.read_text(encoding="utf-8")
-    
-    # 提取 <style>...</style>
+
+    # Extract <style>...</style>
     style_match = re.search(r'<style>(.*?)</style>', html, re.DOTALL)
     style = style_match.group(0) if style_match else "<style></style>"
-    
-    # 提取 ECharts CDN script 标签，强制加 crossorigin
+
+    # Extract ECharts CDN script tag and force crossorigin
     cdn_match = re.search(r'<script src="([^"]*echarts[^"]*)"[^>]*></script>', html)
     if cdn_match:
         cdn_url = cdn_match.group(1)
         cdn = f'<script src="{cdn_url}" crossorigin="anonymous"></script>'
     else:
         cdn = _ECHARTS_CDN
-    
-    # 提取 fallback JS
+
+    # Extract fallback JS
     fallback_match = re.search(
-        r'<!-- 图表渲染 Fallback.*?</script>', html, re.DOTALL
+        r'<!-- Chart render fallback.*?</script>', html, re.DOTALL
     )
     fallback_js = fallback_match.group(0) if fallback_match else _FALLBACK_JS
-    
+
     return style, cdn, fallback_js
 
 
 _ECHARTS_CDN = '<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js" crossorigin="anonymous"></script>'
 
-_FALLBACK_JS = '''<!-- 图表渲染 Fallback -->
+_FALLBACK_JS = '''<!-- Chart render fallback -->
 <script>
   window.addEventListener('load', function() {
     if (typeof echarts === 'undefined') return;
@@ -187,7 +205,7 @@ _FALLBACK_JS = '''<!-- 图表渲染 Fallback -->
       var instance = echarts.getInstanceByDom(el);
       if (!instance) {
         el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;color:#94a3b8;font-size:14px;border:2px dashed #e2e8f0;border-radius:8px;padding:20px;text-align:center;">'
-          + '<div>\\u26a0\\ufe0f 图表未能渲染<br><span style="font-size:12px;color:#cbd5e1;">可能原因：数据加载异常。请检查浏览器控制台。</span></div>'
+          + '<div>\\u26a0\\ufe0f Chart did not render<br><span style="font-size:12px;color:#cbd5e1;">Possible cause: data loading failed. Check the browser console.</span></div>'
           + '</div>';
       }
     });
@@ -196,7 +214,7 @@ _FALLBACK_JS = '''<!-- 图表渲染 Fallback -->
 
 
 def _minimal_style():
-    """模板不可用时的最小样式。"""
+    """Minimal style used when the template is unavailable."""
     return """<style>
   body { font-family: -apple-system, sans-serif; line-height: 1.6; color: #2D3748; background: #C9CED1; }
   .page { max-width: 900px; margin: 0 auto 20px; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
@@ -204,90 +222,90 @@ def _minimal_style():
 </style>"""
 
 
-# ── 验证 ─────────────────────────────────────────────────────
+# ── Validation ─────────────────────────────────────────────────────
 
 def _validate(html, expected_charts):
-    """验证生成的 HTML 中 ECharts 数据完整性。"""
+    """Validate ECharts data integrity in generated HTML."""
     init_count = len(re.findall(r'echarts\.init', html))
     data_count = len(re.findall(r'\bdata\s*:', html))
     empty_data = len(re.findall(r'\bdata\s*:\s*\[\s*\]', html))
-    
-    print(f"[图表自检] ECharts 实例: {init_count}, data 键: {data_count}, 空数组: {empty_data}")
-    
+
+    print(f"[chart self-check] ECharts instances: {init_count}, data keys: {data_count}, empty arrays: {empty_data}")
+
     ok = True
     if init_count != expected_charts:
-        print(f"⚠️ 预期 {expected_charts} 个图表，实际 {init_count} 个 echarts.init")
+        print(f"⚠️ expected {expected_charts} chart(s), actual {init_count} echarts.init call(s)")
         ok = False
     if data_count < init_count:
-        print(f"⚠️ data 键数量({data_count}) < ECharts 实例数({init_count})，可能有数据丢失！")
+        print(f"⚠️ data key count ({data_count}) < ECharts instance count ({init_count}); chart data may be missing")
         ok = False
     if empty_data > 0:
-        print(f"⚠️ 发现 {empty_data} 个空数组，图表将无数据渲染！")
+        print(f"⚠️ found {empty_data} empty arrays; charts will render without data")
         ok = False
     if ok:
-        print("✅ 图表数据完整性检查通过")
+        print("✅ chart data integrity check passed")
     return ok
 
 
-# ── 主入口 ────────────────────────────────────────────────────
+# ── Main entry point ────────────────────────────────────────────────────
 
 def build_report(
     body=None,
     body_file=None,
     charts=None,
-    title="研究报告",
+    title="Research Report",
     output="report.html",
     template=None,
-    confidential="内部资料",
+    confidential="Internal",
     date=None,
 ):
     """
-    组装完整报告 HTML 并写入文件。
+    Assemble the complete report HTML and write it to disk.
 
-    参数：
-        body:         HTML 正文字符串（所有 <div class="page"> 块）
-        body_file:    或者从文件读取正文（与 body 二选一）
-        charts:       ECharts 图表配置列表，每个元素 {"id": "chart1", "option": {...}}
-                      option 中用 "values" 替代 "data"
-        title:        报告标题
-        output:       输出文件路径
-        template:     report_template.html 路径（None 使用默认）
-        confidential: 保密级别
-        date:         日期字符串（None 使用当天）
+    Arguments:
+        body:         HTML body string(all <div class="page"> blocks)
+        body_file:    or read body HTML from file(mutually exclusive with body)
+        charts:       ECharts chart configuration list, each item {"id": "chart1", "option": {...}}
+                      option use "values" instead of "data"
+        title:        Report Title
+        output:       output file path
+        template:     report_template.html path (None uses default)
+        confidential: confidentiality level
+        date:         date string(None uses today)
     """
-    # 正文
+    # Body
     if body is None and body_file is not None:
         body = Path(body_file).read_text(encoding="utf-8")
     if body is None:
         body = ""
-    
-    # 日期
+
+    # Date
     if date is None:
-        date = datetime.now().strftime("%Y年%m月%d日")
-    
-    # 模板资源
+        date = datetime.now().strftime("%Y-%m-%d")
+
+    # Template assets
     style, cdn, fallback_js = _read_template(template)
-    
-    # 图表 JS
+
+    # Chart JS
     chart_js = _make_chart_js(charts or [])
     chart_script = f"\n<script>\n{chart_js}\n</script>" if chart_js else ""
-    
-    # 组装
+
+    # Assemble
     html = f"""<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{title}</title>
+  <title>{_escape_html(title)}</title>
   {style}
 </head>
 <body>
 
 {body}
 
-  <!-- 打印按钮 -->
+  <!-- Print button -->
   <div class="no-print">
-    <button class="print-btn" onclick="window.print()">打印 / 导出 PDF</button>
+    <button class="print-btn" onclick="window.print()">Print / Export PDF</button>
   </div>
 
   {cdn}
@@ -297,39 +315,39 @@ def build_report(
 
 </body>
 </html>"""
-    
-    # 写入
+
+    # Write output
     out_path = Path(output)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(html, encoding="utf-8")
-    
+
     file_size = out_path.stat().st_size
-    print(f"📄 报告已生成: {out_path} ({file_size:,} bytes)")
-    
-    # 验证
+    print(f"📄 report generated: {out_path} ({file_size:,} bytes)")
+
+    # Validation
     if charts:
         _validate(html, len(charts))
-    
+
     return str(out_path)
 
 
-# ── ReportBuilder：分步构建 + 模板预填充 ────────────────────────
+# ── ReportBuilder: incremental build + template prefill ────────────────────────
 
 class ReportBuilder:
-    """分步构建报告，解决大报告一次性生成的性能瓶颈。
+    """Build reports incrementally to avoid large one-shot generation bottlenecks.
 
-    核心价值：
-    1. 模板预填充 — 封面/目录/章节头/尾页自动生成，模型输出量减少 60-70%
-    2. 分步生成 — save_state()/load_state() 支持跨多次 Bash 调用
-    3. 自动图表管理 — add_chart() 自动处理 values→data 映射
+    Core value:
+    1. Template prefill — cover/TOC/chapter headers/footer generated automatically, reducing model output by 60-70%
+    2. Incremental generation — save_state()/load_state() supports multiple Bash calls
+    3. Automatic chart management — add_chart() automatically handles values->data mapping
     """
 
-    def __init__(self, title="研究报告", subtitle="", date=None,
-                 confidential="内部资料", version="V1.0",
+    def __init__(self, title="Research Report", subtitle="", date=None,
+                 confidential="Internal", version="V1.0",
                  author="Alpha Insights Research"):
         self.title = title
         self.subtitle = subtitle
-        self.date = date or datetime.now().strftime("%Y年%m月%d日")
+        self.date = date or datetime.now().strftime("%Y-%m-%d")
         self.confidential = confidential
         self.version = version
         self.author = author
@@ -337,21 +355,21 @@ class ReportBuilder:
         self.chapters = []   # list of [num_str, name, body_html]
         self.charts = []     # list of {"id": ..., "option": ...}
 
-    # ── 内容添加 ──
+    # ── Content adding ──
 
     def set_toc_conclusion(self, text):
-        """设置目录页的核心结论（1-2句话）。"""
+        """Set the TOC-page core conclusion (1-2 sentences)."""
         self.toc_conclusion = text
         return self
 
     def add_chapter(self, num, name, body_html):
-        """添加一个章节。
+        """Add one chapter.
 
         Args:
-            num: 章节编号，如 "01"、1 或 3.5
-            name: 章节名称，如 "Executive Summary"
-            body_html: 章节内容 HTML（<div class="chapter-body"> 内部的内容）
-                       可包含 h2/h3/p/table/highlight-box/stat-card/chart-container 等
+            num: chapter number, for example "01", 1, or 3.5
+            name: chapter name, for example "Executive Summary"
+            body_html: chapter body HTML inside <div class="chapter-body">
+                       may include h2/h3/p/table/highlight-box/stat-card/chart-container, etc.
         """
         if isinstance(num, float) and not num.is_integer():
             num_str = str(num)          # 3.5 → "3.5"
@@ -362,20 +380,27 @@ class ReportBuilder:
         self.chapters.append([num_str, name, body_html])
         return self
 
-    def add_chart(self, chart_id, option):
-        """注册一个 ECharts 图表。
+    def add_chart(self, chart_id, option, claim_ids=None, source_ids=None):
+        """Register one ECharts chart.
 
         Args:
-            chart_id: 对应 HTML 中 <div id="chart_id"> 的 id
-            option: ECharts option dict，用 "values" 替代 "data"
+            chart_id: id of the corresponding HTML <div id="chart_id">
+            option: ECharts option dict, use "values" instead of "data"
+            claim_ids: Evidence Claim Ledger claim_id list for chart data
+            source_ids: Evidence Claim Ledger source_id list for chart data
         """
-        self.charts.append({"id": chart_id, "option": option})
+        chart = {"id": chart_id, "option": option}
+        if claim_ids:
+            chart["claim_ids"] = list(claim_ids)
+        if source_ids:
+            chart["source_ids"] = list(source_ids)
+        self.charts.append(chart)
         return self
 
-    # ── 状态持久化（支持跨 Bash 调用的分步生成）──
+    # -- State persistence for incremental generation across shell calls -------
 
     def save_state(self, path):
-        """保存当前状态到 JSON 文件，下次 Bash 调用可 load_state() 恢复。"""
+        """Save current state to JSON so the next Bash call can resume with load_state()."""
         state = {
             "title": self.title,
             "subtitle": self.subtitle,
@@ -390,12 +415,12 @@ class ReportBuilder:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         with open(path, 'w', encoding='utf-8') as f:
             json.dump(state, f, ensure_ascii=False, indent=2)
-        print(f"💾 状态已保存: {path} ({len(self.chapters)} 章, {len(self.charts)} 图表)")
+        print(f"💾 state saved: {path} ({len(self.chapters)} chapters, {len(self.charts)} charts)")
         return self
 
     @classmethod
     def load_state(cls, path):
-        """从 JSON 文件恢复 builder 状态。"""
+        """Restore builder state from JSON."""
         with open(path, 'r', encoding='utf-8') as f:
             state = json.load(f)
         builder = cls(
@@ -403,16 +428,16 @@ class ReportBuilder:
             subtitle=state.get("subtitle", ""),
             author=state.get("author", "Alpha Insights Research"),
             date=state.get("date"),
-            confidential=state.get("confidential", "内部资料"),
+            confidential=state.get("confidential", "Internal"),
             version=state.get("version", "V1.0"),
         )
         builder.toc_conclusion = state.get("toc_conclusion", "")
         builder.chapters = state.get("chapters", [])
         builder.charts = state.get("charts", [])
-        print(f"📂 状态已恢复: {len(builder.chapters)} 章, {len(builder.charts)} 图表")
+        print(f"📂 state restored: {len(builder.chapters)} chapters, {len(builder.charts)} charts")
         return builder
 
-    # ── 模板生成（用户无需手写这些 HTML）──
+    # -- Template generation; users should not hand-write these HTML blocks ----
 
     def _make_cover(self):
         return f'''<div class="page cover-page">
@@ -421,23 +446,23 @@ class ReportBuilder:
     </div>
     <div class="cover-right">
       <div class="cover-badge">Alpha Insights - BizAdvisor</div>
-      <h1 class="cover-title">{self.title}</h1>
-      <p class="cover-subtitle">{self.subtitle}</p>
+      <h1 class="cover-title">{_escape_html(self.title)}</h1>
+      <p class="cover-subtitle">{_escape_html(self.subtitle)}</p>
       <div class="cover-divider"></div>
-      <p class="cover-meta">{self.author}</p>
-      <p class="cover-date">{self.date}</p>
+      <p class="cover-meta">{_escape_html(self.author)}</p>
+      <p class="cover-date">{_escape_html(self.date)}</p>
     </div>
     <div class="cover-footer">
-      <span>{self.confidential}</span>
-      <span>{self.version}</span>
+      <span>{_escape_html(self.confidential)}</span>
+      <span>{_escape_html(self.version)}</span>
     </div>
   </div>'''
 
     def _make_toc(self):
         items = "\n    ".join(
             f'<div class="toc-item">'
-            f'<div class="toc-number">{ch[0]}</div>'
-            f'<span class="toc-text">{ch[1]}</span>'
+            f'<div class="toc-number">{_escape_html(ch[0])}</div>'
+            f'<span class="toc-text">{_escape_html(ch[1])}</span>'
             f'</div>'
             for ch in self.chapters
         )
@@ -445,13 +470,13 @@ class ReportBuilder:
         if self.toc_conclusion:
             conclusion = (
                 f'<div class="toc-conclusion">'
-                f'<div class="toc-conclusion-title">核心结论</div>'
-                f'<div class="toc-conclusion-text">{self.toc_conclusion}</div>'
+                f'<div class="toc-conclusion-title">Core Conclusion</div>'
+                f'<div class="toc-conclusion-text">{_escape_html(self.toc_conclusion)}</div>'
                 f'</div>'
             )
         return f'''<div class="page toc-page">
     <div class="toc-header">
-      <div class="toc-title">目 录</div>
+      <div class="toc-title">Contents</div>
     </div>
     {items}
     {conclusion}
@@ -460,8 +485,8 @@ class ReportBuilder:
     def _make_chapter(self, num_str, name, body):
         return f'''<div class="page chapter-section">
     <div class="chapter-header">
-      <div class="chapter-num">{num_str}</div>
-      <div class="chapter-name">{name}</div>
+      <div class="chapter-num">{_escape_html(num_str)}</div>
+      <div class="chapter-name">{_escape_html(name)}</div>
     </div>
     <div class="chapter-body">
 {body}
@@ -472,33 +497,33 @@ class ReportBuilder:
         return f'''<div class="page footer-page">
     <div class="footer-content">
       <div class="footer-icon">📋</div>
-      <div class="footer-title">{self.title}</div>
+      <div class="footer-title">{_escape_html(self.title)}</div>
       <div class="footer-divider"></div>
-      <div class="footer-text">本报告由 Alpha Insights-BizAdvisor 生成</div>
-      <div class="footer-text">{self.confidential} · 请勿外传</div>
-      <div class="footer-date">{self.date}</div>
+      <div class="footer-text">Generated by Alpha Insights-BizAdvisor</div>
+      <div class="footer-text">{_escape_html(self.confidential)} · Do not distribute</div>
+      <div class="footer-date">{_escape_html(self.date)}</div>
       <div class="footer-cta">
-        <a href="https://github.com/Ericyoung-183/alpha-insights" target="_blank">加星 ⭐ Alpha Insights → GitHub</a>
+        <a href="https://github.com/Ericyoung-183/alpha-insights" target="_blank">Star Alpha Insights on GitHub</a>
       </div>
     </div>
   </div>'''
 
-    # ── 构建 ──
+    # -- Build --
 
     def build(self, output, template=None):
-        """组装所有章节并生成最终报告 HTML。
+        """Assemble all chapters and generate the final report HTML.
 
         Returns:
-            输出文件路径字符串
+            output file path string
         """
-        # 组装 body
+        # Assemble body
         parts = [self._make_cover(), self._make_toc()]
         for ch in self.chapters:
             parts.append(self._make_chapter(ch[0], ch[1], ch[2]))
         parts.append(self._make_footer())
         body = "\n\n".join(parts)
 
-        # 调用 build_report 完成 HTML 组装 + 图表 JS 注入 + 验证
+        # Use build_report to assemble HTML, inject chart JS, and validate.
         return build_report(
             body=body,
             charts=self.charts,
@@ -510,20 +535,20 @@ class ReportBuilder:
         )
 
 
-# ── CLI 入口 ─────────────────────────────────────────────────
+# -- CLI entry point -------------------------------------------------
 
 if __name__ == "__main__":
-    # 简单 CLI：python3 report_helper.py --body-file body.html --output report.html
+    # Simple CLI: python3 report_helper.py --body-file body.html --output report.html
     import argparse
-    
-    parser = argparse.ArgumentParser(description="Alpha Insights 报告生成器")
-    parser.add_argument("--body-file", help="HTML 正文文件路径")
-    parser.add_argument("--title", default="研究报告", help="报告标题")
-    parser.add_argument("--output", default="report.html", help="输出路径")
-    parser.add_argument("--template", help="模板路径")
-    parser.add_argument("--confidential", default="内部资料", help="保密级别")
+
+    parser = argparse.ArgumentParser(description="Alpha Insights report generator")
+    parser.add_argument("--body-file", help="HTML body file path")
+    parser.add_argument("--title", default="Research Report", help="Report Title")
+    parser.add_argument("--output", default="report.html", help="output path")
+    parser.add_argument("--template", help="template path")
+    parser.add_argument("--confidential", default="Internal", help="confidentiality level")
     args = parser.parse_args()
-    
+
     build_report(
         body_file=args.body_file,
         title=args.title,

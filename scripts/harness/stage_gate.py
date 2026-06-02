@@ -2,9 +2,9 @@
 """
 Alpha Insights — Stage Gate Validator
 
-统一入口，调用各 Stage 验证器。
+\u7edf\u4e00\u5165\u53e3，\u8c03\u7528\u5404 Stage Validator。
 
-用法:
+Usage:
     python3 stage_gate.py validate <stage_num> <workspace_path>
     python3 stage_gate.py validate-all <workspace_path>
 """
@@ -13,7 +13,6 @@ import json
 import sys
 import os
 
-# 让 validators 包可被导入
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from validators import stage1, stage2, stage3, stage3_5, stage4, stage5, stage6, stage7
@@ -35,16 +34,20 @@ def parse_stage_num(raw):
     try:
         value = float(raw)
     except ValueError:
-        raise ValueError(f"无效 Stage 编号: {raw}")
+        raise ValueError(f"invalid stage number: {raw}")
     if value.is_integer():
         return int(value)
     return value
 
 
+def is_blocked(result):
+    return "BLOCKED" in str(result.get("gate", ""))
+
+
 def validate_stage(stage_num, workspace):
     validator = VALIDATORS.get(stage_num)
     if validator is None:
-        return {"stage": stage_num, "gate": "SKIP", "message": f"Stage {stage_num} 无验证器"}
+        raise ValueError(f"Stage {stage_num}  has no validator")
     result = validator(workspace)
     return result.to_dict()
 
@@ -58,7 +61,7 @@ def validate_all(workspace):
 
 def main():
     if len(sys.argv) < 3:
-        print("用法:")
+        print("Usage:")
         print("  python3 stage_gate.py validate <stage_num> <workspace_path>")
         print("  python3 stage_gate.py validate-all <workspace_path>")
         sys.exit(1)
@@ -67,20 +70,28 @@ def main():
 
     if command == "validate":
         if len(sys.argv) < 4:
-            print("错误: validate 需要 <stage_num> <workspace_path>")
+            print("error: validate requires <stage_num> <workspace_path>")
             sys.exit(1)
         stage_num = parse_stage_num(sys.argv[2])
         workspace = sys.argv[3]
-        result = validate_stage(stage_num, workspace)
+        try:
+            result = validate_stage(stage_num, workspace)
+        except ValueError as exc:
+            print(json.dumps({"stage": stage_num, "gate": "BLOCKED ❌", "error": str(exc)}, ensure_ascii=False, indent=2))
+            sys.exit(1)
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        if is_blocked(result):
+            sys.exit(1)
 
     elif command == "validate-all":
         workspace = sys.argv[2]
         results = validate_all(workspace)
         print(json.dumps(results, ensure_ascii=False, indent=2))
+        if any(is_blocked(result) for result in results):
+            sys.exit(1)
 
     else:
-        print(f"未知命令: {command}")
+        print(f"unknown command: {command}")
         sys.exit(1)
 
 

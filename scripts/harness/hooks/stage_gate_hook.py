@@ -29,6 +29,14 @@ DELIVERABLE_MAP = {
 }
 
 
+HARD_STOP_MESSAGE = (
+    "⛔ Alpha Insights HARD STOP: the current Stage Gate is BLOCKED. "
+    "This write may remain for repair, but do not advance, create or update "
+    "downstream deliverables, or claim stage completion. Fix the FAIL items above "
+    "and rerun the same Stage Gate until PASS."
+)
+
+
 def main():
     try:
         data = json.loads(sys.stdin.read())
@@ -63,10 +71,10 @@ def main():
 
     result = validate_stage(stage_num, workspace)
     gate = result.get("gate", "UNKNOWN")
+    blocked = "BLOCKED" in str(gate)
     checks = result.get("checks", [])
     warnings = result.get("warnings", [])
 
-    # Stage 7 级联完整性检查：迭代状态下额外验证
     stage7_result = None
     stage7_gate = None
     state = None
@@ -81,17 +89,17 @@ def main():
     if state and state.get("current_stage") == 7:
         stage7_result = validate_stage(7, workspace)
         stage7_gate = stage7_result.get("gate", "UNKNOWN")
+        blocked = blocked or "BLOCKED" in str(stage7_gate)
 
     # Format human-readable output
     lines = []
 
-    # 主 Stage 结果
     if "PASS" in gate:
-        lines.append(f"✅ Stage {stage_num} 门控通过")
+        lines.append(f"✅ Stage {stage_num} gate passed")
     elif "BLOCKED" in gate:
-        lines.append(f"❌ Stage {stage_num} 门控未通过")
+        lines.append(f"❌ Stage {stage_num} gate blocked")
     else:
-        lines.append(f"ℹ️ Stage {stage_num} 门控: {gate}")
+        lines.append(f"ℹ️ Stage {stage_num} gate: {gate}")
 
     if checks:
         for chk in checks:
@@ -102,21 +110,37 @@ def main():
         for w in warnings:
             lines.append(f"  ⚠️ {w}")
 
-    # Stage 7 级联完整性结果
     if stage7_result:
         lines.append(f"")
-        lines.append(f"🔄 Stage 7 级联完整性检查")
+        lines.append(f"Stage 7 cascade integrity check")
         if "PASS" in stage7_gate:
-            lines.append(f"  ✅ 级联完整")
+            lines.append(f"  cascade intact")
         elif "BLOCKED" in stage7_gate:
-            lines.append(f"  ⚠️ 级联可能不完整（检查以下）")
+            lines.append(f"  cascade may be incomplete; review below")
         for chk in stage7_result.get("checks", []):
             status = "✓" if chk.get("level") == "PASS" else "✗"
             lines.append(f"    {status} {chk.get('message', '')}")
         for w in stage7_result.get("warnings", []):
             lines.append(f"    ⚠️ {w}")
 
-    json.dump({"decision": "allow", "message": "\n".join(lines)}, sys.stdout, ensure_ascii=False)
+    if blocked:
+        lines.append("")
+        lines.append(HARD_STOP_MESSAGE)
+
+    json.dump({
+        "decision": "allow",
+        "message": "\n".join(lines),
+        "alpha_insights_gate": {
+            "stage": stage_num,
+            "gate": gate,
+            "blocked": blocked,
+            "semantic": "hard_stop" if blocked else "pass_or_warn",
+            "stage7_gate": {
+                "gate": stage7_gate,
+                "blocked": "BLOCKED" in str(stage7_gate),
+            } if stage7_result else None,
+        },
+    }, sys.stdout, ensure_ascii=False)
 
 
 if __name__ == "__main__":
@@ -127,7 +151,7 @@ if __name__ == "__main__":
         try:
             json.dump({
                 "decision": "allow",
-                "message": f"⚠️ Stage 门控脚本异常（{type(e).__name__}: {e}），本次门控未执行。请手动检查门控条件表。"
+                "message": f"Stage gate hook error ({type(e).__name__}: {e}); this gate did not run. Manually inspect the gate checklist."
             }, sys.stdout, ensure_ascii=False)
         except Exception:
             sys.exit(0)  # last resort: silent fail open

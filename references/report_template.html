@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{报告标题}}</title>
+  <title>{{report_title}}</title>
   <style>
     :root {
       --color-primary: #1A365D;
@@ -31,14 +31,14 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "STKaiti", "华文楷体", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       line-height: 1.6;
       color: var(--text-primary);
       background: var(--page-bg);
       min-height: 100vh;
     }
 
-    /* ===== 页面容器 ===== */
+    /* ===== Page container ===== */
     .page {
       max-width: 900px;
       margin: 0 auto 20px;
@@ -46,7 +46,7 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
 
-    /* ===== 封面页 ===== */
+    /* ===== cover page ===== */
     .cover-page {
       min-height: 100vh;
       background: linear-gradient(135deg, #0F2942 0%, #1A365D 40%, #2D5B8C 100%);
@@ -160,7 +160,7 @@
       letter-spacing: 1px;
     }
 
-    /* ===== 目录页 ===== */
+    /* ===== TOC page ===== */
     .toc-page {
       padding: 80px;
       min-height: 100vh;
@@ -229,7 +229,7 @@
       margin-bottom: 12px;
     }
 
-    /* ===== 章节页 ===== */
+    /* ===== Chapter pages ===== */
     .chapter-section { background: var(--page-bg); }
 
     .chapter-header {
@@ -268,7 +268,7 @@
       background: linear-gradient(180deg, #FFFFFF 0%, var(--page-bg) 100%);
     }
 
-    /* ===== 正文排版 ===== */
+    /* ===== Body typography ===== */
     h2 {
       font-size: 18px;
       font-weight: 600;
@@ -309,7 +309,7 @@
 
     strong { color: var(--text-primary); }
 
-    /* ===== 高亮框 ===== */
+    /* ===== Highlight boxes ===== */
     .highlight-box {
       background: linear-gradient(135deg, #EFF6FF 0%, #FFF 100%);
       border-left: 4px solid var(--color-accent);
@@ -339,7 +339,7 @@
       color: var(--text-primary);
     }
 
-    /* ===== 数据卡片网格 ===== */
+    /* ===== Data card grid ===== */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -408,7 +408,7 @@
     .stat-trend.up { background: #D1FAE5; color: #059669; }
     .stat-trend.down { background: #FEE2E2; color: #DC2626; }
 
-    /* ===== 可视化图表 ===== */
+    /* ===== Visual charts ===== */
     .chart-container {
       background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
       border-radius: 12px;
@@ -427,9 +427,9 @@
       border-bottom: 2px solid #E2E8F0;
     }
 
-    /* 图表样式统一使用 ECharts，CSS 图表已移除 */
+    /* Chart rendering is centralized in ECharts; legacy CSS charts were removed. */
 
-    /* ===== 表格 ===== */
+    /* ===== Tables ===== */
     .data-table {
       width: 100%;
       border-collapse: collapse;
@@ -458,7 +458,7 @@
     .data-table tr:nth-child(even) td { background: var(--bg-light); }
     .data-table tr:last-child td { border-bottom: none; }
 
-    /* ===== 策略卡片 ===== */
+    /* ===== Strategy cards ===== */
     .strategy-card {
       display: flex;
       padding: 22px;
@@ -510,7 +510,7 @@
       line-height: 1.6;
     }
 
-    /* ===== 洞察卡片 ===== */
+    /* ===== Insight cards ===== */
     .insight-card {
       background: var(--bg-card);
       border-radius: 12px;
@@ -531,7 +531,7 @@
       margin-bottom: 8px;
     }
 
-    /* ===== 标签/Badge ===== */
+    /* ===== label/Badge ===== */
     .tag {
       display: inline-block;
       padding: 5px 12px;
@@ -562,7 +562,7 @@
     .badge-b { background: #DBEAFE; color: #2563EB; border: 1px solid #BFDBFE; }
     .badge-c { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
 
-    /* ===== 引用 ===== */
+    /* ===== Quotes ===== */
     blockquote {
       margin: 20px 0;
       padding: 16px 24px;
@@ -573,7 +573,7 @@
       font-style: italic;
     }
 
-    /* ===== 页码 ===== */
+    /* ===== page number ===== */
     .page-number {
       text-align: center;
       font-size: 11px;
@@ -588,7 +588,7 @@
       font-weight: 600;
     }
 
-    /* ===== 尾页 ===== */
+    /* ===== footer page ===== */
     .footer-page {
       background: linear-gradient(135deg, #0F2942 0%, #1A365D 40%, #2D5B8C 100%);
       min-height: 50vh;
@@ -661,7 +661,7 @@
       color: #F6AD55;
     }
 
-    /* ===== 打印按钮 ===== */
+    /* ===== Print button ===== */
     .no-print {
       position: fixed;
       bottom: 30px;
@@ -687,7 +687,7 @@
       box-shadow: 0 8px 25px rgba(26,54,93,0.5);
     }
 
-    /* ===== 响应式 ===== */
+    /* ===== Responsive layout ===== */
     @media (max-width: 768px) {
       .cover-page { flex-direction: column; }
       .cover-left { display: none; }
@@ -697,10 +697,9 @@
       .chapter-body { padding: 24px; }
       .chapter-header { padding: 24px; }
       .stats-grid, .stats-grid-3 { grid-template-columns: repeat(2, 1fr); }
-      .donut-chart { flex-direction: column; }
     }
 
-    /* ===== 打印样式 ===== */
+    /* ===== Print styles ===== */
     @media print {
       @page { margin: 1.5cm; size: A4; }
       body { background: white; }
@@ -714,155 +713,155 @@
       .data-table, .chart-container, .highlight-box { page-break-inside: avoid; }
     }
   </style>
-  <!-- ECharts 可视化库（CDN） -->
+  <!-- ECharts visualization library (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 </head>
 <body>
 
-  <!-- ===== 封面页 ===== -->
+  <!-- ===== cover page ===== -->
   <div class="page cover-page">
     <div class="cover-left">
       <div class="cover-number">AI</div>
     </div>
     <div class="cover-right">
       <div class="cover-badge">Alpha Insights - BizAdvisor</div>
-      <h1 class="cover-title">{{报告标题}}</h1>
-      <p class="cover-subtitle">{{报告副标题}}</p>
+      <h1 class="cover-title">{{report_title}}</h1>
+      <p class="cover-subtitle">{{report_subtitle}}</p>
       <div class="cover-divider"></div>
-      <p class="cover-meta">{{作者}}</p>
-      <p class="cover-date">{{日期}}</p>
+      <p class="cover-meta">{{author}}</p>
+      <p class="cover-date">{{date}}</p>
     </div>
     <div class="cover-footer">
-      <span>{{保密级别}}</span>
-      <span>{{版本}}</span>
+      <span>{{confidentiality}}</span>
+      <span>{{version}}</span>
     </div>
   </div>
 
-  <!-- ===== 目录页 ===== -->
+  <!-- ===== TOC page ===== -->
   <div class="page toc-page">
     <div class="toc-header">
-      <div class="toc-title">目 录</div>
+      <div class="toc-title">Contents</div>
     </div>
 
-    {{目录列表}}
-    <!-- 示例：
+    {{toc_list}}
+    <!-- Example:
     <div class="toc-item">
       <div class="toc-number">1</div>
-      <span class="toc-text">章节标题</span>
+      <span class="toc-text">chapter title</span>
     </div>
     -->
 
     <div class="toc-conclusion">
-      <div class="toc-conclusion-title">核心结论</div>
-      <div class="toc-conclusion-text">{{核心结论}}</div>
+      <div class="toc-conclusion-title">Core Conclusion</div>
+      <div class="toc-conclusion-text">{{core_conclusion}}</div>
     </div>
   </div>
 
-  <!-- ===== 章节内容 ===== -->
-  {{章节内容}}
+  <!-- ===== Chapter content ===== -->
+  {{chapter_content}}
 
-  <!--
+  <script type="text/plain" id="chapter-template-example">
   ============================================================
-  章节模板示例（LLM 按需生成多个）：
+  Chapter template example (LLM may generate multiple as needed):
 
   <div class="page chapter-section">
     <div class="chapter-header">
       <div class="chapter-num">01</div>
-      <div class="chapter-name">章节标题</div>
+      <div class="chapter-name">chapter title</div>
     </div>
     <div class="chapter-body">
 
-      <h2>小节标题</h2>
-      <p>正文段落</p>
+      <h2>section title</h2>
+      <p>body paragraph</p>
 
-      <!-- 高亮框（蓝/黄/红/绿） -->
+      <!-- Highlight box (blue/yellow/red/green) -->
       <div class="highlight-box yellow">
-        <div class="highlight-text"><strong>关键发现：</strong>内容</div>
+        <div class="highlight-text"><strong>Key finding:</strong>content</div>
       </div>
 
-      <!-- 数据卡片（4列/3列/2列） -->
+      <!-- Data cards (4/3/2 columns) -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon blue">📊</div>
-          <div class="stat-value">数值</div>
-          <div class="stat-label">标签</div>
+          <div class="stat-value">value</div>
+          <div class="stat-label">label</div>
           <div class="stat-trend up">+12%</div>
         </div>
       </div>
 
-      <!-- ECharts 图表容器（通过 Python 脚本生成 JS 初始化代码） -->
+      <!-- ECharts chart container (JS initialization generated by Python) -->
       <div class="chart-container">
         <div id="chart-example" style="width:100%;height:350px;"></div>
       </div>
 
-      <!-- 表格 -->
+      <!-- Table -->
       <table class="data-table">
-        <tr><th>列1</th><th>列2</th><th>列3</th></tr>
-        <tr><td>数据</td><td>数据</td><td>数据</td></tr>
+        <tr><th>Column 1</th><th>Column 2</th><th>Column 3</th></tr>
+        <tr><td>data</td><td>data</td><td>data</td></tr>
       </table>
 
-      <!-- 策略/建议卡片（蓝/绿/黄/红） -->
+      <!-- Strategy/recommendation card (blue/green/yellow/red) -->
       <div class="strategy-card blue">
         <div class="strategy-num">1</div>
         <div>
-          <div class="strategy-title">策略标题</div>
-          <div class="strategy-desc">策略描述</div>
+          <div class="strategy-title">strategy title</div>
+          <div class="strategy-desc">strategy description</div>
         </div>
       </div>
 
-      <!-- 洞察卡片 -->
+      <!-- Insight card -->
       <div class="insight-card">
-        <h4>洞察标题</h4>
-        <p><strong>发现：</strong>内容</p>
-        <p><strong>含义：</strong>内容</p>
-        <p><strong>建议：</strong>内容</p>
-        <p><strong>置信度：</strong><span class="badge badge-a">高</span></p>
+        <h4>insight title</h4>
+        <p><strong>Finding:</strong>content</p>
+        <p><strong>Implication:</strong>content</p>
+        <p><strong>Recommendation:</strong>content</p>
+        <p><strong>Confidence:</strong><span class="badge badge-a">High</span></p>
       </div>
 
-      <!-- 标签 -->
-      <span class="tag tag-p0">P0 关键</span>
-      <span class="tag tag-p1">P1 重要</span>
-      <span class="badge badge-high">高</span>
-      <span class="badge badge-medium">中</span>
-      <span class="badge badge-low">低</span>
+      <!-- label -->
+      <span class="tag tag-p0">P0 Critical</span>
+      <span class="tag tag-p1">P1 Important</span>
+      <span class="badge badge-high">High</span>
+      <span class="badge badge-medium">Medium</span>
+      <span class="badge badge-low">Low</span>
 
-      <!-- 引用 -->
-      <blockquote>引用内容</blockquote>
+      <!-- Quote -->
+      <blockquote>quoted content</blockquote>
 
-      <div class="page-number">— 页码 —</div>
+      <div class="page-number">— page number —</div>
     </div>
   </div>
   ============================================================
-  -->
+  </script>
 
-  <!-- ===== 尾页 ===== -->
+  <!-- ===== footer page ===== -->
   <div class="page footer-page">
     <div class="footer-content">
       <div class="footer-icon">📋</div>
-      <div class="footer-title">{{报告标题}}</div>
+      <div class="footer-title">{{report_title}}</div>
       <div class="footer-divider"></div>
-      <div class="footer-text">本报告由 Alpha Insights-BizAdvisor 生成</div>
-      <div class="footer-text">{{保密级别}} · 请勿外传</div>
-      <div class="footer-date">{{日期}}</div>
+      <div class="footer-text">Generated by Alpha Insights-BizAdvisor</div>
+      <div class="footer-text">{{confidentiality}} · Do not distribute</div>
+      <div class="footer-date">{{date}}</div>
       <div class="footer-cta">
-        <a href="https://github.com/Ericyoung-183/alpha-insights" target="_blank">加星 ⭐ Alpha Insights → GitHub</a>
+        <a href="https://github.com/Ericyoung-183/alpha-insights" target="_blank">Star Alpha Insights on GitHub</a>
       </div>
     </div>
   </div>
 
-  <!-- 打印按钮 -->
+  <!-- Print button -->
   <div class="no-print">
-    <button class="print-btn" onclick="window.print()">打印 / 导出 PDF</button>
+    <button class="print-btn" onclick="window.print()">Print / Export PDF</button>
   </div>
 
-  <!-- 图表渲染 Fallback：检测空白图表并显示提示 -->
+  <!-- Chart render fallback: detect blank charts and show a hint -->
   <script>
     window.addEventListener('load', function() {
       document.querySelectorAll('.chart-container [id^="chart"]').forEach(function(el) {
-        var instance = echarts.getInstanceByDom(el);
+        var instance = window.echarts && echarts.getInstanceByDom(el);
         if (!instance) {
           el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;color:#94a3b8;font-size:14px;border:2px dashed #e2e8f0;border-radius:8px;padding:20px;text-align:center;">'
-            + '<div>⚠️ 图表未能渲染<br><span style="font-size:12px;color:#cbd5e1;">可能原因：数据加载异常。请检查报告生成日志或联系研究员。</span></div>'
+            + '<div>⚠️ Chart did not render<br><span style="font-size:12px;color:#cbd5e1;">Possible cause: data loading failed. Check the report generation log or contact the researcher.</span></div>'
             + '</div>';
         }
       });

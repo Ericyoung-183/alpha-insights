@@ -48,6 +48,65 @@ class CodexInstallTests(unittest.TestCase):
                 commands,
             )
 
+    def test_reinstall_removes_stale_custom_wrapper_paths(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="alpha-codex-install-") as tmp:
+            codex_home = Path(tmp) / "codex"
+            hooks_json = codex_home / "hooks.json"
+            hooks_json.parent.mkdir(parents=True)
+            stale_root = Path(tmp) / "old-custom-alpha-insights"
+            hooks_json.write_text(
+                json.dumps({
+                    "hooks": {
+                        "PreToolUse": [{
+                            "matcher": ".*",
+                            "hooks": [{
+                                "type": "command",
+                                "command": f"python3 {stale_root / 'scripts/codex_hooks/alpha_insights_pre_tool.py'}",
+                                "timeout": 5,
+                            }],
+                        }],
+                        "PostToolUse": [{
+                            "matcher": ".*",
+                            "hooks": [{
+                                "type": "command",
+                                "command": f"python3 {stale_root / 'scripts/codex_hooks/alpha_insights_post_tool.py'}",
+                                "timeout": 10,
+                            }],
+                        }],
+                    },
+                }),
+                encoding="utf-8",
+            )
+
+            env = os.environ.copy()
+            env["CODEX_HOME"] = str(codex_home)
+            subprocess.run(
+                [sys.executable, str(INSTALLER), "--skip-verify"],
+                check=True,
+                env=env,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            hooks = json.loads(hooks_json.read_text(encoding="utf-8"))
+            commands = [
+                hook.get("command", "")
+                for entries in hooks.get("hooks", {}).values()
+                for entry in entries
+                for hook in entry.get("hooks", [])
+            ]
+            self.assertTrue(commands)
+            self.assertFalse(any(str(stale_root) in command for command in commands))
+            self.assertEqual(
+                sum("alpha_insights_pre_tool.py" in command for command in commands),
+                1,
+            )
+            self.assertEqual(
+                sum("alpha_insights_post_tool.py" in command for command in commands),
+                1,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

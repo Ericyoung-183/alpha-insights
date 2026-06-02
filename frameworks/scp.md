@@ -8,6 +8,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 The SCP (Structure-Conduct-Performance) model explains how industry competitive landscapes shape firm behavior and business outcomes through a "Structure → Conduct → Performance" causal chain. It is one of the most predictive frameworks in industry analysis.

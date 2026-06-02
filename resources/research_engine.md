@@ -268,7 +268,7 @@ After completing each Track (or when Layer 1 completes), **immediately append th
 ✅ Found X relevant documents
 
 ━━━ Track E: Social Media (Xiaohongshu) ━━━
-📚 Loading tool: scripts/xhs/ (TikHub API)
+📚 Loading capability: public social-media search / optional private adapter
 🔍 Search keywords: [keywords]
 ❓ Value judgment: Topic is B2B SaaS business, social media data value may be low
    → Using AskUserQuestion: "Should we still search social media?"
@@ -825,11 +825,18 @@ English examples:
 
 ### Track E: Social Media Data Search (Main Session)
 
-**Tools**: `scripts/xhs/` directory — TikHub API node scripts.
+**Tools**: Public web search, browser-readable social-media pages, user-provided links/screenshots, or a separately installed private adapter if the user's environment provides one.
 
-> ⛔ **Do not invoke external SKILLs** (e.g., weavefox-xhs-intel). Social media data collection is handled independently by Alpha Insights' built-in scripts.
+> **Public package boundary**: The GitHub package does not bundle provider-specific Xiaohongshu/RedNote collection scripts. Do not assume local adapter scripts exist. If a private adapter is available in the user's environment, use it only as an optional data collection capability and keep evidence grading explicit.
 
-**Script Location**: `scripts/xhs/`
+**Collection Modes**:
+
+| Mode | When to Use | Confidence Handling |
+|------|-------------|---------------------|
+| Public search | Default for GitHub/public installs | Usually C unless original pages are directly accessible and timestamped |
+| Browser-readable note/share links | User provides links or pages are publicly accessible | B/C depending on source visibility and timestamp completeness |
+| Screenshots or exports from user | Content is login-gated or private | C unless screenshot/export includes author, date, and URL |
+| Optional private adapter | User environment explicitly provides one | Grade by adapter reliability, raw sample size, and source traceability |
 
 **Execution Flow**:
 
@@ -837,61 +844,46 @@ English examples:
 1. Receive task list (from Main Session)
    ↓
 2. For each task:
-   ├── Select appropriate script
-   ├── Build parameters (keywords, time range, sort order)
-   ├── Execute node script
-   └── Parse JSON response
+   ├── Build keyword groups (brand/product/category/competitor/pain-point terms)
+   ├── Search public web or use available private adapter
+   ├── Preserve source metadata (author, date, link/screenshot, engagement if visible)
+   └── Downgrade weak or indirect evidence instead of overstating it
    ↓
 3. Value judgment:
    ├── High-engagement posts → In-depth analysis
    ├── KOL/KOC original content → Record viewpoints
    └── Routine content → Brief record or ignore
    ↓
-4. Output structured evidence
+4. Output structured evidence with evidence grade and source traceability
    ↓
 5. Return to Main Session
 ```
 
-**Script Selection Guide**:
+**Search / Collection Guide**:
 
-| Scenario | Script | Example |
-|----------|--------|---------|
-| Topic search | search_notes.js | `--keyword "AI programming" --max-pages 15 --sort popularity_descending` |
-| Sentiment scanning | check_topics.js | `--keywords "keyword1,keyword2" --since 24h` |
-| Blogger activity | fetch_user_notes.js | `--user-id "uid1,uid2" --count 5` |
-| Post details | get_note.js | `--url "share link"` |
+| Scenario | Query or Collection Pattern |
+|----------|-----------------------------|
+| Topic search | `{topic} Xiaohongshu`, `{topic} RedNote`, `site:xiaohongshu.com {topic}` |
+| Brand/product sentiment | `{brand} review Xiaohongshu`, `{product} user feedback RedNote` |
+| Competitor comparison | `{brand A} {brand B} comparison Xiaohongshu` |
+| Pain-point discovery | `{category} complaint Xiaohongshu`, `{product} pain point RedNote` |
+| User-provided evidence | Ask for note links, screenshots, or exports when access is gated and Track E is material |
 
-**API Endpoints & Failure Handling**:
+**Failure Handling Rules**:
 
-Scripts have built-in multi-endpoint fallback (3-4 endpoints per script), automatically tried in priority order:
-
-| Script | Endpoints | Endpoints (by priority) |
-|--------|:---------:|------------------------|
-| search_notes.js | 4 | `web/search_notes_v3` → `web/search_notes` → `web_v2/fetch_search_notes` → `app/search_notes` |
-| fetch_user_notes.js | 3 | `web/get_user_notes_v2` → `app_v2/get_user_posted_notes` → `app/get_user_notes` |
-| get_note.js | 3+2 | Detail: `web/get_note_info_v7` → `app_v2/get_mixed_note_detail` → `app/get_note_info`; Resolve link: `web/get_note_id_and_xsec_token` → `app/extract_share_info` |
-
-⛔ **Failure Handling Rules (Do NOT give up prematurely)**:
-
-TikHub API experiences temporary outages (all endpoints return 400 simultaneously, but auto-recover within 5-15 minutes). **It is PROHIBITED to declare Track E unavailable after a single failure.** Follow this degradation chain step by step:
+Do not declare Track E unavailable after one failed path. Follow this degradation chain:
 
 ```
-Step 1: Run scripts/xhs/ script
-        (script internally falls back through all endpoints)
-    ↓ All endpoints fail (400/timeout)
-Step 2: ⏳ Wait 3-5 minutes, retry the same script
-        (TikHub temporary outages typically recover in 5-15 min)
-    ↓ Still fails
-Step 3: ⏳ Wait another 5 minutes, retry a third time
-    ↓ Still fails
-Step 4: Degrade to search engine "site:xiaohongshu.com {keyword}"
-        Indirectly access XHS content (data quality downgraded, mark as C-level)
-    ↓ Search engine also yields no useful results
-Step 5: Only THEN inform user "XHS data temporarily unavailable"
-        + Suggest: retry later / manually search XHS and provide screenshots
+Step 1: Search public web with multiple keyword groups
+    ↓ No useful results
+Step 2: Try browser-readable share links or original pages if the user provides them
+    ↓ Access is gated or links are unavailable
+Step 3: Ask the user for screenshots, exports, or permission to use a configured private adapter
+    ↓ Still unavailable
+Step 4: Record Track E as an evidence gap and continue with other tracks
 ```
 
-> ⚠️ Endpoint availability changes with TikHub API and XHS anti-scraping policies. When all fail, troubleshoot: (1) API Key validity (2) TikHub service status (3) XHS anti-scraping policy changes.
+> When evidence is indirect, login-gated, screenshot-based, or sample size is small, mark it as C-level and avoid quantitative claims that imply complete platform coverage.
 
 **Search Volume & Completion Standards**:
 
@@ -922,21 +914,13 @@ Search 300+ raw posts
 | **Demand analysis** | "Seeking recommendations" post percentage + demand trends | Typical help-seeking post summaries (3-5) |
 | **Popularity analysis** | Keyword popularity index = post count × avg engagement / 1000 | Top viral content analysis (3 posts) |
 
-**Parameter Combination Suggestions**:
+**Search Combination Suggestions**:
 
-```bash
-# Consumer sentiment scanning (recommended)
-node scripts/xhs/check_topics.js \
-  --keywords "brand_name,product_name,competitor_name" --since 24h
-
-# Popular content search
-node scripts/xhs/search_notes.js \
-  --keyword "keyword" --sort popularity_descending
-
-# Latest activity tracking
-node scripts/xhs/search_notes.js \
-  --keyword "keyword" --sort time_descending
-```
+| Purpose | Search Pattern |
+|---------|----------------|
+| Consumer sentiment scanning | `"brand_name product_name review Xiaohongshu"` |
+| Popular content search | `"keyword Xiaohongshu popular discussion"` |
+| Latest activity tracking | `"keyword RedNote recent feedback"` |
 
 **Value Judgment Criteria**:
 

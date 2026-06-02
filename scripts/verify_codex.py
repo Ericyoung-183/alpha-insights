@@ -122,7 +122,7 @@ def _write_stage1_workspace(ws: Path, root: Path) -> None:
         text=True,
     )
     (ws / "user_brief.md").write_text(
-        "# 用户简报\n\n议题: Evaluate a market opportunity\n档位: Tier 1\n背景: smoke test\n",
+        "# User Brief\n\nTopic: Evaluate a market opportunity\nTier: Tier 1\nBackground: smoke test\n",
         encoding="utf-8",
     )
 
@@ -130,16 +130,16 @@ def _write_stage1_workspace(ws: Path, root: Path) -> None:
 def _write_interview_guides(ws: Path) -> None:
     (ws / "interview_guides.md").write_text(
         "\n".join([
-            "# 访谈提纲",
-            "访谈对象: industry operator",
-            "访谈目标: 验证假设 and identify risks",
-            "问题提纲:",
+            "# Interview Guide",
+            "Interviewee: industry operator",
+            "Interview objective: validate hypotheses and identify risks",
+            "Question guide:",
             "- Q1: What changed in demand?",
             "- Q2: Which competitors matter?",
             "- Q3: What costs are underestimated?",
             "- Q4: What adoption blockers exist?",
             "- Q5: What evidence would change your mind?",
-            "访谈纪要: Ask the user to provide raw notes after interviews.",
+            "Interview notes: Ask the user to provide raw notes after interviews.",
         ]),
         encoding="utf-8",
     )

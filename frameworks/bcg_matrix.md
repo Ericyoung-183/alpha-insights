@@ -6,6 +6,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 The BCG Matrix (Boston Matrix) was proposed by Boston Consulting Group founder Bruce Henderson in 1968 and is the world's most famous business portfolio management tool.

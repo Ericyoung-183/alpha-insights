@@ -8,6 +8,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 The Competitive Positioning Map is a two-dimensional matrix visualization tool for analyzing competitive landscapes, used to identify market gaps and differentiation opportunities.

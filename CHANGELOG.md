@@ -2,6 +2,13 @@
 
 ## V4.1 (2026-05-26)
 
+### 2026-06-02 Public Package Boundary Patch (package 4.1.3)
+- **Public social-media adapter boundary**: The GitHub build no longer bundles provider-specific Xiaohongshu/RedNote collection scripts.
+- **Track E public fallback**: English public runtime docs now route social-media research through public search, browser-readable links, user-provided screenshots/exports, or a separately installed private adapter.
+- **GitHub runtime English overlay**: Added `i18n/en_runtime/` overlays for user-visible hook, validator, verifier, report helper, and report template output in the public GitHub build; formal releases continue to enforce the strict runtime CJK gate.
+- **English validator compatibility**: Stage keyword matching is now case-insensitive, preventing `Topic` / `Tier` capitalization from being misread by Stage 1.
+- **Internal package preservation**: Internal marketplace packages continue to include the private adapter scripts for configured environments.
+
 ### 2026-05-27 Installer Patch (package 4.1.2)
 - **Single-version Codex install semantics**: `scripts/install_codex.py` now replaces the previous installed directory directly instead of creating `alpha-insights.backup-*` directories, preventing Codex Desktop from loading backup folders as active skills.
 - **Active context pollution fix**: The Codex install root now stays unique at `~/.codex/skills/alpha-insights/`; repeated installs leave only the latest version.
@@ -10,7 +17,7 @@
 ### 2026-05-26 Release Refresh
 - **Evidence and numeric integrity gates**: Added `resources/evidence_integrity.md` and `validators/evidence_integrity.py`, covering the Evidence Claim Ledger, primary-source requirements, source-laundering risk, key number / chart back-links, and source-grade constraints for strong recommendations.
 - **Stage 3/4/5/6 gate hardening**: Stage 3 now detects due-diligence / target-screening primary-source plans; Stage 4 blocks key numbers, chart data, and recommendation-support evidence without a claim ledger; Stage 5 blocks strong recommendations backed only by weak sources; Stage 6 blocks headline/chart claims without evidence back-links.
-- **Release pipeline fix**: `build.sh` now tracks code files in source-change detection, and Skill Center / ATC publishing now uses CLI directory publishing instead of manual zip upload.
+- **Release pipeline fix**: `build.sh` now tracks code files in source-change detection, and marketplace publishing now uses CLI directory publishing instead of manual zip upload.
 
 ### 2026-05-14 Initial V4.1
 
@@ -24,7 +31,7 @@
 - **Stage 3.5 gate chain**: `stage_gate.py validate 3.5` now supports decimal stages, with a new `validators/stage3_5.py`.
 - **Silent stage gate hook failure**: Removed the local `import json` scope trap in `stage_gate_hook.py`, preventing fail-open silence.
 - **Codex PostToolUse payload compatibility**: The Codex wrapper now normalizes `toolName/toolInput`, so progress logs no longer record `tool=unknown`.
-- **Open-source credential boundary**: Removed the built-in TikHub default key; users must configure a key through CLI args, `~/.alpha_insights.json`, or `TIKHUB_API_KEY`.
+- **Open-source adapter boundary**: Removed the built-in provider-specific default key; public builds must not rely on bundled private collection credentials.
 
 ### Improved
 - **Dual-platform README**: README and README_zh now present Codex Desktop and Claude Code compatible paths through the agent-first installer contract.

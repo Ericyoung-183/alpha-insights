@@ -115,10 +115,7 @@ def _load_hooks(path: Path) -> dict[str, Any]:
 
 
 def _is_alpha_wrapper(command: str, wrapper_name: str) -> bool:
-    return (
-        f"{SKILL_NAME}/scripts/codex_hooks/" in command
-        and wrapper_name in command
-    )
+    return wrapper_name in command and "scripts/codex_hooks/" in command
 
 
 def _replace_wrapper_entry(

@@ -1,4 +1,4 @@
-"""Stage 3.5: Interview Prep 验证器"""
+"""Stage 3.5: Interview Prep Validator"""
 
 from .common import (
     ValidationResult, file_exists, file_contains_keyword,
@@ -11,56 +11,56 @@ def validate(workspace):
     f = "interview_guides.md"
 
     if not file_exists(workspace, f):
-        r.fail(f"{f} 不存在")
+        r.fail(f"{f} missing")
         return r
-    r.pass_check(f"{f} 存在")
+    r.pass_check(f"{f} exists")
 
     has_profile = (
-        file_contains_keyword(workspace, f, "访谈对象")
-        or file_contains_keyword(workspace, f, "对象画像")
+        file_contains_keyword(workspace, f, "\u8bbf\u8c08\u5bf9\u8c61")
+        or file_contains_keyword(workspace, f, "\u5bf9\u8c61\u753b\u50cf")
         or file_contains_keyword(workspace, f, "interviewee")
         or file_contains_keyword(workspace, f, "target role")
     )
     if has_profile:
-        r.pass_check("含访谈对象画像")
+        r.pass_check("interviewee profile present")
     else:
-        r.fail("未检测到访谈对象画像")
+        r.fail("interviewee profile not detected")
 
     has_goal = (
-        file_contains_keyword(workspace, f, "访谈目标")
-        or file_contains_keyword(workspace, f, "验证假设")
+        file_contains_keyword(workspace, f, "\u8bbf\u8c08\u76ee\u6807")
+        or file_contains_keyword(workspace, f, "\u9a8c\u8bc1\u5047\u8bbe")
         or file_contains_keyword(workspace, f, "objective")
         or file_contains_keyword(workspace, f, "hypothesis")
     )
     if has_goal:
-        r.pass_check("含访谈目标/假设映射")
+        r.pass_check("interview objective/hypothesis mapping present")
     else:
-        r.fail("未检测到访谈目标或假设映射")
+        r.fail("interview objective or hypothesis mapping not detected")
 
     has_questions = (
-        file_contains_keyword(workspace, f, "问题提纲")
-        or file_contains_keyword(workspace, f, "核心问题")
+        file_contains_keyword(workspace, f, "\u95ee\u9898\u63d0\u7eb2")
+        or file_contains_keyword(workspace, f, "\u6838\u5fc3\u95ee\u9898")
         or file_contains_keyword(workspace, f, "questions")
     )
     if has_questions:
-        r.pass_check("含问题提纲")
+        r.pass_check("question guide present")
     else:
-        r.fail("未检测到问题提纲")
+        r.fail("question guide not detected")
 
     question_count = count_pattern(workspace, f, r"^\s*(?:[-*]|\d+[.)]|Q\d+[:：])")
     if question_count < 5:
-        r.warn(f"检测到 {question_count} 个问题条目，访谈提纲可能偏薄")
+        r.warn(f"{question_count} question items detected; interview guide may be thin")
     else:
-        r.pass_check(f"问题条目数: {question_count}")
+        r.pass_check(f"question item count: {question_count}")
 
     has_reminder = (
-        file_contains_keyword(workspace, f, "访谈纪要")
-        or file_contains_keyword(workspace, f, "原始记录")
+        file_contains_keyword(workspace, f, "\u8bbf\u8c08\u7eaa\u8981")
+        or file_contains_keyword(workspace, f, "\u539f\u59cb\u8bb0\u5f55")
         or file_contains_keyword(workspace, f, "notes")
     )
     if has_reminder:
-        r.pass_check("含访谈后材料回收提示")
+        r.pass_check("post-interview material collection reminder present")
     else:
-        r.warn("未检测到访谈纪要/原始记录回收提示")
+        r.warn("post-interview notes/raw-record collection reminder not detected")
 
     return r

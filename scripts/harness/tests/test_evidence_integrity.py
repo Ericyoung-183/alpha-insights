@@ -313,6 +313,154 @@ Porter analysis recorded.
             )
 
 
+    def test_stage4_warns_on_stale_headline_or_chart_source_date(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 1}')
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+| A1-01 | A 级 | Track A | Market size reached RMB 100B in 2021 | source_type: official | source_date: 2021-01-10 |
+
+## Evidence Claim Ledger
+
+claim_id: E-001
+claim_type: numeric
+claim_text: Market size reached RMB 100B.
+value: 100
+unit: billion
+currency: RMB
+period: 2021
+source_id: official-001
+source_type: official
+source_grade: A
+source_date: 2021-01-10
+retrieved_at: 2026-05-25
+primary_source_required: false
+primary_source_present: true
+used_in: headline, chart
+
+## Framework analysis
+Porter analysis recorded.
+""",
+            )
+
+            result = stage4.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "PASS ✅")
+            self.assertTrue(
+                any("stale" in msg.lower() for msg in messages(stage4.validate(workspace)))
+            )
+
+
+    def test_stage4_blocks_tier2_blueprint_with_remaining_gap(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 2}')
+            write_file(
+                workspace,
+                "research_definition.md",
+                """
+# Research Definition
+
+## Q1
+**章节蓝图**
+- ✅ 市场规模拆解: Top 3 segments
+- ❌ 竞品深度档案: Top 5 competitors
+""",
+            )
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+| A1-01 | A 级 | Track A | Competitors are increasing product bundling | source_type: expert | source_date: 2025-01-10 |
+
+Line 1 qualitative support.
+Line 2 qualitative support.
+Line 3 qualitative support.
+Line 4 qualitative support.
+Line 5 qualitative support.
+Line 6 qualitative support.
+Line 7 qualitative support.
+Line 8 qualitative support.
+Line 9 qualitative support.
+Line 10 qualitative support.
+Line 11 qualitative support.
+Line 12 qualitative support.
+Line 13 qualitative support.
+Line 14 qualitative support.
+Line 15 qualitative support.
+Line 16 qualitative support.
+
+## Framework analysis
+Porter analysis recorded.
+""",
+            )
+
+            result = stage4.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "BLOCKED ❌")
+            self.assertTrue(
+                any("章节蓝图" in msg and "❌" in msg for msg in messages(stage4.validate(workspace)))
+            )
+
+
+    def test_stage4_allows_tier2_blueprint_with_warning_marker(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 2}')
+            write_file(
+                workspace,
+                "research_definition.md",
+                """
+# Research Definition
+
+## Q1
+**章节蓝图**
+- ✅ 市场规模拆解: Top 3 segments
+- ⚠️ 竞品深度档案: private pricing unavailable, disclose in blind-spot section
+""",
+            )
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+| A1-01 | A 级 | Track A | Competitors are increasing product bundling | source_type: expert | source_date: 2025-01-10 |
+
+Line 1 qualitative support.
+Line 2 qualitative support.
+Line 3 qualitative support.
+Line 4 qualitative support.
+Line 5 qualitative support.
+Line 6 qualitative support.
+Line 7 qualitative support.
+Line 8 qualitative support.
+Line 9 qualitative support.
+Line 10 qualitative support.
+Line 11 qualitative support.
+Line 12 qualitative support.
+Line 13 qualitative support.
+Line 14 qualitative support.
+Line 15 qualitative support.
+Line 16 qualitative support.
+
+## Framework analysis
+Porter analysis recorded.
+""",
+            )
+
+            result = stage4.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "PASS ✅")
+            self.assertTrue(
+                any("章节蓝图无残留" in msg for msg in messages(stage4.validate(workspace)))
+            )
+
+
     def test_stage6_blocks_headline_number_and_chart_without_evidence_links(self):
         with tempfile.TemporaryDirectory() as workspace:
             write_file(workspace, "_state.json", '{"tier": 2}')
@@ -345,6 +493,240 @@ chart3.setOption({series: [{data: [10, 20]}]});
             self.assertTrue(
                 any("evidence link" in msg.lower() for msg in messages(stage6.validate(workspace)))
             )
+
+
+    def test_stage6_blocks_unknown_report_claim_refs(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 2}')
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+## Evidence Claim Ledger
+
+claim_id: E-001
+claim_type: numeric
+claim_text: Market size reached RMB 100B.
+value: 100
+unit: billion
+currency: RMB
+period: 2025
+source_id: official-001
+source_type: official
+source_grade: A
+source_date: 2025-01-10
+retrieved_at: 2026-05-25
+primary_source_required: false
+primary_source_present: true
+used_in: headline, chart
+""",
+            )
+            body = """
+<html>
+<head><script src="echarts.min.js"></script></head>
+<body>
+<section id="cover-page"></section>
+<section id="toc-page"></section>
+<section class="chapter-section"><div class="chapter-header">Chapter 1</div></section>
+<section id="footer-page"></section>
+<div class="headline" data-claim-id="E-999">Market size reached RMB 100B in 2025.</div>
+<div id="chart1" data-claim-id="E-999"></div><div id="chart2" data-claim-id="E-001"></div><div id="chart3" data-claim-id="E-001"></div>
+<script>
+const chart1 = echarts.init(document.getElementById('chart1'));
+chart1.setOption({series: [{data: [100, 120]}]});
+const chart2 = echarts.init(document.getElementById('chart2'));
+chart2.setOption({series: [{data: [30, 40]}]});
+const chart3 = echarts.init(document.getElementById('chart3'));
+chart3.setOption({series: [{data: [10, 20]}]});
+</script>
+</body>
+</html>
+"""
+            write_file(workspace, "report.html", body + ("x" * 5200))
+
+            result = stage6.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "BLOCKED ❌")
+            self.assertTrue(
+                any("unknown claim_id" in msg.lower() for msg in messages(stage6.validate(workspace)))
+            )
+
+    def test_stage6_blocks_chart_value_mismatch_against_ledger(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 2}')
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+## Evidence Claim Ledger
+
+claim_id: E-001
+claim_type: numeric
+claim_text: Market size reached RMB 100B.
+value: 100
+unit: billion
+currency: RMB
+period: 2025
+source_id: official-001
+source_type: official
+source_grade: A
+source_date: 2025-01-10
+retrieved_at: 2026-05-25
+primary_source_required: false
+primary_source_present: true
+used_in: chart
+""",
+            )
+            body = """
+<html>
+<head><script src="echarts.min.js"></script></head>
+<body>
+<section id="cover-page"></section>
+<section id="toc-page"></section>
+<section class="chapter-section"><div class="chapter-header">Chapter 1</div></section>
+<section id="footer-page"></section>
+<div id="chart1" data-claim-id="E-001" data-value="99" data-unit="billion" data-currency="RMB" data-period="2025"></div>
+<div id="chart2" data-claim-id="E-001"></div>
+<div id="chart3" data-claim-id="E-001"></div>
+<script>
+const chart1 = echarts.init(document.getElementById('chart1'));
+chart1.setOption({series: [{data: [99]}]});
+const chart2 = echarts.init(document.getElementById('chart2'));
+chart2.setOption({series: [{data: [100]}]});
+const chart3 = echarts.init(document.getElementById('chart3'));
+chart3.setOption({series: [{data: [100]}]});
+</script>
+</body>
+</html>
+"""
+            write_file(workspace, "report.html", body + ("x" * 5200))
+
+            result = stage6.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "BLOCKED ❌")
+            self.assertTrue(
+                any("value mismatch" in msg.lower() for msg in messages(stage6.validate(workspace)))
+            )
+
+    def test_stage6_blocks_chart_unit_currency_period_mismatch_against_ledger(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 2}')
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+## Evidence Claim Ledger
+
+claim_id: E-001
+claim_type: numeric
+claim_text: Market size reached RMB 100B.
+value: 100
+unit: billion
+currency: RMB
+period: 2025
+source_id: official-001
+source_type: official
+source_grade: A
+source_date: 2025-01-10
+retrieved_at: 2026-05-25
+primary_source_required: false
+primary_source_present: true
+used_in: chart
+""",
+            )
+            body = """
+<html>
+<head><script src="echarts.min.js"></script></head>
+<body>
+<section id="cover-page"></section>
+<section id="toc-page"></section>
+<section class="chapter-section"><div class="chapter-header">Chapter 1</div></section>
+<section id="footer-page"></section>
+<div id="chart1" data-claim-id="E-001" data-value="100" data-unit="million" data-currency="USD" data-period="2024"></div>
+<div id="chart2" data-claim-id="E-001"></div>
+<div id="chart3" data-claim-id="E-001"></div>
+<script>
+const chart1 = echarts.init(document.getElementById('chart1'));
+chart1.setOption({series: [{data: [100]}]});
+const chart2 = echarts.init(document.getElementById('chart2'));
+chart2.setOption({series: [{data: [100]}]});
+const chart3 = echarts.init(document.getElementById('chart3'));
+chart3.setOption({series: [{data: [100]}]});
+</script>
+</body>
+</html>
+"""
+            write_file(workspace, "report.html", body + ("x" * 5200))
+
+            result = stage6.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "BLOCKED ❌")
+            msgs = messages(stage6.validate(workspace))
+            self.assertTrue(any("unit mismatch" in msg.lower() for msg in msgs))
+            self.assertTrue(any("currency mismatch" in msg.lower() for msg in msgs))
+            self.assertTrue(any("period mismatch" in msg.lower() for msg in msgs))
+
+    def test_stage6_accepts_chart_value_when_ledger_value_appears_in_chart_data(self):
+        with tempfile.TemporaryDirectory() as workspace:
+            write_file(workspace, "_state.json", '{"tier": 2}')
+            write_file(
+                workspace,
+                "evidence_base.md",
+                """
+# Evidence Base
+
+## Evidence Claim Ledger
+
+claim_id: E-001
+claim_type: numeric
+claim_text: Market size reached RMB 100B.
+value: 100
+unit: billion
+currency: RMB
+period: 2025
+source_id: official-001
+source_type: official
+source_grade: A
+source_date: 2025-01-10
+retrieved_at: 2026-05-25
+primary_source_required: false
+primary_source_present: true
+used_in: chart
+""",
+            )
+            body = """
+<html>
+<head><script src="echarts.min.js"></script></head>
+<body>
+<section id="cover-page"></section>
+<section id="toc-page"></section>
+<section class="chapter-section"><div class="chapter-header">Chapter 1</div></section>
+<section id="footer-page"></section>
+<div id="chart1" data-claim-id="E-001" data-unit="billion" data-currency="RMB" data-period="2025"></div>
+<div id="chart2" data-claim-id="E-001"></div>
+<div id="chart3" data-claim-id="E-001"></div>
+<script>
+const chart1 = echarts.init(document.getElementById('chart1'));
+chart1.setOption({series: [{data: [80, 90, 100]}]});
+const chart2 = echarts.init(document.getElementById('chart2'));
+chart2.setOption({series: [{data: [100]}]});
+const chart3 = echarts.init(document.getElementById('chart3'));
+chart3.setOption({series: [{data: [100]}]});
+</script>
+</body>
+</html>
+"""
+            write_file(workspace, "report.html", body + ("x" * 5200))
+
+            result = stage6.validate(workspace).to_dict()
+
+            self.assertEqual(result["gate"], "PASS ✅")
 
 
 if __name__ == "__main__":

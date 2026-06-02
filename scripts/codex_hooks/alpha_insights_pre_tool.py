@@ -63,6 +63,45 @@ def _extract_paths(data: dict[str, Any]) -> list[str]:
     return deduped
 
 
+def _snippet(value: str, limit: int = 600) -> str:
+    value = value.strip()
+    if len(value) <= limit:
+        return value
+    return value[:limit].rstrip() + "..."
+
+
+def _hook_failure_payload(script: Path, proc: subprocess.CompletedProcess[str]) -> str:
+    details = []
+    if proc.stderr.strip():
+        details.append(f"stderr: {_snippet(proc.stderr)}")
+    if proc.stdout.strip():
+        details.append(f"stdout: {_snippet(proc.stdout)}")
+    detail_text = "\n".join(details) or "no child hook output"
+    return json.dumps(
+        {
+            "decision": "block",
+            "message": (
+                "Alpha Insights html guard failed "
+                f"(returncode={proc.returncode}). Direct HTML writes are blocked "
+                "until the guard is fixed.\n"
+                f"{detail_text}"
+            ),
+            "reason": "alpha_insights_html_guard_failed",
+            "alpha_insights_hook_error": True,
+            "alpha_insights_hook_errors": [
+                {
+                    "hook": "html_write_guard",
+                    "script": str(script),
+                    "returncode": proc.returncode,
+                    "stderr": _snippet(proc.stderr),
+                    "stdout": _snippet(proc.stdout),
+                }
+            ],
+        },
+        ensure_ascii=False,
+    )
+
+
 def _run_html_guard(original: dict[str, Any], file_path: str) -> str:
     payload = dict(original)
     payload["tool_name"] = _tool_name(original) or "ApplyPatch"
@@ -74,6 +113,8 @@ def _run_html_guard(original: dict[str, Any], file_path: str) -> str:
         capture_output=True,
         check=False,
     )
+    if proc.returncode != 0:
+        return _hook_failure_payload(HTML_GUARD, proc)
     return proc.stdout.strip()
 
 
@@ -93,4 +134,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

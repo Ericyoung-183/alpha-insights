@@ -6,6 +6,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 Porter's Five Forces model was proposed by Harvard Business School professor Michael Porter in 1979 and is the most classic industry competitive structure analysis tool in strategic management. The framework holds that an industry's profitability is not determined by the product itself, but by the interplay of five competitive forces.

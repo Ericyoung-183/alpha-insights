@@ -6,6 +6,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 The Three Horizons of Growth framework was developed by McKinsey & Company for managing multi-time-horizon growth portfolios.
@@ -351,7 +353,7 @@ H3: 30%
 │  • Low resource efficiency                  │
 │                                             │
 │  H1 → H2 (Reinvention):                    │
-│  • Technology disruption creates new opps   │
+│  • Technology disruption creates options    │
 │  • Second curve discovered                  │
 │                                             │
 └─────────────────────────────────────────────┘

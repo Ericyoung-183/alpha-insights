@@ -8,6 +8,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 PESTEL Analysis is the standard tool for macro environment scanning, systematically identifying external forces affecting the industry across six dimensions: Political, Economic, Social, Technological, Environmental, and Legal.
@@ -36,8 +38,8 @@ PESTEL Analysis is the standard tool for macro environment scanning, systematica
 ┌─────────────────────────────────────────────────────────────┐
 │                    PESTEL Six Dimensions                      │
 │                                                             │
-│   P olitical          E conomic          S ocial             │
-│   T echnological      E nvironmental     L egal              │
+│   P — Political       E — Economic       S — Social          │
+│   T — Technological   E — Environmental  L — Legal           │
 │                                                             │
 │              ↓ Per Dimension ↓                               │
 │      Current State → Change Trends → Industry Impact → O/T  │

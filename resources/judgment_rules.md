@@ -24,7 +24,7 @@
 ```
 Input: Stage 4's evidence_base.md
 
-Step 1: Execute Rules 1-7 sequentially (select rule subset based on Tier)
+Step 1: Execute Rules 1-7 sequentially (all tiers execute the full generation rule set; Rules 8a/8b run in Steps 3-4)
    ⛔ After each rule completes, broadcast a one-line progress summary to the user (see format below)
    ↓
 Step 2: User confirms insight direction (after Rule 7 ranking, before Red/Blue Team review)
@@ -410,7 +410,7 @@ Each recommendation must answer 5 questions:
 
 | Dimension | Question | Failing Example | Passing Example |
 |-----------|----------|-----------------|-----------------|
-| **S**pecific | What exactly to do? | "Strengthen B-end expansion" | "Build a 10-person B-end sales team" |
+| **Specific** | What exactly to do? | "Strengthen B-end expansion" | "Build a 10-person B-end sales team" |
 | **M**easurable | How to measure success? | "Increase market share" | "Sign 20 bank clients" |
 | **A**chievable | Is it achievable? | "Become global #1" | "Increase domestic B-end share to 30%" |
 | **R**elevant | Related to core question? | Off-topic recommendation | Directly addresses core hypothesis |

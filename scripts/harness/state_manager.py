@@ -2,13 +2,13 @@
 """
 Alpha Insights — Workspace State Manager
 
-外部状态追踪，让 AI 的执行路径可审计。
-管理 workspace/_state.json 文件。
+\u5916\u90e8\u72b6\u6001\u8ffd\u8e2a，\u8ba9 AI \u7684\u6267\u884c\u8def\u5f84\u53ef\u5ba1\u8ba1。
+\u7ba1\u7406 workspace/_state.json \u6587\u4ef6。
 
-用法:
+Usage:
     python3 state_manager.py init <workspace> --tier 2
     python3 state_manager.py advance <workspace> --stage 2
-    python3 state_manager.py log <workspace> --type file_load --detail "📚 加载 X"
+    python3 state_manager.py log <workspace> --type file_load --detail "📚 \u52a0\u8f7d X"
     python3 state_manager.py status <workspace>
 """
 
@@ -42,6 +42,8 @@ STAGE_DELIVERABLES = {
     6: "report.html",
 }
 
+VALID_STAGES = set(STAGE_NAMES)
+
 
 def _now():
     return datetime.now(timezone.utc).isoformat()
@@ -49,6 +51,20 @@ def _now():
 
 def _state_path(workspace):
     return os.path.join(workspace, STATE_FILE)
+
+
+def parse_stage(raw):
+    """Parse and validate a stage number."""
+    try:
+        stage = float(raw)
+    except (TypeError, ValueError):
+        raise ValueError(f"invalid stage number: {raw}") from None
+    if stage.is_integer():
+        stage = int(stage)
+    if stage not in VALID_STAGES:
+        valid = ", ".join(str(s) for s in sorted(VALID_STAGES))
+        raise ValueError(f"invalid stage number: {raw}. Valid values: {valid}")
+    return stage
 
 
 def _load_state(workspace):
@@ -59,7 +75,7 @@ def _load_state(workspace):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except (json.JSONDecodeError, IOError) as e:
-        print(json.dumps({"warning": f"_state.json 读取失败: {e}，视为不存在"}, ensure_ascii=False), file=sys.stderr)
+        print(json.dumps({"warning": f"_state.json read failed: {e}; treating as missing"}, ensure_ascii=False), file=sys.stderr)
         return None
 
 
@@ -71,7 +87,7 @@ def _save_state(workspace, state):
 
 
 def cmd_init(workspace, tier=3):
-    """初始化 workspace 状态"""
+    """initialize workspace state"""
     os.makedirs(workspace, exist_ok=True)
     state = {
         "version": VERSION,
@@ -96,7 +112,12 @@ def cmd_init(workspace, tier=3):
 
 
 def cmd_advance(workspace, stage):
-    """推进到指定 Stage"""
+    """advance to target stage"""
+    if stage not in VALID_STAGES:
+        valid = ", ".join(str(s) for s in sorted(VALID_STAGES))
+        print(json.dumps({"error": f"invalid stage number: {stage}. Valid values: {valid}"}, ensure_ascii=False))
+        sys.exit(1)
+
     state = _load_state(workspace)
     if state is None:
         print(json.dumps({"error": f"No _state.json in {workspace}. Run 'init' first."}, ensure_ascii=False))
@@ -104,19 +125,16 @@ def cmd_advance(workspace, stage):
 
     prev_stage = state["current_stage"]
 
-    # 前进检查：禁止回跳（Stage 7 回退由 SKILL.md 边缘情况处理，不经 advance）
     if stage <= prev_stage and prev_stage > 0:
         print(json.dumps({
-            "error": f"不允许从 Stage {prev_stage} 回跳到 Stage {stage}。如需回退，请使用 Stage 7 迭代流程。",
+            "error": f"cannot move backward from Stage {prev_stage} to Stage {stage}. Use the Stage 7 iteration flow for rollback.",
             "action": "advance",
             "status": "BLOCKED ❌",
         }, ensure_ascii=False))
         sys.exit(1)
 
-    # 如果有前一个 Stage 在进行中，标记为完成
     if prev_stage > 0 and prev_stage not in state["completed_stages"]:
         state["completed_stages"].append(prev_stage)
-        # 更新 stage_history 中最后一个条目的完成时间
         for entry in reversed(state["stage_history"]):
             if entry["stage"] == prev_stage and entry.get("completed") is None:
                 entry["completed"] = _now()
@@ -142,7 +160,7 @@ def cmd_advance(workspace, stage):
 
 
 def cmd_log(workspace, log_type, detail):
-    """记录披露日志"""
+    """record disclosure log"""
     state = _load_state(workspace)
     if state is None:
         print(json.dumps({"error": f"No _state.json in {workspace}. Run 'init' first."}, ensure_ascii=False))
@@ -156,9 +174,8 @@ def cmd_log(workspace, log_type, detail):
     }
     state["disclosure_log"].append(entry)
 
-    # 自动追踪特定类型
     if log_type == "file_load":
-        filename = detail.replace("📚 加载 ", "").replace("📚 加载", "").strip()
+        filename = detail.replace("📚 \u52a0\u8f7d ", "").replace("📚 \u52a0\u8f7d", "").strip()
         if filename and filename not in state["files_loaded"]:
             state["files_loaded"].append(filename)
     elif log_type == "framework":
@@ -175,7 +192,6 @@ def cmd_log(workspace, log_type, detail):
         state["interview_checkpoint_done"] = True
         state["interview_checkpoint_result"] = detail  # "completed" / "deferred" / "cancelled"
     elif log_type == "iqr_result":
-        # 记录 IQR 复核结果（PASS / REVISE / BLOCK）
         if "iqr_results" not in state:
             state["iqr_results"] = {}
         state["iqr_results"][str(state["current_stage"])] = {
@@ -188,7 +204,7 @@ def cmd_log(workspace, log_type, detail):
 
 
 def cmd_status(workspace):
-    """输出当前状态摘要"""
+    """print current state summary"""
     state = _load_state(workspace)
     if state is None:
         print(json.dumps({"error": f"No _state.json in {workspace}."}, ensure_ascii=False))
@@ -209,7 +225,7 @@ def cmd_status(workspace):
 
 
 def cmd_record_validation(workspace, stage, result_json):
-    """记录验证结果"""
+    """record validation result"""
     state = _load_state(workspace)
     if state is None:
         print(json.dumps({"error": f"No _state.json in {workspace}."}, ensure_ascii=False))
@@ -224,8 +240,8 @@ def cmd_record_validation(workspace, stage, result_json):
 
 def main():
     if len(sys.argv) < 3:
-        print("用法: state_manager.py <command> <workspace> [options]")
-        print("命令: init, advance, log, status, record_validation")
+        print("Usage: state_manager.py <command> <workspace> [options]")
+        print("Commands: init, advance, log, status, record_validation")
         sys.exit(1)
 
     command = sys.argv[1]
@@ -242,11 +258,13 @@ def main():
         stage = None
         for i, arg in enumerate(sys.argv):
             if arg == "--stage" and i + 1 < len(sys.argv):
-                stage = float(sys.argv[i + 1])
-                if stage == int(stage):
-                    stage = int(stage)  # 保持整数阶段为 int（1, 2, ...）
+                try:
+                    stage = parse_stage(sys.argv[i + 1])
+                except ValueError as exc:
+                    print(json.dumps({"error": str(exc)}, ensure_ascii=False))
+                    sys.exit(1)
         if stage is None:
-            print("错误: advance 需要 --stage N 参数")
+            print("error: advance requires --stage N")
             sys.exit(1)
         cmd_advance(workspace, stage)
 
@@ -259,7 +277,7 @@ def main():
             if arg == "--detail" and i + 1 < len(sys.argv):
                 detail = sys.argv[i + 1]
         if not log_type or not detail:
-            print("错误: log 需要 --type 和 --detail 参数")
+            print("error: log requires --type and --detail")
             sys.exit(1)
         cmd_log(workspace, log_type, detail)
 
@@ -271,16 +289,20 @@ def main():
         result_json = None
         for i, arg in enumerate(sys.argv):
             if arg == "--stage" and i + 1 < len(sys.argv):
-                stage = int(sys.argv[i + 1])
+                try:
+                    stage = parse_stage(sys.argv[i + 1])
+                except ValueError as exc:
+                    print(json.dumps({"error": str(exc)}, ensure_ascii=False))
+                    sys.exit(1)
             if arg == "--result" and i + 1 < len(sys.argv):
                 result_json = sys.argv[i + 1]
         if stage is None or result_json is None:
-            print("错误: record_validation 需要 --stage 和 --result 参数")
+            print("error: record_validation requires --stage and --result")
             sys.exit(1)
         cmd_record_validation(workspace, stage, result_json)
 
     else:
-        print(f"未知命令: {command}")
+        print(f"unknown command: {command}")
         sys.exit(1)
 
 

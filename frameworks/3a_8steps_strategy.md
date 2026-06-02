@@ -8,6 +8,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 The **3A Strategy 8-Step Framework** is an integrated framework combining strategic perspectives with a full industry analysis workflow. It fuses:
@@ -29,11 +31,11 @@ The **3A Strategy 8-Step Framework** is an integrated framework combining strate
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │   Strategic Layer (Why)     Analysis Layer (What)   Output (How)│
-│   ┌─────┬─────┬─────┐                                          │
-│   │Aspi-│Abil-│Acces│  ← 3A Strategic Dimensions                │
-│   │ration│ity │sibi-│                                           │
-│   │     │     │lity │                                           │
-│   └──┬──┴──┬──┴──┬──┘                                          │
+│   ┌──────┬──────┬──────┐                                       │
+│   │Aspi- │Abil- │Access│  ← 3A Strategic Dimensions             │
+│   │ration│ity   │ibil- │                                       │
+│   │      │      │ity   │                                       │
+│   └──┬───┴──┬───┴──┬───┘                                       │
 │      │      │      │                                           │
 │      ▼      ▼      ▼                                           │
 │   ┌──────────────────────────┐                                  │

@@ -6,6 +6,8 @@
 
 ---
 
+> **Case Boundary**: Company/industry cases in this file are illustrative examples for framework structure and reasoning, not current factual claims by Alpha Insights. Before reusing any numbers, shares, dates, or conclusions in a live study, re-check sources and record them in the Evidence Claim Ledger.
+
 ## Overview
 
 The Platform Canvas is an analysis tool designed specifically for platform/ecosystem business models, extending traditional BMC to accommodate two-sided/multi-sided market characteristics.
