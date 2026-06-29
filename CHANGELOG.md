@@ -31,7 +31,7 @@
 - **Stage 3.5 gate chain**: `stage_gate.py validate 3.5` now supports decimal stages, with a new `validators/stage3_5.py`.
 - **Silent stage gate hook failure**: Removed the local `import json` scope trap in `stage_gate_hook.py`, preventing fail-open silence.
 - **Codex PostToolUse payload compatibility**: The Codex wrapper now normalizes `toolName/toolInput`, so progress logs no longer record `tool=unknown`.
-- **Open-source adapter boundary**: Removed the built-in provider-specific default key; public builds must not rely on bundled private collection credentials.
+- **GitHub credential boundary**: Public GitHub builds must not ship built-in provider-specific default credentials; internal source and internal/local full packages retain the configured private adapter capability.
 
 ### Improved
 - **Dual-platform README**: README and README_zh now present Codex Desktop and Claude Code compatible paths through the agent-first installer contract.
